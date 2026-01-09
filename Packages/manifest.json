@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.coffee.unmask": "https://github.com/mob-sakai/UnmaskForUGUI.git",
+    "com.gilzoide.flex-ui": "https://github.com/gilzoide/unity-flex-ui.git#1.2.4",
     "com.unity.2d.animation": "12.0.2",
     "com.unity.2d.aseprite": "2.0.2",
     "com.unity.2d.psdimporter": "11.0.1",
