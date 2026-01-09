@@ -1,16 +1,29 @@
+using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class NavbarButton : MonoBehaviour
+public class NavbarButton : UIView<NavbarButtonModel>
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private Image iconImage;
+    [SerializeField] private Button action;
+    [SerializeField] private Text label;
+
+    protected override void Subscribe()
     {
-        
+        base.Subscribe();
+
+        action.OnClickAsObservable()
+            .Subscribe(_ =>
+            {
+                Trigger(DataProperty.Value);
+            })
+            .AddTo(this);
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void UpdateUI()
     {
-        
+        var data = DataProperty.Value;
+        if (iconImage != null) iconImage.sprite = data.icon;
+        if (label != null) label.text = data.label;
     }
 }

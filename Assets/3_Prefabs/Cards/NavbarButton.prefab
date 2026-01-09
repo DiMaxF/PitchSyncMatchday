@@ -409,6 +409,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f66b79b3b965c64e8754053e0365115, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NavbarButton
+  iconImage: {fileID: 0}
+  action: {fileID: 0}
+  label: {fileID: 0}
 --- !u!1 &8433680103440588465
 GameObject:
   m_ObjectHideFlags: 0

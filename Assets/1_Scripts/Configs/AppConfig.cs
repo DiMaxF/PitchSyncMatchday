@@ -1,0 +1,8 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "AppConfig", menuName = "Scriptable Objects/AppConfig")]
+public class AppConfig : ScriptableObject
+{
+    public List<NavigationButtonConfig> navbarData;
+}

@@ -1,16 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Navbar : MonoBehaviour
+public class Navbar : UIView<List<NavbarButtonModel>>
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+   // [SerializeField] private ListContainer<NavbarButtonModel> listView;
+
+    public override void UpdateUI()
     {
-        
+        //listView.ForceRefresh(DataProperty.Value ?? new List<NavbarButtonModel>());
     }
 
-    // Update is called once per frame
-    void Update()
+    protected override void Subscribe()
     {
-        
+
     }
 }

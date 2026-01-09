@@ -1,16 +1,20 @@
+using UnityEditor;
 using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] AppConfig config;
+    AppModel _appModel = new AppModel();
+
+    public NavbarDataManager NavbarDataManager;
+
+    private void OnEnable()
     {
-        
+        InitManagers();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void InitManagers() 
     {
-        
+        NavbarDataManager = new NavbarDataManager(config);
     }
 }

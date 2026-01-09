@@ -3,20 +3,20 @@ using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
 
-public class ListContainer<TItem> : UIView<List<TItem>>
+public class ListContainer : UIView<List<object>>
 {
     [SerializeField] private Transform contentParent;
-    [SerializeField] private UIView<TItem> itemPrefab;           
+    [SerializeField] private UIView itemPrefab;
     [SerializeField] private UIView noItemPrefab;              
-    [SerializeField] private float spawnDelayPerItem = 0.05f;    
+    [SerializeField] private float spawnDelayPerItem = 0.05f;
 
-    private readonly List<UIView<TItem>> _spawnedItems = new List<UIView<TItem>>();
+    private readonly List<UIView> _spawnedItems = new List<UIView>();
 
     public override void UpdateUI()
     {
-        var itemsData = DataProperty.Value ?? new List<TItem>();
+        var itemsData = DataProperty.Value ?? new List<object>();
 
-        ClearItems();
+        ClearItems();   
 
         foreach (var itemData in itemsData)
         {
@@ -31,13 +31,17 @@ public class ListContainer<TItem> : UIView<List<TItem>>
         AnimateItemsSpawn();
     }
 
-    private void SpawnItem(TItem itemData)
+    private void SpawnItem(object itemData)
     {
-        var itemInstance = Instantiate(itemPrefab, contentParent);
-        UIManager.RegisterView(itemInstance); 
+        if (itemPrefab == null) return;
 
-        itemInstance.Init(itemData);
-        _spawnedItems.Add(itemInstance);
+        var instance = Instantiate(itemPrefab, contentParent);
+        UIManager.RegisterView(instance);
+
+        var initMethod = instance.GetType().GetMethod("Init");
+        initMethod?.Invoke(instance, new object[] { itemData });
+
+        _spawnedItems.Add(instance);
     }
 
     private void ClearItems()
@@ -76,10 +80,5 @@ public class ListContainer<TItem> : UIView<List<TItem>>
 
             item.ShowAsync().Forget();
         }
-    }
-
-    public void ForceRefresh(List<TItem> newData)
-    {
-        DataProperty.Value = newData;
     }
 }
