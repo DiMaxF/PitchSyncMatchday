@@ -1,4 +1,4 @@
-public enum NavbarScreens 
+public enum Screens 
 {
     HomeScreen,
     LineupScreen

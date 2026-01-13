@@ -4,7 +4,7 @@ public class NavbarButtonModel : MonoBehaviour
 {
     public string label;
     public Sprite icon;
-    public NavbarScreens screen;
+    public Screens screen;
     public bool selected;
 
     public NavbarButtonModel(NavigationButtonConfig config, bool isSelected)

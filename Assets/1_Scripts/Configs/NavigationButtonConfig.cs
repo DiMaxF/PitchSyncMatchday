@@ -5,5 +5,5 @@ public class NavigationButtonConfig : ScriptableObject
 {
     public string buttonName;   
     public Sprite icon;
-    public NavbarScreens screen;
+    public Screens screen;
 }

@@ -8,7 +8,7 @@ public class NavbarButton : UIView<NavbarButtonModel>
     [SerializeField] private Button action;
     [SerializeField] private Text label;
 
-    protected override void Subscribe()
+    protected override void Subscribe() 
     {
         base.Subscribe();
 
@@ -25,5 +25,7 @@ public class NavbarButton : UIView<NavbarButtonModel>
         var data = DataProperty.Value;
         if (iconImage != null) iconImage.sprite = data.icon;
         if (label != null) label.text = data.label;
+
+       // new Log($"{data == null}", "NavbarButton");
     }
 }

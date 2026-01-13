@@ -1,52 +1,140 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
 
-public class ListContainer : UIView<List<object>>
+public class ListContainer : UIView<ReactiveCollection<object>>
 {
     [SerializeField] private Transform contentParent;
     [SerializeField] private UIView itemPrefab;
-    [SerializeField] private UIView noItemPrefab;              
+    [SerializeField] private UIView noItemPrefab;
     [SerializeField] private float spawnDelayPerItem = 0.05f;
+    [SerializeField] private bool animateRemoval = true;
 
-    private readonly List<UIView> _spawnedItems = new List<UIView>();
+    private readonly Dictionary<int, UIView> _spawnedItems = new Dictionary<int, UIView>();
+    private bool _isInitialized = false;
 
-    public override void UpdateUI()
+    public void Init(object data)
     {
-        var itemsData = DataProperty.Value ?? new List<object>();
-
-        ClearItems();   
-
-        foreach (var itemData in itemsData)
+        if (data is ReactiveCollection<object> collection)
         {
-            SpawnItem(itemData);
-        }
-            
-        if (itemsData.Count == 0 && noItemPrefab != null)
-        {
-            Instantiate(noItemPrefab, contentParent);
-        }
+            if (_isInitialized && DataProperty.Value == collection) return;
 
-        AnimateItemsSpawn();
+            DataProperty.Value = collection;
+            ClearAllItems();
+            InitializeFromCollection(collection);
+            _isInitialized = true;
+        }
     }
 
-    private void SpawnItem(object itemData)
+    private void InitializeFromCollection(ReactiveCollection<object> collection)
+    {
+        collection.ObserveAdd().Subscribe(e => OnItemAdded(e.Index, e.Value)).AddTo(this);
+        collection.ObserveRemove().Subscribe(e => OnItemRemoved(e.Index, e.Value)).AddTo(this);
+        collection.ObserveReset().Subscribe(_ => OnCollectionReset()).AddTo(this);
+        collection.ObserveMove().Subscribe(e => OnItemMoved(e.OldIndex, e.NewIndex)).AddTo(this);
+        collection.ObserveReplace().Subscribe(e => OnItemReplaced(e.Index, e.NewValue)).AddTo(this);
+
+        for (int i = 0; i < collection.Count; i++)
+        {
+            OnItemAdded(i, collection[i]);
+        }
+
+        UpdateNoItemView();
+    }
+
+    private void OnItemAdded(int index, object itemData)
     {
         if (itemPrefab == null) return;
 
         var instance = Instantiate(itemPrefab, contentParent);
         UIManager.RegisterView(instance);
 
-        var initMethod = instance.GetType().GetMethod("Init");
-        initMethod?.Invoke(instance, new object[] { itemData });
+        var initMethod = instance.GetType().GetMethod("Init", new[] { typeof(object) });
+        if (initMethod != null)
+        {
+            initMethod.Invoke(instance, new[] { itemData });
+        }
+        else
+        {
+            var genericInit = instance.GetType().GetMethod("Init");
+            genericInit?.Invoke(instance, itemData != null ? new[] { itemData } : null);
+        }
 
-        _spawnedItems.Add(instance);
+        _spawnedItems[index] = instance;
+
+        instance.gameObject.SetActive(false);
+        AnimateItemAppear(instance, index).Forget();
     }
 
-    private void ClearItems()
+    private async UniTask AnimateItemAppear(UIView item, int index)
     {
-        foreach (var item in _spawnedItems)
+        await UniTask.Delay(System.TimeSpan.FromSeconds(index * spawnDelayPerItem),
+            cancellationToken: this.GetCancellationTokenOnDestroy());
+        if (item != null) // защита от destroy
+        {
+            await item.ShowAsync();
+        }
+    }
+
+    private async void OnItemRemoved(int index, object itemData)
+    {
+        if (!_spawnedItems.TryGetValue(index, out var item) || item == null) return;
+
+        _spawnedItems.Remove(index);
+
+        if (animateRemoval)
+        {
+            await item.HideAsync();
+        }
+
+        UIManager.UnregisterView(item);
+        Destroy(item.gameObject);
+
+        ReindexAfterRemoval(index);
+        UpdateNoItemView();
+    }
+
+    private void OnItemReplaced(int index, object newData)
+    {
+        if (_spawnedItems.TryGetValue(index, out var item) && item != null)
+        {
+            var initMethod = item.GetType().GetMethod("Init", new[] { typeof(object) });
+            initMethod?.Invoke(item, new[] { newData });
+        }
+    }
+
+    private void OnItemMoved(int oldIndex, int newIndex)
+    {
+        if (_spawnedItems.TryGetValue(oldIndex, out var item) && item != null)
+        {
+            item.transform.SetSiblingIndex(newIndex);
+            _spawnedItems.Remove(oldIndex);
+            _spawnedItems[newIndex] = item;
+        }
+    }
+
+    private void ReindexAfterRemoval(int removedIndex)
+    {
+        var keys = _spawnedItems.Keys.Where(k => k > removedIndex).OrderBy(k => k).ToList();
+        foreach (var oldKey in keys)
+        {
+            var item = _spawnedItems[oldKey];
+            _spawnedItems.Remove(oldKey);
+            _spawnedItems[oldKey - 1] = item;
+        }
+    }
+
+    private void OnCollectionReset()
+    {
+        ClearAllItems();
+        UpdateNoItemView();
+    }
+
+    private void ClearAllItems()
+    {
+        foreach (var item in _spawnedItems.Values)
         {
             if (item != null)
             {
@@ -54,31 +142,30 @@ public class ListContainer : UIView<List<object>>
                 Destroy(item.gameObject);
             }
         }
-
         _spawnedItems.Clear();
+        ClearNoItemView();
+    }
 
-        foreach (Transform child in contentParent)
+    private void UpdateNoItemView()
+    {
+        ClearNoItemView();
+
+        if (DataProperty.Value != null && DataProperty.Value.Count == 0 && noItemPrefab != null)
         {
-            Destroy(child.gameObject);
+            var noItem = Instantiate(noItemPrefab, contentParent);
+            noItem.name = "NoItemPlaceholder";
         }
     }
 
-    private async void AnimateItemsSpawn()
+    private void ClearNoItemView()
     {
-        foreach (var item in _spawnedItems)
+        for (int i = contentParent.childCount - 1; i >= 0; i--)
         {
-            if (item != null) item.gameObject.SetActive(false);
-        }
-
-        for (int i = 0; i < _spawnedItems.Count; i++)
-        {
-            var item = _spawnedItems[i];
-            if (item == null) continue;
-
-            await UniTask.Delay(System.TimeSpan.FromSeconds(spawnDelayPerItem),
-                cancellationToken: this.GetCancellationTokenOnDestroy());
-
-            item.ShowAsync().Forget();
+            var child = contentParent.GetChild(i);
+            if (child.name.StartsWith("NoItem"))
+            {
+                Destroy(child.gameObject);
+            }
         }
     }
 }

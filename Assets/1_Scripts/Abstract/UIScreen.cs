@@ -6,14 +6,14 @@ using UnityEngine;
 
 public abstract class UIScreen : MonoBehaviour
 {
-    protected DataManager Data;
-    protected ScreenManager ScreenManager;
+    public Screens ScreenType;
+
+    protected ScreensManager ScreenManager;
 
     private CompositeDisposable _disposables = new CompositeDisposable();
 
-    public void Init(DataManager data, ScreenManager screenManager)
+    public void Init(ScreensManager screenManager)
     {
-        Data = data;
         ScreenManager = screenManager;
     }
 
@@ -40,12 +40,11 @@ public abstract class UIScreen : MonoBehaviour
         return disposable;
     }
 
-    
     public virtual async UniTask ShowAsync()
     {
         gameObject.SetActive(true);
         await AnimationPlayer.PlayAnimationsAsync(gameObject, true);
-        RefreshViews(); 
+        RefreshViews();
     }
 
     public virtual async UniTask HideAsync()
@@ -54,14 +53,10 @@ public abstract class UIScreen : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-   
     public virtual void Show() => ShowAsync().Forget();
     public virtual void Hide() => HideAsync().Forget();
 
-    
     protected virtual void RefreshViews()
     {
-
     }
 }
-
