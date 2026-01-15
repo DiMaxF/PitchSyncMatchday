@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,7 +16,7 @@ public class ListContainer : UIView<ReactiveCollection<object>>
     private readonly Dictionary<int, UIView> _spawnedItems = new Dictionary<int, UIView>();
     private bool _isInitialized = false;
 
-    public void Init(object data)
+    public new void Init(object data)
     {
         if (data is ReactiveCollection<object> collection)
         {
@@ -64,6 +65,8 @@ public class ListContainer : UIView<ReactiveCollection<object>>
 
         _spawnedItems[index] = instance;
 
+        UIManager.ForwardEventsFrom(instance, this).AddTo(this);
+
         instance.gameObject.SetActive(false);
         AnimateItemAppear(instance, index).Forget();
     }
@@ -72,7 +75,7 @@ public class ListContainer : UIView<ReactiveCollection<object>>
     {
         await UniTask.Delay(System.TimeSpan.FromSeconds(index * spawnDelayPerItem),
             cancellationToken: this.GetCancellationTokenOnDestroy());
-        if (item != null) // защита от destroy
+        if (item != null) 
         {
             await item.ShowAsync();
         }

@@ -52,6 +52,31 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public static IDisposable ForwardEventsFrom(UIView sourceView, UIView targetView, bool persistent = false)
+    {
+        if (!_viewSubjects.TryGetValue(sourceView, out var sourceSubject))
+        {
+            sourceSubject = new Subject<object>();
+            _viewSubjects[sourceView] = sourceSubject;
+        }
+
+        var subscription = sourceSubject
+            .Subscribe(data =>
+            {
+                if (_viewSubjects.TryGetValue(targetView, out var targetSubject))
+                {
+                    targetSubject.OnNext(data);
+                }
+            });
+
+        if (persistent)
+        {
+            _globalDisposables.Add(subscription);
+        }
+
+        return subscription;
+    }
+
     public static TView GetView<TView>() where TView : UIView
     {
         return _persistentViews.OfType<TView>().FirstOrDefault() ??

@@ -1,3 +1,4 @@
+using System;
 using UniRx;
 using UnityEngine;
 
@@ -5,14 +6,11 @@ public abstract class UIView<TData> : UIView
 {
     protected readonly ReactiveProperty<TData> DataProperty = new ReactiveProperty<TData>();
 
+    private IDisposable _updateSubscription; 
+
     protected override void OnEnable()
     {
         base.OnEnable();
-
-        DataProperty
-         .Where(data => data != null) 
-         .Subscribe(_ => UpdateUI())
-         .AddTo(this);
 
         UIManager.SubscribeToView(this, (TData data) =>
         {
@@ -24,8 +22,11 @@ public abstract class UIView<TData> : UIView
     {
         DataProperty.Value = initialData;
 
-        if (initialData != null)  UpdateUI();
+        SubscribeToDataChanges();
+
+        if (initialData != null) UpdateUI(); 
     }
+
     public void Init(object data)
     {
         if (data is TData typedData)
@@ -34,13 +35,23 @@ public abstract class UIView<TData> : UIView
         }
         else
         {
-            new Error($"Type mismatch in {this.GetType().Name}: expected {typeof(TData).Name}, got {(data != null ? data.GetType().Name : "null")}", "IView<TData>");
+            new Error($"Type mismatch in {this.GetType().Name}: expected {typeof(TData).Name}, got {(data != null ? data.GetType().Name : "null")}", "UIView<TData>");
         }
     }
+
+    protected void SubscribeToDataChanges()
+    {
+        if (_updateSubscription != null) return;
+
+        _updateSubscription = DataProperty
+            .Where(data => data != null)
+            .Subscribe(_ => UpdateUI())
+            .AddTo(this);
+    }
+
     public override void UpdateUI()
     {
         if (DataProperty.Value == null) return;
-
     }
 
     protected void Trigger(TData data)

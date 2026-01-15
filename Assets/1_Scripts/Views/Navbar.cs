@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Navbar : UIView<ReactiveCollection<object>>
 {
+    [SerializeField] private ScreensManager screensManager;
     [SerializeField] private ListContainer listView;
 
     private NavigationDataManager Navigation => DataManager.Navigation;
@@ -23,9 +24,11 @@ public class Navbar : UIView<ReactiveCollection<object>>
 
     protected override void Subscribe()
     {
-        UIManager.SubscribeToView(this, (NavbarButtonModel data) =>
+        UIManager.SubscribeToView(listView, (NavbarButtonModel data) =>
         {
-            DataManager.Navigation.SelectScreen(data.screen);
+            new Log($"{data.screen}", "Navbar");
+            screensManager.Show(data.screen);
+            //DataManager.Navigation.SelectScreen(data.screen);
         }, persistent: true);
     }
 }

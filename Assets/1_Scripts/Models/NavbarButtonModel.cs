@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NavbarButtonModel : MonoBehaviour
+public class NavbarButtonModel
 {
     public string label;
     public Sprite icon;

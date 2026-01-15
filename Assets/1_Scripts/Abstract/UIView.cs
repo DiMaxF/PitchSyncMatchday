@@ -8,22 +8,38 @@ public abstract class UIView : MonoBehaviour
     public bool IsActive => gameObject.activeSelf;
 
     private CompositeDisposable _disposables = new CompositeDisposable();
+    private bool _isSubscribed = false;
+
+    protected virtual void Awake()
+    {
+        if (!_isSubscribed)
+        {
+            _isSubscribed = true;
+            Subscribe();
+        }
+    }
 
     protected virtual void OnEnable()
     {
         UIManager.RegisterView(this);
-        Subscribe();
+        
+        if (!_isSubscribed)
+        {
+            _isSubscribed = true;
+            Subscribe();
+        }
     }
 
     protected virtual void OnDisable()
     {
-        _disposables.Clear();
     }
 
     protected virtual void OnDestroy()
     {
         UIManager.UnregisterView(this);
+        _disposables.Clear();
         _disposables.Dispose();
+        _isSubscribed = false;
     }
 
     public virtual void Init()

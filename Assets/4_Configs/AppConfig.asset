@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AppConfig
   navbarData:
   - {fileID: 11400000, guid: c09960ce1fc132949b900d5d2eeb2b15, type: 2}
+  - {fileID: 11400000, guid: d9d1744989a04f74c982be94cd5ac03e, type: 2}

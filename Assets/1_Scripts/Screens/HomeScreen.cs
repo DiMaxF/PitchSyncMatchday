@@ -1,16 +1,20 @@
 using UnityEngine;
-
+using UnityEngine.UI;
+using UniRx;
+using UniRx.Triggers;
 public class HomeScreen : UIScreen
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private Button pitchFinderButton;
 
-    // Update is called once per frame
-    void Update()
+    protected override void SubscribeToData()
     {
-        
+        base.SubscribeToData();
+        pitchFinderButton.OnClickAsObservable()
+            .Subscribe(_ =>
+            {
+                ScreenManager.Show(Screens.PitchFinderScreen);
+               //DataManager.Navigation.SelectScreen(Screens.PitchFinderScreen);
+            })
+            .AddTo(this);
     }
 }
