@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,7 +10,10 @@ public class DataManager : MonoBehaviour
     AppModel _appModel = new AppModel();
 
     public static NavigationDataManager Navigation => Instance._navbar;
+    public static PitchFinderDataManager PitchFinder => Instance._pitchFinder;
+    
     private NavigationDataManager _navbar;
+    private PitchFinderDataManager _pitchFinder;
 
     private void Awake()
     {
@@ -27,7 +31,6 @@ public class DataManager : MonoBehaviour
     public void InitManagers() 
     {
         _navbar = new NavigationDataManager(config);
-
-        //new Log($"{_navbar.Buttons.Count} {_navbar.Buttons[0].screen}", "DataManager");
+        _pitchFinder = new PitchFinderDataManager(config);
     }
 }

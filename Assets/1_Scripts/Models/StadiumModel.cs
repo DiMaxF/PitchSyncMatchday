@@ -14,4 +14,17 @@ public class StadiumModel
     public float basePricePerHour; 
     public string photoUrl;        
     public List<PitchSize> supportedSizes;
+
+    public StadiumModel(PitchConfig config)
+    {
+        id = config.id;
+        name = config.name;
+        address = config.address;
+        location = config.location;
+        rating = config.rating;
+        reviewsCount = config.reviewsCount;
+        basePricePerHour = config.basePricePerHour;
+        photoUrl = config.photoUrl;
+        supportedSizes = new List<PitchSize>(config.supportedSizes);
+    }
 }
