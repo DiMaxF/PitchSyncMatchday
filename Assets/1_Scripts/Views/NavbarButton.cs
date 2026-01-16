@@ -11,7 +11,6 @@ public class NavbarButton : UIView<NavbarButtonModel>
     protected override void Subscribe() 
     {
         base.Subscribe();
-        new Log($"Subscribe: {DataProperty.Value?.GetType()}", "NavbarButton");
         action.OnClickAsObservable()
             .Subscribe(_ =>
             {
@@ -23,11 +22,8 @@ public class NavbarButton : UIView<NavbarButtonModel>
     public override void UpdateUI()
     {
         var data = DataProperty.Value;
-        new Log($"UpdateUI: data is null = {data == null}", "NavbarButton");
 
         if (iconImage != null) iconImage.sprite = data.icon;
         if (label != null) label.text = data.label;
-
-       // new Log($"{data == null}", "NavbarButton");
     }
 }
