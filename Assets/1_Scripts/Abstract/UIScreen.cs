@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
 using UniRx;
-using UnityEditor;
 using UnityEngine;
 
 public abstract class UIScreen : MonoBehaviour
@@ -11,6 +10,12 @@ public abstract class UIScreen : MonoBehaviour
     protected ScreensManager ScreenManager;
 
     private CompositeDisposable _disposables = new CompositeDisposable();
+    private AnimationController _animController;
+
+    private void Awake()
+    {
+        _animController = GetComponent<AnimationController>();
+    }
 
     public void Init(ScreensManager screenManager)
     {
@@ -43,13 +48,18 @@ public abstract class UIScreen : MonoBehaviour
     public virtual async UniTask ShowAsync()
     {
         gameObject.SetActive(true);
-        await AnimationPlayer.PlayAnimationsAsync(gameObject, true);
+
+        if (_animController != null)
+            await _animController.PlayAsync(true);
+
         RefreshViews();
     }
 
     public virtual async UniTask HideAsync()
     {
-        await AnimationPlayer.PlayAnimationsAsync(gameObject, false);
+        if (_animController != null)
+            await _animController.PlayAsync(false);
+
         gameObject.SetActive(false);
     }
 

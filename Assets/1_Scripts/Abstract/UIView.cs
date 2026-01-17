@@ -9,9 +9,12 @@ public abstract class UIView : MonoBehaviour
 
     private CompositeDisposable _disposables = new CompositeDisposable();
     private bool _isSubscribed = false;
+    private AnimationController _animController;
 
     protected virtual void Awake()
     {
+        _animController = GetComponent<AnimationController>();
+
         if (!_isSubscribed)
         {
             _isSubscribed = true;
@@ -22,7 +25,7 @@ public abstract class UIView : MonoBehaviour
     protected virtual void OnEnable()
     {
         UIManager.RegisterView(this);
-        
+
         if (!_isSubscribed)
         {
             _isSubscribed = true;
@@ -59,14 +62,17 @@ public abstract class UIView : MonoBehaviour
 
     public virtual async UniTask ShowAsync()
     {
-        gameObject.SetActive(true);
-        await AnimationPlayer.PlayAnimationsAsync(gameObject, true);
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
+
+        if (_animController != null)
+            await _animController.PlayAsync(true);
     }
 
     public virtual async UniTask HideAsync()
     {
-        await AnimationPlayer.PlayAnimationsAsync(gameObject, false);
-        gameObject.SetActive(false);
+        if (_animController != null)
+            await _animController.PlayAsync(false);
     }
 
     public virtual void Show() => ShowAsync().Forget();

@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +9,9 @@ public class ToggleButton : UIView<ToggleButtonModel>
     [SerializeField] private Text valueText;
     [SerializeField] private string removeStr;
 
-    protected override void Subscribe() 
+    private bool _previousSelectedState;
+
+    protected override void Subscribe()
     {
         base.Subscribe();
         if (button != null)
@@ -29,9 +32,22 @@ public class ToggleButton : UIView<ToggleButtonModel>
 
         if (valueText != null)
         {
-            valueText.text = data.selected && !string.IsNullOrEmpty(removeStr) 
-                ? removeStr 
+            valueText.text = data.selected && !string.IsNullOrEmpty(removeStr)
+                ? removeStr
                 : data.name;
+        }
+
+        if (_previousSelectedState != data.selected)
+        {
+            _previousSelectedState = data.selected;
+            if (data.selected)
+            {
+                ShowAsync().Forget();
+            }
+            else
+            {
+                HideAsync().Forget();
+            }
         }
     }
 }

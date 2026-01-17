@@ -21,16 +21,21 @@ public class PitchFinderDataManager : IDataManager
     public ReactiveCollection<object> SortFiltersAsObject => SortFilters.Select(m => (object)m).ToReactiveCollection();
     public ReactiveCollection<object> FilteredPitchesAsObject => FilteredPitches.Select(m => (object)m).ToReactiveCollection();
 
-    public PitchFinderDataManager(AppConfig config)
+    public PitchFinderDataManager(AppConfig config, AppModel appModel)
     {
-        _allPitches = new List<StadiumModel>();
-        if (config != null && config.pitches != null)
+        if (appModel.stadiums == null || appModel.stadiums.Count == 0)
         {
-            foreach (var pitchConfig in config.pitches)
+            appModel.stadiums = new List<StadiumModel>();
+            if (config != null && config.pitches != null)
             {
-                _allPitches.Add(new StadiumModel(pitchConfig));
+                foreach (var pitchConfig in config.pitches)
+                {
+                    appModel.stadiums.Add(new StadiumModel(pitchConfig));
+                }
             }
         }
+        
+        _allPitches = appModel.stadiums;
         InitializeFilters();
         SubscribeToFilterChanges();
     }
@@ -73,7 +78,13 @@ public class PitchFinderDataManager : IDataManager
         for (int i = 0; i < SizeFilters.Count && i < sizes.Length; i++)
         {
             var size = (PitchSize)sizes.GetValue(i);
-            SizeFilters[i].selected = SelectedSizeFilter.Value == size;
+            var model = SizeFilters[i];
+            var newSelected = SelectedSizeFilter.Value == size;
+            if (model.selected != newSelected)
+            {
+                model.selected = newSelected;
+                SizeFilters[i] = model;
+            }
         }
     }
 
@@ -83,7 +94,13 @@ public class PitchFinderDataManager : IDataManager
         for (int i = 0; i < SortFilters.Count && i < sortTypes.Length; i++)
         {
             var sortType = (SortPicthesType)sortTypes.GetValue(i);
-            SortFilters[i].selected = SelectedSortType.Value == sortType;
+            var model = SortFilters[i];
+            var newSelected = SelectedSortType.Value == sortType;
+            if (model.selected != newSelected)
+            {
+                model.selected = newSelected;
+                SortFilters[i] = model;
+            }
         }
     }
 

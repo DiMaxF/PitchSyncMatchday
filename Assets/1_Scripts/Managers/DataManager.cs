@@ -31,6 +31,6 @@ public class DataManager : MonoBehaviour
     public void InitManagers() 
     {
         _navbar = new NavigationDataManager(config);
-        _pitchFinder = new PitchFinderDataManager(config);
+        _pitchFinder = new PitchFinderDataManager(config, _appModel);
     }
 }

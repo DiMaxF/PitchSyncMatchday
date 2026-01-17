@@ -15,6 +15,9 @@ GameObject:
   - component: {fileID: 4452474178664873408}
   - component: {fileID: 3937053118237238209}
   - component: {fileID: 3205439370869345102}
+  - component: {fileID: 4526889964580821886}
+  - component: {fileID: 6516504402559594496}
+  - component: {fileID: 4420686614458557891}
   m_Layer: 5
   m_Name: FilterButton
   m_TagString: Untagged
@@ -179,6 +182,51 @@ MonoBehaviour:
   button: {fileID: 3937053118237238209}
   valueText: {fileID: 6320878564286352858}
   removeStr: 
+--- !u!114 &4526889964580821886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3743193446552060239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e91321310d01dd24ebfc8b4b17c50cf5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UICornersGradient
+  m_topLeftColor: {r: 0.078431375, g: 0.50980395, b: 0.4509804, a: 1}
+  m_topRightColor: {r: 0.054901965, g: 0.054901965, b: 0.054901965, a: 1}
+  m_bottomRightColor: {r: 0.05490196, g: 0.05490196, b: 0.05490196, a: 1}
+  m_bottomLeftColor: {r: 0.054901965, g: 0.054901965, b: 0.054901965, a: 1}
+--- !u!114 &6516504402559594496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3743193446552060239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10aeba8df91f3254aaf34a7e0e25c08a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColorAnimation
+  graphic: {fileID: 2596949216729834864}
+  startColor: {r: 1, g: 1, b: 1, a: 1}
+  config: {fileID: 11400000, guid: ec2e54d1c84aa434c8ae2c5e0da613e3, type: 2}
+  order: 0
+  parallel: 1
+--- !u!114 &4420686614458557891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3743193446552060239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
 --- !u!1001 &4319946134462618678
 PrefabInstance:
   m_ObjectHideFlags: 0

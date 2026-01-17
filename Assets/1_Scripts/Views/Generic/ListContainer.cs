@@ -31,6 +31,11 @@ public class ListContainer : UIView<ReactiveCollection<object>>
 
     private void InitializeFromCollection(ReactiveCollection<object> collection)
     {
+        for (int i = contentParent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(contentParent.GetChild(i).gameObject);
+        }
+
         collection.ObserveAdd().Subscribe(e => OnItemAdded(e.Index, e.Value)).AddTo(this);
         collection.ObserveRemove().Subscribe(e => OnItemRemoved(e.Index, e.Value)).AddTo(this);
         collection.ObserveReset().Subscribe(_ => OnCollectionReset()).AddTo(this);

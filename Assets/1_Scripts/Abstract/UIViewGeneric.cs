@@ -6,7 +6,7 @@ public abstract class UIView<TData> : UIView
 {
     protected readonly ReactiveProperty<TData> DataProperty = new ReactiveProperty<TData>();
 
-    private IDisposable _updateSubscription; 
+    private IDisposable _updateSubscription;
 
     protected override void OnEnable()
     {
@@ -24,7 +24,7 @@ public abstract class UIView<TData> : UIView
 
         SubscribeToDataChanges();
 
-        if (initialData != null) UpdateUI(); 
+        if (initialData != null) UpdateUI();
     }
 
     public void Init(object data)

@@ -1,45 +1,44 @@
-using UnityEngine;
-using DG.Tweening;
-using System.Linq;
 using Cysharp.Threading.Tasks;
-using System;
+using DG.Tweening;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
-public static class AnimationPlayer
+public class AnimationController : MonoBehaviour
 {
-    public static async UniTask PlayAnimationsAsync(GameObject target, bool show = true)
-    {
-        if (target == null) return;
+    private const bool ExcludeChildViews = true;
 
-        var allAnimations = target.GetComponentsInChildren<IAnimationComponent>(true);
-        if (allAnimations.Length == 0) return;
+    public async UniTask PlayAsync(bool show)
+    {
+        var allAnimations = GetComponentsInChildren<IAnimationComponent>(true);
+
+        if (!allAnimations.Any()) return;
 
         var filteredAnimations = allAnimations
-     .Where(anim =>
-     {
-         var go = (anim as Component)?.gameObject;
-         return go != null && (!HasUIViewComponent(go) || go == target);
-     })
-     .ToList();
+            .Where(anim =>
+            {
+                var go = (anim as Component)?.gameObject;
+                return go != null && (!ExcludeChildViews || !HasUIViewComponent(go) || go == gameObject);
+            })
+            .ToList();
 
-        if (filteredAnimations.Count == 0) return;
+        if (!filteredAnimations.Any()) return;
 
         var animationsByGameObject = filteredAnimations
             .GroupBy(a => (a as Component)?.gameObject)
-            .Where(g => g.Key != null) // на всякий случай отфильтруем null
+            .Where(g => g.Key != null)
             .ToList();
 
         var tasks = new List<UniTask>();
 
         foreach (var group in animationsByGameObject)
         {
-            var gameObject = group.Key;
             var animations = group
                 .OrderBy(a => a.Order)
                 .GroupBy(a => a.Order)
                 .ToList();
 
-            if (animations.Count == 0) continue;
+            if (!animations.Any()) continue;
 
             var sequence = DOTween.Sequence();
 
@@ -62,17 +61,17 @@ public static class AnimationPlayer
                             sequence.Join(tween);
                         }
                     }
-                    catch (Exception ex)
+                    catch (System.Exception ex)
                     {
-                        Debug.LogError($"Animation error in {anim.GetType().Name} on {gameObject.name}: {ex.Message}");
+                        Debug.LogError($"Animation error in {anim.GetType().Name} on {group.Key.name}: {ex.Message}");
                     }
                 }
             }
 
-            tasks.Add(sequence.AsyncWaitForCompletion().AsUniTask());
+            tasks.Add(sequence.Play().AsyncWaitForCompletion().AsUniTask());
         }
 
-        if (tasks.Count > 0)
+        if (tasks.Any())
         {
             await UniTask.WhenAll(tasks);
         }
@@ -83,15 +82,10 @@ public static class AnimationPlayer
         if (obj == null) return false;
 
         var behaviours = obj.GetComponents<MonoBehaviour>();
-        foreach (var mb in behaviours)
+        return behaviours.Any(mb =>
         {
             var type = mb.GetType();
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(UIView<>))
-            {
-                return true;
-            }
-        }
-
-        return false;
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(UIView<>);
+        });
     }
 }
