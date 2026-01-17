@@ -5,33 +5,41 @@ using UnityEngine.UI;
 public class ColorAnimation : MonoBehaviour, IAnimationComponent
 {
     [SerializeField] Graphic graphic;
-    [SerializeField] Color startColor = Color.clear;
+    [SerializeField] Color hideColor = Color.clear;
     [SerializeField] AnimationConfig config;
     [SerializeField] int order = 0;
     [SerializeField] bool parallel = false;
 
     public int Order => order;
     public bool IsParallel => parallel;
-
-    private Color originalColor;
+    private Color showColor;
+    private bool _hasAnimated = false;
 
     private void Awake()
     {
         if (graphic == null) graphic = GetComponent<Graphic>();
-        originalColor = graphic.color;
+        showColor = graphic.color;
     }
 
     public Tween AnimateShow()
     {
-        graphic.color = startColor;
-        return graphic.DOColor(originalColor, config.Duration)
+        if (!_hasAnimated)
+        {
+            graphic.color = hideColor;
+        }
+        _hasAnimated = true;
+        return graphic.DOColor(showColor, config.Duration)
             .SetEase(config.Ease)
             .SetDelay(config.Delay);
     }
 
     public Tween AnimateHide()
     {
-        graphic.color = originalColor;
-        return graphic.DOColor(startColor, config.Duration).SetEase(config.Ease);
+        if (!_hasAnimated)
+        {
+            graphic.color = showColor;
+        }
+        _hasAnimated = true;
+        return graphic.DOColor(hideColor, config.Duration).SetEase(config.Ease);
     }
 }

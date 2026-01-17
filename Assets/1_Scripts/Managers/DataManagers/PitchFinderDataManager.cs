@@ -3,23 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
-
 public class PitchFinderDataManager : IDataManager
 {
     private readonly List<StadiumModel> _allPitches;
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
-    
+
     public ReactiveProperty<PitchSize?> SelectedSizeFilter { get; } = new ReactiveProperty<PitchSize?>(null);
     public ReactiveProperty<SortPicthesType?> SelectedSortType { get; } = new ReactiveProperty<SortPicthesType?>(null);
     public ReactiveProperty<string> SearchQuery { get; } = new ReactiveProperty<string>(string.Empty);
-    
+
     public ReactiveCollection<ToggleButtonModel> SizeFilters { get; } = new ReactiveCollection<ToggleButtonModel>();
     public ReactiveCollection<ToggleButtonModel> SortFilters { get; } = new ReactiveCollection<ToggleButtonModel>();
     public ReactiveCollection<StadiumModel> FilteredPitches { get; } = new ReactiveCollection<StadiumModel>();
-    
-    public ReactiveCollection<object> SizeFiltersAsObject => SizeFilters.Select(m => (object)m).ToReactiveCollection();
-    public ReactiveCollection<object> SortFiltersAsObject => SortFilters.Select(m => (object)m).ToReactiveCollection();
-    public ReactiveCollection<object> FilteredPitchesAsObject => FilteredPitches.Select(m => (object)m).ToReactiveCollection();
+
+    private readonly ReactiveCollection<object> _sizeFiltersAsObject = new ReactiveCollection<object>();
+    private readonly ReactiveCollection<object> _sortFiltersAsObject = new ReactiveCollection<object>();
+    private readonly ReactiveCollection<object> _filteredPitchesAsObject = new ReactiveCollection<object>();
+
+    public ReactiveCollection<object> SizeFiltersAsObject => _sizeFiltersAsObject;
+    public ReactiveCollection<object> SortFiltersAsObject => _sortFiltersAsObject;
+    public ReactiveCollection<object> FilteredPitchesAsObject => _filteredPitchesAsObject;
 
     public PitchFinderDataManager(AppConfig config, AppModel appModel)
     {
@@ -34,10 +37,29 @@ public class PitchFinderDataManager : IDataManager
                 }
             }
         }
-        
+
         _allPitches = appModel.stadiums;
+
+        BindMirror(SizeFilters, _sizeFiltersAsObject);
+        BindMirror(SortFilters, _sortFiltersAsObject);
+        BindMirror(FilteredPitches, _filteredPitchesAsObject);
+
         InitializeFilters();
         SubscribeToFilterChanges();
+        UpdateFilteredPitches();
+    }
+
+    private void BindMirror<T>(ReactiveCollection<T> source, ReactiveCollection<object> mirror)
+    {
+        source.ObserveAdd().Subscribe(e => mirror.Insert(e.Index, e.Value)).AddTo(_disposables);
+        source.ObserveRemove().Subscribe(e => mirror.RemoveAt(e.Index)).AddTo(_disposables);
+        source.ObserveReplace().Subscribe(e => mirror[e.Index] = e.NewValue).AddTo(_disposables);
+        source.ObserveMove().Subscribe(e => mirror.Move(e.OldIndex, e.NewIndex)).AddTo(_disposables);
+        source.ObserveReset().Subscribe(_ =>
+        {
+            mirror.Clear();
+            foreach (var item in source) mirror.Add(item);
+        }).AddTo(_disposables);
     }
 
     private void InitializeFilters()
@@ -80,10 +102,14 @@ public class PitchFinderDataManager : IDataManager
             var size = (PitchSize)sizes.GetValue(i);
             var model = SizeFilters[i];
             var newSelected = SelectedSizeFilter.Value == size;
+
             if (model.selected != newSelected)
             {
-                model.selected = newSelected;
-                SizeFilters[i] = model;
+                SizeFilters[i] = new ToggleButtonModel
+                {
+                    name = model.name,
+                    selected = newSelected
+                };
             }
         }
     }
@@ -96,10 +122,14 @@ public class PitchFinderDataManager : IDataManager
             var sortType = (SortPicthesType)sortTypes.GetValue(i);
             var model = SortFilters[i];
             var newSelected = SelectedSortType.Value == sortType;
+
             if (model.selected != newSelected)
             {
-                model.selected = newSelected;
-                SortFilters[i] = model;
+                SortFilters[i] = new ToggleButtonModel
+                {
+                    name = model.name,
+                    selected = newSelected
+                };
             }
         }
     }
@@ -116,8 +146,8 @@ public class PitchFinderDataManager : IDataManager
         if (!string.IsNullOrEmpty(SearchQuery.Value))
         {
             var query = SearchQuery.Value.ToLower();
-            filtered = filtered.Where(p => 
-                (p.name != null && p.name.ToLower().Contains(query)) || 
+            filtered = filtered.Where(p =>
+                (p.name != null && p.name.ToLower().Contains(query)) ||
                 (p.address != null && p.address.ToLower().Contains(query)));
         }
 
@@ -144,4 +174,3 @@ public class PitchFinderDataManager : IDataManager
         }
     }
 }
-

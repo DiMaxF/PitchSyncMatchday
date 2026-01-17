@@ -10,6 +10,17 @@ public class ToggleButton : UIView<ToggleButtonModel>
     [SerializeField] private string removeStr;
 
     private bool _previousSelectedState;
+    private bool _isInitialized = false;
+
+    public override void Init(ToggleButtonModel initialData = default)
+    {
+        base.Init(initialData);
+        if (initialData != null)
+        {
+            _previousSelectedState = initialData.selected;
+            _isInitialized = true;
+        }
+    }
 
     protected override void Subscribe()
     {
@@ -37,6 +48,22 @@ public class ToggleButton : UIView<ToggleButtonModel>
                 : data.name;
         }
 
+        if (!_isInitialized)
+        {
+            _previousSelectedState = data.selected;
+            _isInitialized = true;
+            if (data.selected)
+            {
+                ShowAsync().Forget();
+            }
+            else
+            {
+                HideAsync().Forget();
+            }
+            return;
+        }
+
+        new Log($"{data.name} {_previousSelectedState} {data.selected}", "ToggleButton");
         if (_previousSelectedState != data.selected)
         {
             _previousSelectedState = data.selected;

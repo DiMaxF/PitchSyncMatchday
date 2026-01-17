@@ -20,11 +20,8 @@ public abstract class UIView<TData> : UIView
 
     public virtual void Init(TData initialData = default)
     {
-        DataProperty.Value = initialData;
-
         SubscribeToDataChanges();
-
-        if (initialData != null) UpdateUI();
+        DataProperty.Value = initialData;
     }
 
     public void Init(object data)

@@ -73,7 +73,7 @@ public class PitchFinderScreen : UIScreen
                         PitchFinder.SelectSizeFilter(size);
                     }
                 }
-            }, persistent: true).AddTo(this);
+            }).AddTo(this);
         }
 
         if (sortFilteres != null)
@@ -91,7 +91,7 @@ public class PitchFinderScreen : UIScreen
                         PitchFinder.SelectSortType(sortType);
                     }
                 }
-            }, persistent: true).AddTo(this);
+            }).AddTo(this);
         }
     }
 }

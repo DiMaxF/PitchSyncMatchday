@@ -26,6 +26,7 @@ public static class FileUtils
             string filePath = GetFilePath(fileName);
             string json = JsonUtility.ToJson(data, true);
             File.WriteAllText(filePath, json);
+            new Log($"{filePath} saved", "FileUtils");
         }
         catch (Exception ex)
         {

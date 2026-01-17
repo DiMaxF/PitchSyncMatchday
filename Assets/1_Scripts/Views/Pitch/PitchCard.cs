@@ -12,6 +12,7 @@ public class PitchCard : UIView<StadiumModel>
     [SerializeField] private Button pickButton;
     [SerializeField] private RatingView ratingView;
 
+
     protected override void Subscribe()
     {
         base.Subscribe();
@@ -28,5 +29,8 @@ public class PitchCard : UIView<StadiumModel>
         var data = DataProperty.Value;
 
         if (nameText != null) nameText.text = data.name;
+        if (ratingView != null) ratingView.Init(data.rating);
+        if (priceText != null) priceText.text = $"From ${data.basePricePerHour}";
+        if (locationNameText != null) locationNameText.text = $"{data.address}";
     }
 }
