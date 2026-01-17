@@ -8,9 +8,13 @@ public abstract class UIView<TData> : UIView
 
     private IDisposable _updateSubscription;
 
+    protected virtual bool ListenToSelfEvents => true;
+
     protected override void OnEnable()
     {
         base.OnEnable();
+
+        if (!ListenToSelfEvents) return;
 
         UIManager.SubscribeToView(this, (TData data) =>
         {

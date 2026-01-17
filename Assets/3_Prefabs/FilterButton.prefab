@@ -226,7 +226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ToggleButton
   button: {fileID: 3937053118237238209}
   valueText: {fileID: 6320878564286352858}
-  removeStr: 
+  removeStr: Size
 --- !u!1001 &4319946134462618678
 PrefabInstance:
   m_ObjectHideFlags: 0

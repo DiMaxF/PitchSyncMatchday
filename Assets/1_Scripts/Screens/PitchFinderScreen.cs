@@ -19,7 +19,6 @@ public class PitchFinderScreen : UIScreen
         base.OnEnable();
         InitializeFilters();
         InitializePitchCards();
-        SubscribeToSearchBar();
     }
 
     private void InitializeFilters()
@@ -47,51 +46,50 @@ public class PitchFinderScreen : UIScreen
     {
         if (searchBar != null)
         {
-            searchBar.OnValueChangedAsObservable()
-                .Subscribe(query => PitchFinder.SearchQuery.Value = query)
-                .AddTo(this);
+            AddToDispose(searchBar.OnValueChangedAsObservable()
+                .Subscribe(query => PitchFinder.SearchQuery.Value = query));
+        }
+    }
+
+    private void SubscribeToPitchCards() 
+    {
+        if (pitchCards != null) 
+        {
+            AddToDispose(UIManager.SubscribeToView(pitchCards, (StadiumModel data) =>
+            {
+                //Select in data pitch
+                ScreenManager.Show(Screens.AvailabilityPlannerScreen);
+            }));
         }
     }
 
     protected override void SubscribeToData()
     {
         base.SubscribeToData();
-
+        SubscribeToSearchBar();
+        SubscribeToPitchCards();
         if (sizeFilteres != null)
         {
-            UIManager.SubscribeToView(sizeFilteres, (ToggleButtonModel data) =>
+            AddToDispose(UIManager.SubscribeToView(sizeFilteres, (ToggleButtonModel data) =>
             {
-                new Log($"data " + data.selected, "PitchFinderScreen");
-                if (data.selected)
+                if (Enum.TryParse<PitchSize>(data.name, out var size))
                 {
-                    PitchFinder.SelectSizeFilter(null);
+                    var isSelected = PitchFinder.SelectedSizeFilter.Value == size;
+                    PitchFinder.SelectSizeFilter(isSelected ? (PitchSize?)null : size);
                 }
-                else
-                {
-                    if (Enum.TryParse<PitchSize>(data.name, out var size))
-                    {
-                        PitchFinder.SelectSizeFilter(size);
-                    }
-                }
-            }).AddTo(this);
+            }));
         }
 
         if (sortFilteres != null)
         {
-            UIManager.SubscribeToView(sortFilteres, (ToggleButtonModel data) =>
+            AddToDispose(UIManager.SubscribeToView(sortFilteres, (ToggleButtonModel data) =>
             {
-                if (data.selected)
+                if (Enum.TryParse<SortPicthesType>(data.name, out var sortType))
                 {
-                    PitchFinder.SelectSortType(null);
+                    var isSelected = PitchFinder.SelectedSortType.Value == sortType;
+                    PitchFinder.SelectSortType(isSelected ? (SortPicthesType?)null : sortType);
                 }
-                else
-                {
-                    if (Enum.TryParse<SortPicthesType>(data.name, out var sortType))
-                    {
-                        PitchFinder.SelectSortType(sortType);
-                    }
-                }
-            }).AddTo(this);
+            }));
         }
     }
 }

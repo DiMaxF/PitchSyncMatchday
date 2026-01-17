@@ -2,5 +2,6 @@ public enum Screens
 {
     HomeScreen,
     LineupScreen,
-    PitchFinderScreen
+    PitchFinderScreen,
+    AvailabilityPlannerScreen
 }

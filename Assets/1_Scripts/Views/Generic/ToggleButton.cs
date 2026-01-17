@@ -11,15 +11,12 @@ public class ToggleButton : UIView<ToggleButtonModel>
 
     private bool _previousSelectedState;
     private bool _isInitialized = false;
-
+    protected override bool ListenToSelfEvents => false;
     public override void Init(ToggleButtonModel initialData = default)
     {
+        _isInitialized = false;
+        _previousSelectedState = false;
         base.Init(initialData);
-        if (initialData != null)
-        {
-            _previousSelectedState = initialData.selected;
-            _isInitialized = true;
-        }
     }
 
     protected override void Subscribe()
@@ -39,13 +36,12 @@ public class ToggleButton : UIView<ToggleButtonModel>
     public override void UpdateUI()
     {
         var data = DataProperty.Value;
+        new Log($"{data.selected} {data.name}", "ToggleButton");
         if (data == null) return;
 
         if (valueText != null)
         {
-            valueText.text = data.selected && !string.IsNullOrEmpty(removeStr)
-                ? removeStr
-                : data.name;
+            valueText.text = data.name.Replace(removeStr, "");
         }
 
         if (!_isInitialized)
@@ -63,7 +59,6 @@ public class ToggleButton : UIView<ToggleButtonModel>
             return;
         }
 
-        new Log($"{data.name} {_previousSelectedState} {data.selected}", "ToggleButton");
         if (_previousSelectedState != data.selected)
         {
             _previousSelectedState = data.selected;

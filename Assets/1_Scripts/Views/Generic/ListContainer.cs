@@ -86,14 +86,23 @@ public class ListContainer : UIView<ReactiveCollection<object>>
 
         AnimateItemAppear(instance, index).Forget();
     }
-
+    [SerializeField] private bool playShowOnSpawn = true;
     private async UniTask AnimateItemAppear(UIView item, int index)
     {
         await UniTask.Delay(TimeSpan.FromSeconds(index * spawnDelayPerItem),
             cancellationToken: this.GetCancellationTokenOnDestroy());
+
         if (item != null)
         {
-            await item.ShowAsync();
+            if (playShowOnSpawn)
+            {
+                await item.ShowAsync();
+            }
+            else
+            {
+                item.gameObject.SetActive(true);
+                item.UpdateUI();
+            }
         }
     }
 
@@ -122,17 +131,18 @@ public class ListContainer : UIView<ReactiveCollection<object>>
         var item = _activeItems[index];
         if (item != null)
         {
-            var dataPropertyField = item.GetType().BaseType?.GetField("DataProperty",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (dataPropertyField != null)
+            var initMethod = item.GetType().GetMethod("Init", new[] { typeof(object) });
+            if (initMethod != null)
             {
-                var dataProperty = dataPropertyField.GetValue(item);
-                var valueProperty = dataProperty?.GetType().GetProperty("Value");
-                if (valueProperty != null && newData != null)
-                {
-                    valueProperty.SetValue(dataProperty, newData);
-                }
+                initMethod.Invoke(item, new[] { newData });
             }
+            else
+            {
+                var genericInit = item.GetType().GetMethod("Init");
+                genericInit?.Invoke(item, newData != null ? new[] { newData } : null);
+            }
+
+            item.UpdateUI();
         }
     }
 

@@ -16,7 +16,7 @@ public class StarView : UIView<bool>
     public override void UpdateUI()
     {
         var data = DataProperty.Value;
-        new Log($"{transform.GetEntityId()} {data}", "StarView");
+        //new Log($"{transform.GetEntityId()} {data}", "StarView");
         if (!_isInitialized)
         {
             _previousSelectedState = data;
