@@ -5,9 +5,11 @@ using UnityEngine;
 [DefaultExecutionOrder(-1000)]
 public class DataManager : MonoBehaviour
 {
+    private const string APP_MODEL_FILE = "AppModel.json";
+
     public static DataManager Instance { get; private set; }
     [SerializeField] AppConfig config;
-    AppModel _appModel = new AppModel();
+    AppModel _appModel;
 
     public static NavigationDataManager Navigation => Instance._navbar;
     public static PitchFinderDataManager PitchFinder => Instance._pitchFinder;
@@ -25,12 +27,51 @@ public class DataManager : MonoBehaviour
 
         Instance = this;
        
+        LoadAppModel();
         InitManagers();
+    }
+
+    private void LoadAppModel()
+    {
+        if (FileUtils.FileExists(APP_MODEL_FILE))
+        {
+            _appModel = FileUtils.LoadJson<AppModel>(APP_MODEL_FILE);
+        }
+        else
+        {
+            _appModel = new AppModel();
+        }
+    }
+
+    public void SaveAppModel()
+    {
+        FileUtils.SaveJson(_appModel, APP_MODEL_FILE);
     }
 
     public void InitManagers() 
     {
         _navbar = new NavigationDataManager(config);
         _pitchFinder = new PitchFinderDataManager(config, _appModel);
+    }
+
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+        {
+            SaveAppModel();
+        }
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            SaveAppModel();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        SaveAppModel();
     }
 }

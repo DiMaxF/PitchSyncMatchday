@@ -61,6 +61,7 @@ public class PitchFinderScreen : UIScreen
         {
             UIManager.SubscribeToView(sizeFilteres, (ToggleButtonModel data) =>
             {
+                new Log($"data " + data.selected, "PitchFinderScreen");
                 if (data.selected)
                 {
                     PitchFinder.SelectSizeFilter(null);
