@@ -57,7 +57,7 @@ public class PitchFinderScreen : UIScreen
         {
             AddToDispose(UIManager.SubscribeToView(pitchCards, (StadiumModel data) =>
             {
-                //Select in data pitch
+                DataManager.Booking.StartNewBooking(data);
                 ScreenManager.Show(Screens.AvailabilityPlannerScreen);
             }));
         }

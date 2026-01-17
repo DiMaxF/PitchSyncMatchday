@@ -13,9 +13,13 @@ public class DataManager : MonoBehaviour
 
     public static NavigationDataManager Navigation => Instance._navbar;
     public static PitchFinderDataManager PitchFinder => Instance._pitchFinder;
-    
+    public static BookingDataManager Booking => Instance._booking;
+
     private NavigationDataManager _navbar;
     private PitchFinderDataManager _pitchFinder;
+    private BookingDataManager _booking;
+
+
 
     private void Awake()
     {
@@ -52,6 +56,7 @@ public class DataManager : MonoBehaviour
     {
         _navbar = new NavigationDataManager(config);
         _pitchFinder = new PitchFinderDataManager(config, _appModel);
+        _booking = new BookingDataManager(_appModel);
     }
 
     private void OnApplicationPause(bool pauseStatus)

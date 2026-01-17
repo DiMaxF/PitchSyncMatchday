@@ -40,7 +40,7 @@ public class ToggleButton : UIView<ToggleButtonModel>
 
         if (valueText != null)
         {
-            valueText.text = data.name.Replace(removeStr, "");
+            valueText.text = removeStr.Equals("") ? data.name : data.name.Replace(removeStr, "");
         }
 
         if (!_isInitialized)

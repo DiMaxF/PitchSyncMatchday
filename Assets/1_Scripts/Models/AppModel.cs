@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using UnityEngine;
+using System;
 
-[System.Serializable]
+[Serializable]
 public class AppModel
 {
     public List<StadiumModel> stadiums = new List<StadiumModel>();
+    public List<BookingModel> bookings = new List<BookingModel>();
 }

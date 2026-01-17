@@ -31,17 +31,17 @@ public class Day : MonoBehaviour
         switch (dayMode)
         {
             case DayMode.Disabled:
-                dateText.color = Color.gray;
+                dateText.color = Color.clear;
                 button.interactable = false;
                 currentDateIndicator.SetActive(false);
                 break;
             case DayMode.Current:
-                dateText.color = Color.black;
+                dateText.color = Color.white;
                 button.interactable = true;
                 currentDateIndicator.SetActive(true);
                 break;
             case DayMode.Normal:
-                dateText.color = Color.white;
+                dateText.color = Color.gray;
                 button.interactable = true;
                 currentDateIndicator.SetActive(false);
                 break;

@@ -55,7 +55,6 @@ public class CalendarManager : MonoBehaviour
         for (int i = 0; i < days.Length; i++)
         {
             days[i].GetComponent<Day>().DayModeSet(0);
-            //days[i].GetComponent<Day>().time = -1;
             days[i].GetComponent<Day>().dateNum = 0;
         }
 
@@ -76,37 +75,55 @@ public class CalendarManager : MonoBehaviour
 
                 if (currentField >= startDay && currentField - startDay < endDay)
                 {
-
                     var dateDay = new DateTime(showYear, showMonth, (currentField - startDay) + 1);
                     days[currentField].GetComponent<Day>().Init(dateDay, this);
                 }
                 else if (currentField < startDay)
                 {
-                    if (temp.Month != 1)
+                    int prevYear = showYear;
+                    int prevMonth = showMonth - 1;
+
+                    if (prevMonth < 1)
                     {
-                        previousEndDate = GetTotalNumberOfDays(temp.Year, temp.Month - 1);
+                        prevMonth = 12;
+                        prevYear = showYear - 1;
                     }
-                    else
-                    {
-                        previousEndDate = 31;
-                    }
+
+                    previousEndDate = GetTotalNumberOfDays(prevYear, prevMonth);
 
                     int sub = startDay - currentField;
                     if (sub > 0 && sub < 7)
                     {
-                        var dateDay = new DateTime(showYear, showMonth - 1, (previousEndDate - (sub - 1)));
-                        days[currentField].GetComponent<Day>().dateNum = previousEndDate - (sub - 1);
-                        days[currentField].GetComponent<Day>().Init(dateDay, this);
+                        int day = previousEndDate - (sub - 1);
+                        if (day >= 1 && day <= previousEndDate)
+                        {
+                            var dateDay = new DateTime(prevYear, prevMonth, day);
+                            days[currentField].GetComponent<Day>().dateNum = day;
+                            days[currentField].GetComponent<Day>().Init(dateDay, this);
+                        }
                     }
                 }
                 else if (currentField - startDay >= endDay)
                 {
+                    int nextYear = showYear;
+                    int nextMonth = showMonth + 1;
+
+                    if (nextMonth > 12)
+                    {
+                        nextMonth = 1;
+                        nextYear = showYear + 1;
+                    }
+
                     int sub = (currentField - startDay) - endDay + 1;
                     if (sub > 0 && sub < 15)
                     {
-                        var dateDay = new DateTime(showYear, showMonth, sub);
-                        days[currentField].GetComponent<Day>().Init(dateDay, this);
-                        days[currentField].GetComponent<Day>().dateNum = sub;
+                        int maxDays = GetTotalNumberOfDays(nextYear, nextMonth);
+                        if (sub <= maxDays)
+                        {
+                            var dateDay = new DateTime(nextYear, nextMonth, sub);
+                            days[currentField].GetComponent<Day>().Init(dateDay, this);
+                            days[currentField].GetComponent<Day>().dateNum = sub;
+                        }
                     }
                 }
             }
@@ -121,8 +138,6 @@ public class CalendarManager : MonoBehaviour
                 currentDateSelected = selectedDate.Value.Day;
             }
         }
-
-       
     }
 
     public void Select(DateTime date)
