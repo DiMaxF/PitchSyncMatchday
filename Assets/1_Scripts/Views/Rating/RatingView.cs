@@ -26,10 +26,22 @@ public class RatingView : UIView<float>
             }
             else
             {
-                _starsCollection.Clear();
-                foreach (var star in starsList)
+                for (int i = 0; i < starsList.Count && i < _starsCollection.Count; i++)
                 {
-                    _starsCollection.Add(star);
+                    if ((bool)_starsCollection[i] != starsList[i])
+                    {
+                        _starsCollection[i] = starsList[i];
+                    }
+                }
+
+                while (_starsCollection.Count < starsList.Count)
+                {
+                    _starsCollection.Add(starsList[_starsCollection.Count]);
+                }
+
+                while (_starsCollection.Count > starsList.Count)
+                {
+                    _starsCollection.RemoveAt(_starsCollection.Count - 1);
                 }
             }
         }

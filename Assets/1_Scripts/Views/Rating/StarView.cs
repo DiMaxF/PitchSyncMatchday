@@ -5,38 +5,34 @@ public class StarView : UIView<bool>
 {
     private bool _previousSelectedState;
     private bool _isInitialized = false;
-
+    protected override bool ListenToSelfEvents => false;
     public override void Init(bool initialData = default)
     {
+        _isInitialized = false;
+        _previousSelectedState = false;
         base.Init(initialData);
-        _previousSelectedState = initialData;
-        _isInitialized = true;
     }
 
     public override void UpdateUI()
     {
         var data = DataProperty.Value;
-        //new Log($"{transform.GetEntityId()} {data}", "StarView");
+
         if (!_isInitialized)
         {
             _previousSelectedState = data;
             _isInitialized = true;
-            
-            if (gameObject.activeSelf)
+            if (data)
             {
-                if (data)
-                {
-                    ShowAsync().Forget();
-                }
-                else
-                {
-                    HideAsync().Forget();
-                }
+                ShowAsync().Forget();
+            }
+            else
+            {
+                HideAsync().Forget();
             }
             return;
         }
 
-        if (_previousSelectedState != data && gameObject.activeSelf)
+        if (_previousSelectedState != data)
         {
             _previousSelectedState = data;
             if (data)

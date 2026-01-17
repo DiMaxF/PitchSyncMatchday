@@ -36,7 +36,6 @@ public class ToggleButton : UIView<ToggleButtonModel>
     public override void UpdateUI()
     {
         var data = DataProperty.Value;
-        new Log($"{data.selected} {data.name}", "ToggleButton");
         if (data == null) return;
 
         if (valueText != null)
