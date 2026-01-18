@@ -24,6 +24,11 @@ public class PitchFinderDataManager : IDataManager
     public ReactiveCollection<object> SortFiltersAsObject => _sortFiltersAsObject;
     public ReactiveCollection<object> FilteredPitchesAsObject => _filteredPitchesAsObject;
 
+    public StadiumModel GetStadiumById(int stadiumId)
+    {
+        return _allPitches.FirstOrDefault(s => s.id == stadiumId);
+    }
+
     public PitchFinderDataManager(AppConfig config, AppModel appModel)
     {
         if (appModel.stadiums == null || appModel.stadiums.Count == 0)

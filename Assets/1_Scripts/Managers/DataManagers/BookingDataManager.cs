@@ -12,6 +12,16 @@ public class BookingDataManager : IDataManager
     public ReactiveCollection<BookingModel> UpcomingBookings { get; } = new ReactiveCollection<BookingModel>();
     public ReactiveCollection<BookingModel> PastBookings { get; } = new ReactiveCollection<BookingModel>();
     public ReactiveCollection<BookingModel> AllBookings { get; } = new ReactiveCollection<BookingModel>();
+    
+    public ReactiveProperty<BookingCategoryType?> SelectedCategory { get; } = new ReactiveProperty<BookingCategoryType?>(null);
+    public ReactiveCollection<ToggleButtonModel> CategoryFilters { get; } = new ReactiveCollection<ToggleButtonModel>();
+    public ReactiveCollection<BookingModel> FilteredBookings { get; } = new ReactiveCollection<BookingModel>();
+    
+    private readonly ReactiveCollection<object> _categoryFiltersAsObject = new ReactiveCollection<object>();
+    private readonly ReactiveCollection<object> _filteredBookingsAsObject = new ReactiveCollection<object>();
+    
+    public ReactiveCollection<object> CategoryFiltersAsObject => _categoryFiltersAsObject;
+    public ReactiveCollection<object> FilteredBookingsAsObject => _filteredBookingsAsObject;
 
     // Текущий черновик
     public ReactiveProperty<BookingModel> CurrentDraft { get; } = new ReactiveProperty<BookingModel>(null);
@@ -85,9 +95,17 @@ public class BookingDataManager : IDataManager
         InitializePitchSizes();
         InitializeDurations();
         BindPitchSizeAndDurationCollections();
+        InitializeCategoryFilters();
+        BindCategoryFilters();
+        UpdateFilteredBookingsByCategory();
 
         SelectedPitchSize.Subscribe(_ => UpdatePitchSizesSelection()).AddTo(_disposables);
         SelectedDuration.Subscribe(_ => UpdateDurationsSelection()).AddTo(_disposables);
+        SelectedCategory.Subscribe(_ => UpdateFilteredBookingsByCategory()).AddTo(_disposables);
+        AllBookings.ObserveAdd().Subscribe(_ => UpdateFilteredBookingsByCategory()).AddTo(_disposables);
+        AllBookings.ObserveRemove().Subscribe(_ => UpdateFilteredBookingsByCategory()).AddTo(_disposables);
+        AllBookings.ObserveReplace().Subscribe(_ => UpdateFilteredBookingsByCategory()).AddTo(_disposables);
+        AllBookings.ObserveReset().Subscribe(_ => UpdateFilteredBookingsByCategory()).AddTo(_disposables);
     }
     private void InitializeExtraConfigs(AppConfig config)
     {
@@ -613,6 +631,74 @@ public class BookingDataManager : IDataManager
         }
     }
 
+    private void InitializeCategoryFilters()
+    {
+        foreach (BookingCategoryType categoryType in System.Enum.GetValues(typeof(BookingCategoryType)))
+        {
+            CategoryFilters.Add(new ToggleButtonModel { name = categoryType.ToString(), selected = false });
+        }
+    }
+    
+    private void BindCategoryFilters()
+    {
+        BindMirror(CategoryFilters, _categoryFiltersAsObject);
+        BindMirror(FilteredBookings, _filteredBookingsAsObject);
+    }
+    
+    public void SelectCategory(BookingCategoryType? categoryType)
+    {
+        SelectedCategory.Value = categoryType;
+        UpdateCategoryFiltersSelection();
+    }
+    
+    private void UpdateCategoryFiltersSelection()
+    {
+        var categoryTypes = System.Enum.GetValues(typeof(BookingCategoryType));
+        for (int i = 0; i < CategoryFilters.Count && i < categoryTypes.Length; i++)
+        {
+            var categoryType = (BookingCategoryType)categoryTypes.GetValue(i);
+            var model = CategoryFilters[i];
+            var newSelected = SelectedCategory.Value == categoryType;
+
+            if (model.selected != newSelected)
+            {
+                CategoryFilters[i] = new ToggleButtonModel
+                {
+                    name = model.name,
+                    selected = newSelected
+                };
+            }
+        }
+    }
+    
+    private void UpdateFilteredBookingsByCategory()
+    {
+        FilteredBookings.Clear();
+        
+        if (!SelectedCategory.Value.HasValue)
+        {
+            return;
+        }
+        
+        var now = DateTime.UtcNow;
+        var bookings = new List<BookingModel>();
+        
+        switch (SelectedCategory.Value.Value)
+        {
+            case BookingCategoryType.Upcoming:
+                bookings = UpcomingBookings.ToList();
+                break;
+            case BookingCategoryType.Past:
+                bookings = PastBookings.ToList();
+                break;
+        }
+        
+        foreach (var booking in bookings)
+        {
+            FilteredBookings.Add(booking);
+        }
+    }
+
     public void UpdateFilteredBookings()
     {
         var now = DateTime.UtcNow;
@@ -634,6 +720,8 @@ public class BookingDataManager : IDataManager
 
         foreach (var b in upcoming) UpcomingBookings.Add(b);
         foreach (var b in past) PastBookings.Add(b);
+        
+        UpdateFilteredBookingsByCategory();
     }
 
     public void Dispose()

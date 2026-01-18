@@ -5,6 +5,7 @@ using UniRx.Triggers;
 public class HomeScreen : UIScreen
 {
     [SerializeField] private Button pitchFinderButton;
+    [SerializeField] private Button myBookingButton;
 
     protected override void SubscribeToData()
     {
@@ -13,7 +14,13 @@ public class HomeScreen : UIScreen
             .Subscribe(_ =>
             {
                 ScreenManager.Show(Screens.PitchFinderScreen);
-               //DataManager.Navigation.SelectScreen(Screens.PitchFinderScreen);
+            })
+            .AddTo(this);
+
+        myBookingButton.OnClickAsObservable()
+            .Subscribe(_ =>
+            {
+                ScreenManager.Show(Screens.MyBookingScreen);
             })
             .AddTo(this);
     }
