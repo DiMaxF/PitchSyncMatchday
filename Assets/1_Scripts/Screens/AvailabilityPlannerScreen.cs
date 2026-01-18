@@ -102,6 +102,13 @@ public class AvailabilityPlannerScreen : UIScreen
                 Booking.SelectTimeSlot(data, Booking.EveningTimes);
             }));
         }
+
+        continueButton.OnClickAsObservable()
+        .Subscribe(_ =>
+        {
+            ScreenManager.Show(Screens.BookingBuilderScreen);
+        })
+        .AddTo(this);
     }
 
     private void OnContinueClicked()

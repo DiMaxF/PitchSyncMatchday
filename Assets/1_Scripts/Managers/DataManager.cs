@@ -56,7 +56,7 @@ public class DataManager : MonoBehaviour
     {
         _navbar = new NavigationDataManager(config);
         _pitchFinder = new PitchFinderDataManager(config, _appModel);
-        _booking = new BookingDataManager(_appModel);
+        _booking = new BookingDataManager(_appModel, config);
     }
 
     private void OnApplicationPause(bool pauseStatus)

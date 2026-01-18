@@ -26,7 +26,7 @@ public static class AnimationPlayer
 
         var animationsByGameObject = filteredAnimations
             .GroupBy(a => (a as Component)?.gameObject)
-            .Where(g => g.Key != null) // на всякий случай отфильтруем null
+            .Where(g => g.Key != null) // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ null
             .ToList();
 
         var tasks = new List<UniTask>();

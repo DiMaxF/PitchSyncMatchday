@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dee70998e80036143874db615f7d2df8, type: 3}
+  m_Name: BookingExtraConfig
+  m_EditorClassIdentifier: Assembly-CSharp::BookingExtraConfig
+  configs:
+  - type: 0
+    maxQuantity: 20
+    pricePerUnit: 5
+    icon: {fileID: 21300000, guid: 677addf173478344fb925df2c0c01013, type: 3}
+  - type: 1
+    maxQuantity: 100
+    pricePerUnit: 4
+    icon: {fileID: 21300000, guid: d889dbe594653b04a990b07de02030a8, type: 3}
+  - type: 2
+    maxQuantity: 20
+    pricePerUnit: 6
+    icon: {fileID: 21300000, guid: c13f70226bfbe704090652b57561b8ec, type: 3}
+  - type: 3
+    maxQuantity: 1
+    pricePerUnit: 15
+    icon: {fileID: 21300000, guid: ae8504cf50aeb184082b25bac76b6aba, type: 3}

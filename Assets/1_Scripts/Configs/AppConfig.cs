@@ -6,4 +6,5 @@ public class AppConfig : ScriptableObject
 {
     public List<NavigationButtonConfig> navbarData;
     public List<PitchConfig> pitches;
+    public BookingExtraConfig extrasConfig;
 }

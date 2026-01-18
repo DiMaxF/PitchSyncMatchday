@@ -24,6 +24,8 @@ public class BookingDataManager : IDataManager
 
     public ReactiveProperty<List<BookingExtra>> SelectedExtras { get; } = new ReactiveProperty<List<BookingExtra>>(new List<BookingExtra>());
 
+    public ReactiveProperty<float> TotalCost { get; } = new ReactiveProperty<float>(0f);
+
     public ReactiveProperty<DateTime?> SelectedDate { get; } = new ReactiveProperty<DateTime?>(null);
     public ReactiveProperty<string> SelectedTime { get; } = new ReactiveProperty<string>(null);
 
@@ -39,26 +41,28 @@ public class BookingDataManager : IDataManager
     public ReactiveCollection<object> AfternoonTimesAsObject => _afternoonTimesAsObject;
     public ReactiveCollection<object> EveningTimesAsObject => _eveningTimesAsObject;
 
-    private readonly Dictionary<ExtraType, int> _maxQuantity = new Dictionary<ExtraType, int>
-    {
-        { ExtraType.Ball, 3 },
-        { ExtraType.WaterPack, 30 },
-        { ExtraType.Bibs, 2 },        
-        { ExtraType.Referee, 1 }
-    };
+    public ReactiveCollection<ToggleButtonModel> PitchSizes { get; } = new ReactiveCollection<ToggleButtonModel>();
+    public ReactiveCollection<ToggleButtonModel> Durations { get; } = new ReactiveCollection<ToggleButtonModel>();
 
-    private readonly Dictionary<ExtraType, float> _pricePerUnit = new Dictionary<ExtraType, float>
-    {
-        { ExtraType.Ball, 15f },
-        { ExtraType.WaterPack, 5f },  
-        { ExtraType.Bibs, 20f },
-        { ExtraType.Referee, 50f }
-    };
+    private readonly ReactiveCollection<object> _pitchSizesAsObject = new ReactiveCollection<object>();
+    private readonly ReactiveCollection<object> _durationsAsObject = new ReactiveCollection<object>();
+
+    public ReactiveCollection<object> PitchSizesAsObject => _pitchSizesAsObject;
+    public ReactiveCollection<object> DurationsAsObject => _durationsAsObject;
+
+    public ReactiveCollection<BookingExtraModel> AvailableExtras { get; } = new ReactiveCollection<BookingExtraModel>();
+    private readonly ReactiveCollection<object> _availableExtrasAsObject = new ReactiveCollection<object>();
+    public ReactiveCollection<object> AvailableExtrasAsObject => _availableExtrasAsObject;
+
+    private Dictionary<ExtraType, BookingExtraConfig.ExtraConfigData> _extraConfigs;
+    private AppConfig _config;
 
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
-    public BookingDataManager(AppModel appModel)
+    public BookingDataManager(AppModel appModel, AppConfig config)
     {
+        _config = config;
+
         if (appModel.bookings == null || appModel.bookings.Count == 0)
         {
             appModel.bookings = new List<BookingModel>();
@@ -66,17 +70,89 @@ public class BookingDataManager : IDataManager
 
         _allBookings = appModel.bookings;
 
+        InitializeExtraConfigs(config);
         SyncAllBookingsToReactive();
         UpdateFilteredBookings();
+        EnsureAllBookingsHaveAllExtras();
 
         SelectedDuration.Subscribe(_ => RecalculateTotalCost()).AddTo(_disposables);
         SelectedExtras.Subscribe(_ => RecalculateTotalCost()).AddTo(_disposables);
         SelectedPitchSize.Subscribe(_ => RecalculateTotalCost()).AddTo(_disposables);
 
+        InitializeAvailableExtras();
         BindTimeCollections();
         InitializeTimeSlots();
-        new Log($"{MorningTimes.Count}", "BookingDataManager");
+        InitializePitchSizes();
+        InitializeDurations();
+        BindPitchSizeAndDurationCollections();
+
+        SelectedPitchSize.Subscribe(_ => UpdatePitchSizesSelection()).AddTo(_disposables);
+        SelectedDuration.Subscribe(_ => UpdateDurationsSelection()).AddTo(_disposables);
     }
+    private void InitializeExtraConfigs(AppConfig config)
+    {
+        _extraConfigs = new Dictionary<ExtraType, BookingExtraConfig.ExtraConfigData>();
+        
+        if (config?.extrasConfig != null)
+        {
+            foreach (var configData in config.extrasConfig.configs)
+            {
+                _extraConfigs[configData.type] = configData;
+            }
+        }
+    }
+
+    private void EnsureAllBookingsHaveAllExtras()
+    {
+        foreach (var booking in _allBookings)
+        {
+            EnsureBookingHasAllExtras(booking);
+        }
+    }
+
+    private void EnsureBookingHasAllExtras(BookingModel booking)
+    {
+        if (booking.extras == null)
+        {
+            booking.extras = new List<BookingExtra>();
+        }
+
+        var allTypes = System.Enum.GetValues(typeof(ExtraType)).Cast<ExtraType>();
+        
+        foreach (var type in allTypes)
+        {
+            var existing = booking.extras.FirstOrDefault(e => e.type == type);
+            if (existing == null)
+            {
+                var config = _extraConfigs.GetValueOrDefault(type);
+                float price = config?.pricePerUnit ?? 0f;
+                booking.extras.Add(new BookingExtra(type, 0, price));
+            }
+        }
+    }
+
+    private void InitializeAvailableExtras()
+    {
+        AvailableExtras.Clear();
+        
+        var allTypes = System.Enum.GetValues(typeof(ExtraType)).Cast<ExtraType>();
+        
+        foreach (var type in allTypes)
+        {
+            var config = _extraConfigs.GetValueOrDefault(type);
+            if (config != null)
+            {
+                var currentExtra = SelectedExtras.Value.FirstOrDefault(e => e.type == type);
+                int currentQuantity = currentExtra?.quantity ?? 0;
+                
+                var model = new BookingExtraModel(config, currentQuantity);
+                AvailableExtras.Add(model);
+            }
+        }
+
+        BindMirror(AvailableExtras, _availableExtrasAsObject);
+    }
+
     private void SyncAllBookingsToReactive()
     {
         AllBookings.Clear();
@@ -95,7 +171,9 @@ public class BookingDataManager : IDataManager
         SelectedDateTimeIso.Value = null;
         SelectedDate.Value = null;
         SelectedTime.Value = null;
-        SelectedExtras.Value = new List<BookingExtra>();
+        
+        var initialExtras = InitializeExtrasForNewBooking();
+        SelectedExtras.Value = initialExtras;
         DeselectAllTimes();
 
         CurrentDraft.Value = new BookingModel
@@ -103,8 +181,37 @@ public class BookingDataManager : IDataManager
             stadiumId = stadium.id,
             status = BookingStatus.Draft,
             totalCost = 0f,
-            extras = new List<BookingExtra>()
+            extras = new List<BookingExtra>(initialExtras)
         };
+
+        UpdateAllAvailableExtrasModels();
+    }
+
+    private List<BookingExtra> InitializeExtrasForNewBooking()
+    {
+        var extras = new List<BookingExtra>();
+        var allTypes = System.Enum.GetValues(typeof(ExtraType)).Cast<ExtraType>();
+        
+        foreach (var type in allTypes)
+        {
+            var config = _extraConfigs.GetValueOrDefault(type);
+            float price = config?.pricePerUnit ?? 0f;
+            extras.Add(new BookingExtra(type, 0, price));
+        }
+        
+        return extras;
+    }
+
+    private void UpdateAllAvailableExtrasModels()
+    {
+        var allTypes = System.Enum.GetValues(typeof(ExtraType)).Cast<ExtraType>();
+        
+        foreach (var type in allTypes)
+        {
+            var currentExtra = SelectedExtras.Value.FirstOrDefault(e => e.type == type);
+            int currentQuantity = currentExtra?.quantity ?? 0;
+            UpdateAvailableExtrasModel(type, currentQuantity);
+        }
     }
 
     public void SetDateTime(string dateTimeIso)
@@ -202,8 +309,90 @@ public class BookingDataManager : IDataManager
         BindMirror(EveningTimes, _eveningTimesAsObject);
     }
 
+    private void InitializePitchSizes()
+    {
+        PitchSizes.Clear();
+        var pitchSizes = System.Enum.GetValues(typeof(PitchSize)).Cast<PitchSize>();
+        foreach (var size in pitchSizes)
+        {
+            var isSelected = SelectedPitchSize.Value == size;
+            PitchSizes.Add(new ToggleButtonModel
+            {
+                name = size.ToString(),
+                selected = isSelected
+            });
+        }
+    }
+
+    private void InitializeDurations()
+    {
+        Durations.Clear();
+        var durations = System.Enum.GetValues(typeof(MatchDuration)).Cast<MatchDuration>();
+        foreach (var duration in durations)
+        {
+            var isSelected = SelectedDuration.Value == duration;
+            Durations.Add(new ToggleButtonModel
+            {
+                name = duration.ToString(),
+                selected = isSelected
+            });
+        }
+    }
+
+    private void BindPitchSizeAndDurationCollections()
+    {
+        BindMirror(PitchSizes, _pitchSizesAsObject);
+        BindMirror(Durations, _durationsAsObject);
+    }
+
+    public void UpdatePitchSizesSelection()
+    {
+        var sizes = System.Enum.GetValues(typeof(PitchSize)).Cast<PitchSize>().ToList();
+        for (int i = 0; i < PitchSizes.Count && i < sizes.Count; i++)
+        {
+            var size = sizes[i];
+            var model = PitchSizes[i];
+            var newSelected = SelectedPitchSize.Value == size;
+
+            if (model.selected != newSelected)
+            {
+                PitchSizes[i] = new ToggleButtonModel
+                {
+                    name = model.name,
+                    selected = newSelected
+                };
+            }
+        }
+    }
+
+    public void UpdateDurationsSelection()
+    {
+        var durations = System.Enum.GetValues(typeof(MatchDuration)).Cast<MatchDuration>().ToList();
+        for (int i = 0; i < Durations.Count && i < durations.Count; i++)
+        {
+            var duration = durations[i];
+            var model = Durations[i];
+            var newSelected = SelectedDuration.Value == duration;
+
+            if (model.selected != newSelected)
+            {
+                Durations[i] = new ToggleButtonModel
+                {
+                    name = model.name,
+                    selected = newSelected
+                };
+            }
+        }
+    }
+
     private void BindMirror<T>(ReactiveCollection<T> source, ReactiveCollection<object> mirror)
     {
+        mirror.Clear();
+        foreach (var item in source)
+        {
+            mirror.Add(item);
+        }
+
         source.ObserveAdd().Subscribe(e => mirror.Insert(e.Index, e.Value)).AddTo(_disposables);
         source.ObserveRemove().Subscribe(e => mirror.RemoveAt(e.Index)).AddTo(_disposables);
         source.ObserveReplace().Subscribe(e => mirror[e.Index] = e.NewValue).AddTo(_disposables);
@@ -261,6 +450,7 @@ public class BookingDataManager : IDataManager
         {
             CurrentDraft.Value.pitchSize = size;
         }
+        UpdatePitchSizesSelection();
     }
 
     public void SetDuration(MatchDuration duration)
@@ -270,28 +460,30 @@ public class BookingDataManager : IDataManager
         {
             CurrentDraft.Value.duration = duration;
         }
+        UpdateDurationsSelection();
     }
 
-    /// <summary>
-    /// Установка количества для конкретной экстра (0 = убрать)
-    /// </summary>
     public void SetExtraQuantity(ExtraType type, int quantity)
     {
         if (quantity < 0) return;
 
-        int max = _maxQuantity.TryGetValue(type, out var m) ? m : 10;
+        var config = _extraConfigs.GetValueOrDefault(type);
+        int max = config?.maxQuantity ?? 10;
         quantity = Mathf.Clamp(quantity, 0, max);
 
         var list = new List<BookingExtra>(SelectedExtras.Value);
-        var existing = list.Find(e => e.type == type);
+        var existing = list.FirstOrDefault(e => e.type == type);
 
         if (quantity == 0)
         {
-            if (existing != null) list.Remove(existing);
+            if (existing != null)
+            {
+                existing.quantity = 0;
+            }
         }
         else
         {
-            float price = _pricePerUnit.TryGetValue(type, out var p) ? p : 10f;
+            float price = config?.pricePerUnit ?? 0f;
 
             if (existing != null)
             {
@@ -308,7 +500,32 @@ public class BookingDataManager : IDataManager
 
         if (CurrentDraft.Value != null)
         {
-            CurrentDraft.Value.extras = list;
+            EnsureBookingHasAllExtras(CurrentDraft.Value);
+            var draftExtra = CurrentDraft.Value.extras.FirstOrDefault(e => e.type == type);
+            if (draftExtra != null)
+            {
+                draftExtra.quantity = quantity;
+                draftExtra.pricePerUnit = config?.pricePerUnit ?? 0f;
+            }
+        }
+
+        UpdateAvailableExtrasModel(type, quantity);
+    }
+
+    private void UpdateAvailableExtrasModel(ExtraType type, int quantity)
+    {
+        var model = AvailableExtras.FirstOrDefault(m => m.type == type);
+        if (model != null)
+        {
+            var index = AvailableExtras.IndexOf(model);
+            if (index >= 0)
+            {
+                var config = _extraConfigs.GetValueOrDefault(type);
+                if (config != null)
+                {
+                    AvailableExtras[index] = new BookingExtraModel(config, quantity);
+                }
+            }
         }
     }
 
@@ -320,7 +537,7 @@ public class BookingDataManager : IDataManager
 
     private void AdjustExtra(ExtraType type, int delta)
     {
-        var current = SelectedExtras.Value.Find(e => e.type == type);
+        var current = SelectedExtras.Value.FirstOrDefault(e => e.type == type);
         int newQuantity = (current?.quantity ?? 0) + delta;
         SetExtraQuantity(type, newQuantity);
     }
@@ -330,15 +547,15 @@ public class BookingDataManager : IDataManager
     /// </summary>
     private void RecalculateTotalCost()
     {
-        if (CurrentDraft.Value == null || SelectedStadium.Value == null) return;
+        if (CurrentDraft.Value == null || SelectedStadium.Value == null)
+        {
+            TotalCost.Value = 0f;
+            return;
+        }
 
         var stadium = SelectedStadium.Value;
         float hours = (int)SelectedDuration.Value / 60f;
         float baseCost = stadium.basePricePerHour * hours;
-
-        // Можно добавить зависимость цены от pitchSize (например, больший размер — дороже)
-        // float sizeMultiplier = SelectedPitchSize.Value == PitchSize.Size11x11 ? 1.5f : 1f;
-        // baseCost *= sizeMultiplier;
 
         float extrasCost = 0f;
         foreach (var extra in SelectedExtras.Value)
@@ -348,6 +565,7 @@ public class BookingDataManager : IDataManager
 
         float total = baseCost + extrasCost;
         CurrentDraft.Value.totalCost = total;
+        TotalCost.Value = total;
     }
 
     public void ConfirmBooking()
@@ -366,8 +584,10 @@ public class BookingDataManager : IDataManager
         SelectedDateTimeIso.Value = null;
         SelectedDate.Value = null;
         SelectedTime.Value = null;
-        SelectedExtras.Value = new List<BookingExtra>();
+        var emptyExtras = InitializeExtrasForNewBooking();
+        SelectedExtras.Value = emptyExtras;
         DeselectAllTimes();
+        UpdateAllAvailableExtrasModels();
     }
 
     public void CancelDraft()
@@ -377,8 +597,10 @@ public class BookingDataManager : IDataManager
         SelectedDateTimeIso.Value = null;
         SelectedDate.Value = null;
         SelectedTime.Value = null;
-        SelectedExtras.Value = new List<BookingExtra>();
+        var emptyExtras = InitializeExtrasForNewBooking();
+        SelectedExtras.Value = emptyExtras;
         DeselectAllTimes();
+        UpdateAllAvailableExtrasModels();
     }
 
     public void CancelBooking(int bookingId)
