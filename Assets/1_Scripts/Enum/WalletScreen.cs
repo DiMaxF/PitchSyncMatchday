@@ -1,16 +1,8 @@
 using UnityEngine;
 
-public class WalletScreen : MonoBehaviour
+public enum WalletScreens
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    Summary,
+    Scoreboard,
+    Notes
 }

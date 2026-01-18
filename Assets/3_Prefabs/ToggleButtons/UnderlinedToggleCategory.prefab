@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 1262981995875507780}
   - component: {fileID: 8440864274301836986}
   m_Layer: 5
-  m_Name: BokingToggleCategory
+  m_Name: UnderlinedToggleCategory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
