@@ -140,8 +140,10 @@ public class BookingBuilderScreen : UIScreen
             return;
         }
 
+        var booking = Booking.CurrentDraft.Value;
         Booking.ConfirmBooking();
-        ScreenManager?.Show(Screens.MyBookingScreen);
+        DataManager.BookingConfirm.InitializeForBooking(booking);
+        ScreenManager?.Show(Screens.BookingConfirmScreen);
     }
 
     protected override void RefreshViews()
