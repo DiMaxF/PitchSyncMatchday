@@ -5,5 +5,6 @@ public enum Screens
     PitchFinderScreen,
     AvailabilityPlannerScreen,
     BookingBuilderScreen,
+    BookingConfirmScreen,
     MyBookingScreen
 }

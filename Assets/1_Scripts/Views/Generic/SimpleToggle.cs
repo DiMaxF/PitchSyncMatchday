@@ -26,7 +26,9 @@ public class SimpleToggle : UIView<bool>
             action.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    Trigger(!DataProperty.Value);
+                    var newValue = !DataProperty.Value;
+                    DataProperty.Value = newValue;
+                    Trigger(newValue);
                 })
                 .AddTo(this);
         }

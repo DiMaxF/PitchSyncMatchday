@@ -1,16 +1,9 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MyBookingScreen : UIScreen
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    [SerializeField] private ListContainer categoryList;
+    [SerializeField] private ListContainer cardList;
+    [SerializeField] private Button backButton;
 }
