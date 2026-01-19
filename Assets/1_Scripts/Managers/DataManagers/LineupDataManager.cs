@@ -16,6 +16,10 @@ public class LineupDataManager : IDataManager
     private readonly ReactiveCollection<object> _draftModesAsObject = new ReactiveCollection<object>();
     public ReactiveCollection<object> DraftModesAsObject => _draftModesAsObject;
 
+    public ReactiveCollection<ToggleButtonModel> PositionFilters { get; } = new ReactiveCollection<ToggleButtonModel>();
+    private readonly ReactiveCollection<object> _positionFiltersAsObject = new ReactiveCollection<object>();
+    public ReactiveCollection<object> PositionFiltersAsObject => _positionFiltersAsObject;
+
     public ReactiveCollection<PlayerModel> PlayersPool { get; } = new ReactiveCollection<PlayerModel>();
     private readonly ReactiveCollection<object> _playersPoolAsObject = new ReactiveCollection<object>();
     public ReactiveCollection<object> PlayersPoolAsObject => _playersPoolAsObject;
@@ -42,12 +46,120 @@ public class LineupDataManager : IDataManager
 
     private void InitializePlayers()
     {
-        for (int i = 1; i <= 20; i++)
+        if (_appModel.players == null || _appModel.players.Count == 0)
         {
-            var position = (PlayerPosition)((i - 1) % 4);
-            var player = new PlayerModel(i, $"Player {i}", position);
+            _appModel.players = new List<PlayerModel>();
+            for (int i = 1; i <= 20; i++)
+            {
+                var position = (PlayerPosition)((i - 1) % 4);
+                var player = new PlayerModel(i, $"Player {i}", position);
+                _appModel.players.Add(player);
+            }
+        }
+
+        foreach (var player in _appModel.players)
+        {
+            if (!string.IsNullOrEmpty(player.avatarPath))
+            {
+                player.avatar = FileUtils.LoadImageAsSprite(player.avatarPath);
+            }
+            
             _allPlayers.Add(player);
             PlayersPool.Add(player);
+        }
+    }
+
+    public void AddPlayer(string name, PlayerPosition position, Sprite avatar, string avatarPath)
+    {
+        var maxId = _allPlayers.Count > 0 ? _allPlayers.Max(p => p.id) : 0;
+        var newId = maxId + 1;
+        
+        var player = new PlayerModel(newId, name, position);
+        var fileName = $"player_{newId}_avatar.png";
+        
+        if (avatar != null)
+        {
+            player.avatar = avatar;
+            FileUtils.SaveImage(avatar, fileName);
+            player.avatarPath = fileName;
+        }
+
+        _allPlayers.Add(player);
+        PlayersPool.Add(player);
+        _appModel.players.Add(player);
+        DataManager.Instance.SaveAppModel();
+    }
+
+    public void RemovePlayer(int playerId)
+    {
+        var player = _allPlayers.FirstOrDefault(p => p.id == playerId);
+        if (player == null) return;
+
+        _allPlayers.Remove(player);
+        PlayersPool.Remove(player);
+        _appModel.players.Remove(player);
+
+        RemovePlayerFromTeam(playerId, TeamSide.Green);
+        RemovePlayerFromTeam(playerId, TeamSide.Red);
+        DataManager.Instance.SaveAppModel();
+    }
+
+    public void UpdatePlayer(int playerId, string name, PlayerPosition position, Sprite avatar, string avatarPath)
+    {
+        var player = _allPlayers.FirstOrDefault(p => p.id == playerId);
+        if (player == null) return;
+
+        player.name = name;
+        player.position = position;
+        
+        if (avatar != null)
+        {
+            player.avatar = avatar;
+            var fileName = $"player_{playerId}_avatar.png";
+            FileUtils.SaveImage(avatar, fileName);
+            player.avatarPath = fileName;
+        }
+
+        var poolIndex = PlayersPool.IndexOf(player);
+        if (poolIndex >= 0)
+        {
+            PlayersPool[poolIndex] = player;
+        }
+
+        var appIndex = _appModel.players.IndexOf(player);
+        if (appIndex >= 0)
+        {
+            _appModel.players[appIndex] = player;
+        }
+
+        UpdateSquadPlayerInfo(playerId, name, position);
+        DataManager.Instance.SaveAppModel();
+    }
+
+    private void UpdateSquadPlayerInfo(int playerId, string name, PlayerPosition position)
+    {
+        UpdateSquadPlayerInfoInSquad(SquadGreen, playerId, name, position);
+        UpdateSquadPlayerInfoInSquad(SquadRed, playerId, name, position);
+    }
+
+    private void UpdateSquadPlayerInfoInSquad(ReactiveCollection<SquadPlayerModel> squad, int playerId, string name, PlayerPosition position)
+    {
+        for (int i = 0; i < squad.Count; i++)
+        {
+            var squadPlayer = squad[i];
+            if (squadPlayer.playerId == playerId)
+            {
+                squad[i] = new SquadPlayerModel
+                {
+                    playerId = squadPlayer.playerId,
+                    name = name,
+                    position = position,
+                    squadNumber = squadPlayer.squadNumber,
+                    isCaptain = squadPlayer.isCaptain,
+                    teamSide = squadPlayer.teamSide,
+                    teamIcon = squadPlayer.teamIcon
+                };
+            }
         }
     }
 
@@ -55,9 +167,10 @@ public class LineupDataManager : IDataManager
     {
         foreach (LineupMode mode in Enum.GetValues(typeof(LineupMode)))
         {
+            string displayName = mode == LineupMode.Alternate ? "Alternate 1:1" : "Snake 1:2";
             DraftModes.Add(new ToggleButtonModel
             {
-                name = mode.ToString(),
+                name = displayName,
                 selected = mode == SelectedDraftMode.Value
             });
         }
@@ -74,9 +187,10 @@ public class LineupDataManager : IDataManager
 
             if (model.selected != newSelected)
             {
+                string displayName = mode == LineupMode.Alternate ? "Alternate 1:1" : "Snake 1:2";
                 DraftModes[i] = new ToggleButtonModel
                 {
-                    name = model.name,
+                    name = displayName,
                     selected = newSelected
                 };
             }
@@ -89,6 +203,7 @@ public class LineupDataManager : IDataManager
         BindMirror(PlayersPool, _playersPoolAsObject);
         BindMirror(SquadGreen, _squadBlueAsObject);
         BindMirror(SquadRed, _squadRedAsObject);
+        BindMirror(PositionFilters, _positionFiltersAsObject);
     }
 
     private void BindMirror<T>(ReactiveCollection<T> source, ReactiveCollection<object> mirror)

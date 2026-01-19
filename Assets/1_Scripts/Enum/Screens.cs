@@ -8,5 +8,6 @@ public enum Screens
     BookingConfirmScreen,
     MyBookingScreen,
     WalletScreen,
-    ProfileScreen
+    ProfileScreen,
+    PlayersManagementScreen
 }

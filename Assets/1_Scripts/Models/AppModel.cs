@@ -6,6 +6,7 @@ public class AppModel
 {
     public List<StadiumModel> stadiums = new List<StadiumModel>();
     public List<BookingModel> bookings = new List<BookingModel>();
+    public List<PlayerModel> players = new List<PlayerModel>();
     
     public int matchesPlayed = 0;
     public int bookingsCount = 0;

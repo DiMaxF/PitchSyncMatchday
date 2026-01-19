@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class LineupScreen : UIScreen
 {
     [SerializeField] private ListContainer draftModes;
-    //[SerializeField] private ListContainer playersPool;
     [SerializeField] private SquadPanel squadBluePanel;
     [SerializeField] private SquadPanel squadRedPanel;
     [SerializeField] private Button playersButton;
@@ -26,26 +25,14 @@ public class LineupScreen : UIScreen
 
             AddToDispose(UIManager.SubscribeToView(draftModes, (ToggleButtonModel data) =>
             {
-                if (Enum.TryParse<LineupMode>(data.name, out var mode))
+                string modeName = data.name.Split(' ')[0];
+                if (Enum.TryParse<LineupMode>(modeName, out var mode))
                 {
                     Lineup.SelectDraftMode(mode);
                 }
             }));
         }
 
-        /*if (playersPool != null)
-        {
-            playersPool.Init(Lineup.PlayersPoolAsObject);
-
-            AddToDispose(UIManager.SubscribeToView(playersPool, (PlayerModel player) =>
-            {
-                if (player != null)
-                {
-                    var targetTeam = Lineup.SquadGreen.Count <= Lineup.SquadRed.Count ? TeamSide.Green : TeamSide.Red;
-                    Lineup.SelectPlayerForTeam(player.id, targetTeam);
-                }
-            }));
-        }*/
 
         if (squadBluePanel != null)
         {
@@ -100,6 +87,7 @@ public class LineupScreen : UIScreen
             AddToDispose(playersButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
+                    ScreenManager?.Show(Screens.PlayersManagementScreen);
                 }));
         }
 

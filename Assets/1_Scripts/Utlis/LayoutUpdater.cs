@@ -23,7 +23,7 @@ public class LayoutUpdater : MonoBehaviour
     private void UpdateVertical() 
     {
         float angle = _vertical.spacing;
-        DOTween.To(() => angle, x => angle = x, _vertical.spacing + 1, 0.2f)
+        DOTween.To(() => angle, x => angle = x, _vertical.spacing + 0.1f, 1f)
             .OnUpdate(() => {
                 _vertical.spacing = angle;
             });
@@ -32,7 +32,7 @@ public class LayoutUpdater : MonoBehaviour
     private void UpdateHorizontal() 
     {
         float angle = _horizontal.spacing;
-        DOTween.To(() => angle, x => angle = x, _horizontal.spacing + 1, 0.2f)
+        DOTween.To(() => angle, x => angle = x, _horizontal.spacing + 0.1f, 1f)
             .OnUpdate(() => {
                 _horizontal.spacing = angle;
             });

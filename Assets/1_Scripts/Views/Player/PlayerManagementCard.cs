@@ -2,24 +2,39 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerCard : UIView<PlayerModel>
+public class PlayerManagementCard : UIView<PlayerModel>
 {
     [SerializeField] private Text nameText;
     [SerializeField] private Text positionBadge;
-    [SerializeField] private Button selectButton;
+    [SerializeField] private Image avatarImage;
+    [SerializeField] private Button editButton;
+    [SerializeField] private Button deleteButton;
 
     protected override void Subscribe()
     {
         base.Subscribe();
         
-        if (selectButton != null)
+        if (editButton != null)
         {
-            selectButton.OnClickAsObservable()
+            editButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     if (DataProperty.Value != null)
                     {
                         Trigger(DataProperty.Value);
+                    }
+                })
+                .AddTo(this);
+        }
+
+        if (deleteButton != null)
+        {
+            deleteButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (DataProperty.Value != null)
+                    {
+                        UIManager.TriggerAction(this, DataProperty.Value.id);
                     }
                 })
                 .AddTo(this);
@@ -40,6 +55,11 @@ public class PlayerCard : UIView<PlayerModel>
         if (positionBadge != null)
         {
             positionBadge.text = data.position.ToString();
+        }
+
+        if (avatarImage != null)
+        {
+            avatarImage.sprite = data.avatar;
         }
     }
 }

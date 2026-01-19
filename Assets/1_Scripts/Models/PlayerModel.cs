@@ -8,6 +8,7 @@ public class PlayerModel
     public string name;
     public PlayerPosition position;
     public Sprite avatar;
+    public string avatarPath;
 
     public PlayerModel() { }
 

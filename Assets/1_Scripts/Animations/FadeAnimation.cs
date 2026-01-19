@@ -23,14 +23,15 @@ public class FadeAnimation : MonoBehaviour, IAnimationComponent
     public Tween AnimateShow()
     {
         canvasGroup.alpha = hideAlpha;
+        canvasGroup.interactable = false;
         return canvasGroup.DOFade(originalAlpha, config.Duration)
             .SetEase(config.Ease)
-            .SetDelay(config.Delay);
+            .SetDelay(config.Delay).OnComplete(() => canvasGroup.interactable = true);
     }
 
     public Tween AnimateHide()
     {
         canvasGroup.alpha = originalAlpha;
-        return canvasGroup.DOFade(hideAlpha, config.Duration).SetEase(config.Ease);
+        return canvasGroup.DOFade(hideAlpha, config.Duration).SetEase(config.Ease).OnComplete(() => canvasGroup.interactable = true); ;
     }
 }

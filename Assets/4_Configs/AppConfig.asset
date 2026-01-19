@@ -16,6 +16,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c09960ce1fc132949b900d5d2eeb2b15, type: 2}
   - {fileID: 11400000, guid: d9d1744989a04f74c982be94cd5ac03e, type: 2}
   - {fileID: 11400000, guid: 1420a2fbd91ac2d439bdf837e36dd76c, type: 2}
+  - {fileID: 11400000, guid: 987e244c13f80294085963e4c40f909e, type: 2}
   pitches:
   - {fileID: 11400000, guid: 30f8aa06171a8964d9587579fc2d013b, type: 2}
   - {fileID: 11400000, guid: 9c144b9d3b00ed44ea1b4f2c9d15594d, type: 2}
