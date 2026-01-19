@@ -4,7 +4,7 @@ using UnityEngine;
 public class FadeAnimation : MonoBehaviour, IAnimationComponent
 {
     [SerializeField] CanvasGroup canvasGroup;
-    [SerializeField] float startAlpha = 0f;
+    [SerializeField] float hideAlpha = 0f;
     [SerializeField] AnimationConfig config;
     [SerializeField] int order = 0;
     [SerializeField] bool parallel = false;
@@ -22,7 +22,7 @@ public class FadeAnimation : MonoBehaviour, IAnimationComponent
 
     public Tween AnimateShow()
     {
-        canvasGroup.alpha = startAlpha;
+        canvasGroup.alpha = hideAlpha;
         return canvasGroup.DOFade(originalAlpha, config.Duration)
             .SetEase(config.Ease)
             .SetDelay(config.Delay);
@@ -31,6 +31,6 @@ public class FadeAnimation : MonoBehaviour, IAnimationComponent
     public Tween AnimateHide()
     {
         canvasGroup.alpha = originalAlpha;
-        return canvasGroup.DOFade(startAlpha, config.Duration).SetEase(config.Ease);
+        return canvasGroup.DOFade(hideAlpha, config.Duration).SetEase(config.Ease);
     }
 }

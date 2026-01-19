@@ -247,7 +247,11 @@ GameObject:
   - component: {fileID: 1730338640232633846}
   - component: {fileID: 7980445256150356651}
   - component: {fileID: 2406565749426895475}
+  - component: {fileID: 7667790685268021504}
   - component: {fileID: 71009125862523538}
+  - component: {fileID: 2171289621765322104}
+  - component: {fileID: 9160718535641546209}
+  - component: {fileID: 3849470501425203414}
   m_Layer: 5
   m_Name: PitchCard
   m_TagString: Untagged
@@ -327,6 +331,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
   m_ShowMaskGraphic: 1
+--- !u!225 &7667790685268021504
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6922088219037596391}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &71009125862523538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,6 +362,52 @@ MonoBehaviour:
   photo: {fileID: 3127906516818089244}
   pickButton: {fileID: 2559999141374580341}
   ratingView: {fileID: 7773863409006483912}
+--- !u!114 &2171289621765322104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6922088219037596391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
+--- !u!114 &9160718535641546209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6922088219037596391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a081075a88da3e347b1084b8c0cf86a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScaleAnimation
+  targetTransform: {fileID: 3293115371085014058}
+  hideScale: {x: 0.8, y: 0.8, z: 0.8}
+  config: {fileID: 11400000, guid: 7483795b513ddd94bb8146195b3c4505, type: 2}
+  order: 1
+  parallel: 1
+--- !u!114 &3849470501425203414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6922088219037596391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 7667790685268021504}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 1
+  parallel: 1
 --- !u!1 &7120052215339038811
 GameObject:
   m_ObjectHideFlags: 0
@@ -699,7 +761,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 241
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}
       propertyPath: m_SizeDelta.y
@@ -961,7 +1023,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: 3900292ea226cf64b9f220c3f03a38e7, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 181
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: 3900292ea226cf64b9f220c3f03a38e7, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1001,7 +1063,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: 3900292ea226cf64b9f220c3f03a38e7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -25.5
+      value: -117
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: 3900292ea226cf64b9f220c3f03a38e7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1216,7 +1278,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: 3900292ea226cf64b9f220c3f03a38e7, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 181
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: 3900292ea226cf64b9f220c3f03a38e7, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1256,7 +1318,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: 3900292ea226cf64b9f220c3f03a38e7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -51
+      value: -193.5
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: 3900292ea226cf64b9f220c3f03a38e7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

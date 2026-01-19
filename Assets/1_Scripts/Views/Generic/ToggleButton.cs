@@ -47,13 +47,14 @@ public class ToggleButton : UIView<ToggleButtonModel>
         {
             _previousSelectedState = data.selected;
             _isInitialized = true;
+            
             if (data.selected)
             {
-                ShowAsync().Forget();
+                Show();
             }
             else
             {
-                HideAsync().Forget();
+                Hide();
             }
             return;
         }
@@ -63,11 +64,11 @@ public class ToggleButton : UIView<ToggleButtonModel>
             _previousSelectedState = data.selected;
             if (data.selected)
             {
-                ShowAsync().Forget();
+                Show();
             }
             else
             {
-                HideAsync().Forget();
+                Hide();
             }
         }
     }
@@ -77,7 +78,6 @@ public class ToggleButton : UIView<ToggleButtonModel>
         if (_animController != null)
         {
             await _animController.PlayAsync(false);
-
         }
     }
 }

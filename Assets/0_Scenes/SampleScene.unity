@@ -1631,6 +1631,9 @@ GameObject:
   m_Component:
   - component: {fileID: 128343489}
   - component: {fileID: 128343490}
+  - component: {fileID: 128343493}
+  - component: {fileID: 128343492}
+  - component: {fileID: 128343491}
   m_Layer: 5
   m_Name: PitchScreen
   m_TagString: Untagged
@@ -1675,6 +1678,47 @@ MonoBehaviour:
   sortFilteres: {fileID: 625091580}
   sizeFilteres: {fileID: 1592728495961084144}
   pitchCards: {fileID: 1511742930}
+--- !u!114 &128343491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128343488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
+--- !u!114 &128343492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128343488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 128343493}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 0
+  parallel: 0
+--- !u!225 &128343493
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128343488}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &142047333
 GameObject:
   m_ObjectHideFlags: 0
@@ -6481,6 +6525,9 @@ GameObject:
   m_Component:
   - component: {fileID: 502860564}
   - component: {fileID: 502860565}
+  - component: {fileID: 502860568}
+  - component: {fileID: 502860567}
+  - component: {fileID: 502860566}
   m_Layer: 5
   m_Name: WalletScreen
   m_TagString: Untagged
@@ -6522,6 +6569,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WalletScreen
   ScreenType: 7
+--- !u!114 &502860566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 502860563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
+--- !u!114 &502860567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 502860563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 502860568}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 0
+  parallel: 0
+--- !u!225 &502860568
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 502860563}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -7585,6 +7673,9 @@ GameObject:
   - component: {fileID: 591182922}
   - component: {fileID: 591182921}
   - component: {fileID: 591182920}
+  - component: {fileID: 591182925}
+  - component: {fileID: 591182924}
+  - component: {fileID: 591182923}
   m_Layer: 5
   m_Name: BookingConfirmScreen
   m_TagString: Untagged
@@ -7672,6 +7763,47 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 591182918}
   m_CullTransparentMesh: 1
+--- !u!225 &591182923
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591182918}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &591182924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591182918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 591182923}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 0
+  parallel: 0
+--- !u!114 &591182925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 591182918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
 --- !u!1001 &591939250
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12746,6 +12878,9 @@ GameObject:
   m_Component:
   - component: {fileID: 959748601}
   - component: {fileID: 959748602}
+  - component: {fileID: 959748605}
+  - component: {fileID: 959748604}
+  - component: {fileID: 959748603}
   m_Layer: 5
   m_Name: LineupScreen
   m_TagString: Untagged
@@ -12785,6 +12920,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LineupScreen
   ScreenType: 1
+--- !u!114 &959748603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959748600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
+--- !u!114 &959748604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959748600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 959748605}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 0
+  parallel: 0
+--- !u!225 &959748605
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959748600}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &965923160
 GameObject:
   m_ObjectHideFlags: 0
@@ -16705,6 +16881,9 @@ GameObject:
   - component: {fileID: 1255153264}
   - component: {fileID: 1255153263}
   - component: {fileID: 1255153262}
+  - component: {fileID: 1255153266}
+  - component: {fileID: 1255153265}
+  - component: {fileID: 1255153267}
   m_Layer: 5
   m_Name: MyBookingScreen
   m_TagString: Untagged
@@ -16791,6 +16970,47 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1255153260}
   m_CullTransparentMesh: 1
+--- !u!114 &1255153265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255153260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 1255153266}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 0
+  parallel: 0
+--- !u!225 &1255153266
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255153260}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1255153267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1255153260}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
 --- !u!1001 &1258860430
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17187,6 +17407,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1273757616}
   - component: {fileID: 1273757617}
+  - component: {fileID: 1273757620}
+  - component: {fileID: 1273757619}
+  - component: {fileID: 1273757618}
   m_Layer: 5
   m_Name: ProfileScreen
   m_TagString: Untagged
@@ -17227,6 +17450,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProfileScreen
   ScreenType: 8
+--- !u!114 &1273757618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1273757615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
+--- !u!114 &1273757619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1273757615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 1273757620}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 0
+  parallel: 0
+--- !u!225 &1273757620
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1273757615}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!224 &1283241104 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2652261759710445436, guid: b284adf5b7f92b643892fb735470dfc8, type: 3}
@@ -18227,6 +18491,9 @@ GameObject:
   - component: {fileID: 1406355078}
   - component: {fileID: 1406355080}
   - component: {fileID: 1406355079}
+  - component: {fileID: 1406355083}
+  - component: {fileID: 1406355082}
+  - component: {fileID: 1406355081}
   m_Layer: 5
   m_Name: AvailabilityPlannerScreen
   m_TagString: Untagged
@@ -18313,6 +18580,47 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1406355076}
   m_CullTransparentMesh: 1
+--- !u!225 &1406355081
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406355076}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1406355082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406355076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 1406355081}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 0
+  parallel: 0
+--- !u!114 &1406355083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1406355076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
 --- !u!1 &1412499794
 GameObject:
   m_ObjectHideFlags: 0
@@ -20102,6 +20410,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1602559147}
   - component: {fileID: 1602559148}
+  - component: {fileID: 1602559150}
+  - component: {fileID: 1602559149}
+  - component: {fileID: 1602559151}
   m_Layer: 5
   m_Name: HomeScreen
   m_TagString: Untagged
@@ -20144,6 +20455,47 @@ MonoBehaviour:
   ScreenType: 0
   pitchFinderButton: {fileID: 1187390567}
   myBookingButton: {fileID: 786708941}
+--- !u!225 &1602559149
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602559146}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1602559150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602559146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 1602559149}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 0
+  parallel: 0
+--- !u!114 &1602559151
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602559146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
 --- !u!1 &1604634357
 GameObject:
   m_ObjectHideFlags: 0
@@ -27037,6 +27389,9 @@ GameObject:
   - component: {fileID: 2118647161}
   - component: {fileID: 2118647160}
   - component: {fileID: 2118647162}
+  - component: {fileID: 2118647165}
+  - component: {fileID: 2118647164}
+  - component: {fileID: 2118647163}
   m_Layer: 5
   m_Name: BookingBuilderScreen
   m_TagString: Untagged
@@ -27123,6 +27478,47 @@ MonoBehaviour:
   total: {fileID: 569586275}
   backButton: {fileID: 396439520}
   generateButton: {fileID: 554040460}
+--- !u!225 &2118647163
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2118647158}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &2118647164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2118647158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ed8d6167276bb84e9685c770ab7568c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FadeAnimation
+  canvasGroup: {fileID: 2118647163}
+  hideAlpha: 0
+  config: {fileID: 11400000, guid: f196d8648d9693041b82bf8e4b5c741e, type: 2}
+  order: 0
+  parallel: 0
+--- !u!114 &2118647165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2118647158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
 --- !u!1 &2121544445
 GameObject:
   m_ObjectHideFlags: 0

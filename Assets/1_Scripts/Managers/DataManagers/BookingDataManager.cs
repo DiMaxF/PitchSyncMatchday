@@ -30,7 +30,7 @@ public class BookingDataManager : IDataManager
     public ReactiveProperty<StadiumModel> SelectedStadium { get; } = new ReactiveProperty<StadiumModel>(null);
     public ReactiveProperty<string> SelectedDateTimeIso { get; } = new ReactiveProperty<string>(null);
     public ReactiveProperty<PitchSize> SelectedPitchSize { get; } = new ReactiveProperty<PitchSize>(PitchSize.Size7x7);
-    public ReactiveProperty<MatchDuration> SelectedDuration { get; } = new ReactiveProperty<MatchDuration>(MatchDuration.Min90);
+    public ReactiveProperty<MatchDuration> SelectedDuration { get; } = new ReactiveProperty<MatchDuration>(MatchDuration.Min60);
 
     public ReactiveProperty<List<BookingExtra>> SelectedExtras { get; } = new ReactiveProperty<List<BookingExtra>>(new List<BookingExtra>());
 
@@ -185,7 +185,7 @@ public class BookingDataManager : IDataManager
     {
         SelectedStadium.Value = stadium;
         SelectedPitchSize.Value = PitchSize.Size7x7;
-        SelectedDuration.Value = MatchDuration.Min90;
+        SelectedDuration.Value = MatchDuration.Min60;
         SelectedDateTimeIso.Value = null;
         SelectedDate.Value = null;
         SelectedTime.Value = null;
@@ -199,7 +199,8 @@ public class BookingDataManager : IDataManager
             stadiumId = stadium.id,
             status = BookingStatus.Draft,
             totalCost = 0f,
-            extras = new List<BookingExtra>(initialExtras)
+            extras = new List<BookingExtra>(initialExtras),
+            duration = MatchDuration.Min60
         };
 
         UpdateAllAvailableExtrasModels();

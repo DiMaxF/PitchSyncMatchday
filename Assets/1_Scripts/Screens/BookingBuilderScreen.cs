@@ -118,6 +118,14 @@ public class BookingBuilderScreen : UIScreen
             }
         }));
 
+        AddToDispose(Booking.SelectedDuration.Subscribe(_ =>
+        {
+            if (shortBookingCard != null && Booking.CurrentDraft.Value != null)
+            {
+                shortBookingCard.UpdateUI();
+            }
+        }));
+
         AddToDispose(Booking.SelectedExtras.Subscribe(_ =>
         {
             InitializeExtras();

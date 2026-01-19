@@ -6,86 +6,47 @@ using UnityEngine;
 
 public class AnimationController : MonoBehaviour
 {
-    private const bool ExcludeChildViews = true;
-
     public async UniTask PlayAsync(bool show)
     {
-        var allAnimations = GetComponentsInChildren<IAnimationComponent>(true);
+        var allAnimations = GetComponents<IAnimationComponent>();
 
         if (!allAnimations.Any()) return;
 
-        var filteredAnimations = allAnimations
-            .Where(anim =>
-            {
-                var go = (anim as Component)?.gameObject;
-                return go != null && (!ExcludeChildViews || !HasUIViewComponent(go) || go == gameObject);
-            })
+        var animations = allAnimations
+            .OrderBy(a => a.Order)
+            .GroupBy(a => a.Order)
             .ToList();
 
-        if (!filteredAnimations.Any()) return;
+        if (!animations.Any()) return;
 
-        var animationsByGameObject = filteredAnimations
-            .GroupBy(a => (a as Component)?.gameObject)
-            .Where(g => g.Key != null)
-            .ToList();
+        var sequence = DOTween.Sequence();
 
-        var tasks = new List<UniTask>();
-
-        foreach (var group in animationsByGameObject)
+        foreach (var orderGroup in animations)
         {
-            var animations = group
-                .OrderBy(a => a.Order)
-                .GroupBy(a => a.Order)
-                .ToList();
-
-            if (!animations.Any()) continue;
-
-            var sequence = DOTween.Sequence();
-
-            foreach (var orderGroup in animations)
+            bool isFirstInGroup = true;
+            foreach (var anim in orderGroup)
             {
-                bool isFirstInGroup = true;
-                foreach (var anim in orderGroup)
+                try
                 {
-                    try
-                    {
-                        var tween = show ? anim.AnimateShow() : anim.AnimateHide();
+                    var tween = show ? anim.AnimateShow() : anim.AnimateHide();
 
-                        if (isFirstInGroup || !anim.IsParallel)
-                        {
-                            sequence.Append(tween);
-                            isFirstInGroup = false;
-                        }
-                        else
-                        {
-                            sequence.Join(tween);
-                        }
-                    }
-                    catch (System.Exception ex)
+                    if (isFirstInGroup || !anim.IsParallel)
                     {
-                        Debug.LogError($"Animation error in {anim.GetType().Name} on {group.Key.name}: {ex.Message}");
+                        sequence.Append(tween);
+                        isFirstInGroup = false;
+                    }
+                    else
+                    {
+                        sequence.Join(tween);
                     }
                 }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"Animation error in {anim.GetType().Name} on {gameObject.name}: {ex.Message}");
+                }
             }
-
-            tasks.Add(sequence.Play().AsyncWaitForCompletion().AsUniTask());
         }
 
-        if (tasks.Any())
-        {
-            await UniTask.WhenAll(tasks);
-        }
-    }
-
-    private static bool HasUIViewComponent(GameObject obj)
-    {
-        if (obj == null) return false;
-
-        var behaviours = obj.GetComponents<MonoBehaviour>();
-        return behaviours.Any(mb =>
-        {
-            var type = mb.GetType();
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(UIView<>);
-        });
+        await sequence.Play().AsyncWaitForCompletion().AsUniTask();
     }
 }
