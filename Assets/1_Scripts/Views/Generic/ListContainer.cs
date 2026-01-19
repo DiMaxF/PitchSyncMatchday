@@ -17,6 +17,13 @@ public class ListContainer : UIView<ReactiveCollection<object>>
     private CompositeDisposable _collectionDisposables;
     private bool _isInitialized = false;
 
+    private LayoutUpdater _updater;
+
+    override protected void Awake() 
+    {
+        _updater = contentParent.GetComponent<LayoutUpdater>(); 
+    }
+
     public new void Init(object data)
     {
         if (data is ReactiveCollection<object> collection)
@@ -85,6 +92,7 @@ public class ListContainer : UIView<ReactiveCollection<object>>
         _activeItems.Insert(index, instance);
 
         AnimateItemAppear(instance, index).Forget();
+        _updater?.ForceUpdate();
     }
     [SerializeField] private bool playShowOnSpawn = true;
     private async UniTask AnimateItemAppear(UIView item, int index)
@@ -123,6 +131,7 @@ public class ListContainer : UIView<ReactiveCollection<object>>
 
         ReindexAfterRemoval(index);
         UpdateNoItemView();
+        _updater?.ForceUpdate();
     }
 
     private void OnItemReplaced(int index, object newData)
@@ -144,6 +153,7 @@ public class ListContainer : UIView<ReactiveCollection<object>>
 
             item.UpdateUI();
         }
+        _updater?.ForceUpdate();
     }
 
     private void OnItemMoved(int oldIndex, int newIndex)
@@ -155,6 +165,7 @@ public class ListContainer : UIView<ReactiveCollection<object>>
         _activeItems.RemoveAt(oldIndex);
         _activeItems.Insert(newIndex, item);
         UpdateSiblingIndices();
+        _updater?.ForceUpdate();
     }
 
     private void ReindexAfterRemoval(int removedIndex)

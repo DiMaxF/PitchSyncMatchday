@@ -10,8 +10,9 @@ public class LineupDataManager : IDataManager
     private readonly AppConfig _appConfig;
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
     private readonly List<PlayerModel> _allPlayers = new List<PlayerModel>();
+    private bool _suppressAvailablePlayersUpdate;
 
-    public ReactiveProperty<LineupMode> SelectedDraftMode { get; } = new ReactiveProperty<LineupMode>(LineupMode.Alternate);
+    public ReactiveProperty<LineupMod> SelectedDraftMode { get; } = new ReactiveProperty<LineupMod>(LineupMod.Alternate);
     public ReactiveCollection<ToggleButtonModel> DraftModes { get; } = new ReactiveCollection<ToggleButtonModel>();
     private readonly ReactiveCollection<object> _draftModesAsObject = new ReactiveCollection<object>();
     public ReactiveCollection<object> DraftModesAsObject => _draftModesAsObject;
@@ -33,6 +34,11 @@ public class LineupDataManager : IDataManager
 
     public ReactiveProperty<LineupModel> CurrentLineup { get; } = new ReactiveProperty<LineupModel>(null);
 
+    public ReactiveProperty<string> SearchQuery { get; } = new ReactiveProperty<string>(string.Empty);
+    public ReactiveCollection<PlayerModel> AvailablePlayers { get; } = new ReactiveCollection<PlayerModel>();
+    private readonly ReactiveCollection<object> _availablePlayersAsObject = new ReactiveCollection<object>();
+    public ReactiveCollection<object> AvailablePlayersAsObject => _availablePlayersAsObject;
+
     public LineupDataManager(AppModel appModel, AppConfig appConfig)
     {
         _appModel = appModel;
@@ -42,21 +48,20 @@ public class LineupDataManager : IDataManager
         InitializeDraftModes();
         BindCollections();
         SelectedDraftMode.Subscribe(_ => UpdateDraftModesSelection()).AddTo(_disposables);
+        
+        SearchQuery.Subscribe(_ => TryUpdateAvailablePlayers()).AddTo(_disposables);
+        SquadGreen.ObserveAdd().Subscribe(_ => TryUpdateAvailablePlayers()).AddTo(_disposables);
+        SquadGreen.ObserveRemove().Subscribe(_ => TryUpdateAvailablePlayers()).AddTo(_disposables);
+        SquadRed.ObserveAdd().Subscribe(_ => TryUpdateAvailablePlayers()).AddTo(_disposables);
+        SquadRed.ObserveRemove().Subscribe(_ => TryUpdateAvailablePlayers()).AddTo(_disposables);
+        PlayersPool.ObserveAdd().Subscribe(_ => TryUpdateAvailablePlayers()).AddTo(_disposables);
+        PlayersPool.ObserveRemove().Subscribe(_ => TryUpdateAvailablePlayers()).AddTo(_disposables);
+        
+        UpdateAvailablePlayers();
     }
 
     private void InitializePlayers()
     {
-        if (_appModel.players == null || _appModel.players.Count == 0)
-        {
-            _appModel.players = new List<PlayerModel>();
-            for (int i = 1; i <= 20; i++)
-            {
-                var position = (PlayerPosition)((i - 1) % 4);
-                var player = new PlayerModel(i, $"Player {i}", position);
-                _appModel.players.Add(player);
-            }
-        }
-
         foreach (var player in _appModel.players)
         {
             if (!string.IsNullOrEmpty(player.avatarPath))
@@ -165,9 +170,9 @@ public class LineupDataManager : IDataManager
 
     private void InitializeDraftModes()
     {
-        foreach (LineupMode mode in Enum.GetValues(typeof(LineupMode)))
+        foreach (LineupMod mode in Enum.GetValues(typeof(LineupMod)))
         {
-            string displayName = mode == LineupMode.Alternate ? "Alternate 1:1" : "Snake 1:2";
+            string displayName = mode == LineupMod.Alternate ? "Alternate 1:1" : "Snake 1:2";
             DraftModes.Add(new ToggleButtonModel
             {
                 name = displayName,
@@ -178,7 +183,7 @@ public class LineupDataManager : IDataManager
 
     private void UpdateDraftModesSelection()
     {
-        var modes = Enum.GetValues(typeof(LineupMode)).Cast<LineupMode>().ToList();
+        var modes = Enum.GetValues(typeof(LineupMod)).Cast<LineupMod>().ToList();
         for (int i = 0; i < DraftModes.Count && i < modes.Count; i++)
         {
             var mode = modes[i];
@@ -187,7 +192,7 @@ public class LineupDataManager : IDataManager
 
             if (model.selected != newSelected)
             {
-                string displayName = mode == LineupMode.Alternate ? "Alternate 1:1" : "Snake 1:2";
+                string displayName = mode == LineupMod.Alternate ? "Alternate 1:1" : "Snake 1:2";
                 DraftModes[i] = new ToggleButtonModel
                 {
                     name = displayName,
@@ -204,6 +209,7 @@ public class LineupDataManager : IDataManager
         BindMirror(SquadGreen, _squadBlueAsObject);
         BindMirror(SquadRed, _squadRedAsObject);
         BindMirror(PositionFilters, _positionFiltersAsObject);
+        BindMirror(AvailablePlayers, _availablePlayersAsObject);
     }
 
     private void BindMirror<T>(ReactiveCollection<T> source, ReactiveCollection<object> mirror)
@@ -225,7 +231,7 @@ public class LineupDataManager : IDataManager
         }).AddTo(_disposables);
     }
 
-    public void SelectDraftMode(LineupMode mode)
+    public void SelectDraftMode(LineupMod mode)
     {
         SelectedDraftMode.Value = mode;
     }
@@ -333,11 +339,21 @@ public class LineupDataManager : IDataManager
 
     public void AutoBalance()
     {
+        _suppressAvailablePlayersUpdate = true;
+        var allSquadPlayers = new List<SquadPlayerModel>();
+        allSquadPlayers.AddRange(SquadGreen);
+        allSquadPlayers.AddRange(SquadRed);
+
+        var players = allSquadPlayers
+            .Select(sp => GetPlayerById(sp.playerId))
+            .Where(p => p != null)
+            .ToList();
+
         SquadGreen.Clear();
         SquadRed.Clear();
 
-        var gks = PlayersPool.Where(p => p.position == PlayerPosition.GK).ToList();
-        var others = PlayersPool.Where(p => p.position != PlayerPosition.GK).ToList();
+        var gks = players.Where(p => p.position == PlayerPosition.GK).ToList();
+        var others = players.Where(p => p.position != PlayerPosition.GK).ToList();
 
         int blueIndex = 1;
         int redIndex = 1;
@@ -353,20 +369,50 @@ public class LineupDataManager : IDataManager
         }
 
         var shuffled = others.OrderBy(x => UnityEngine.Random.value).ToList();
-        bool isBlueTurn = true;
 
-        foreach (var player in shuffled)
+        if (SelectedDraftMode.Value == LineupMod.Alternate)
         {
-            if (isBlueTurn)
+            bool isBlueTurn = true;
+            foreach (var player in shuffled)
             {
-                AddPlayerToSquad(player, TeamSide.Green, blueIndex++);
+                if (isBlueTurn)
+                {
+                    AddPlayerToSquad(player, TeamSide.Green, blueIndex++);
+                }
+                else
+                {
+                    AddPlayerToSquad(player, TeamSide.Red, redIndex++);
+                }
+                isBlueTurn = !isBlueTurn;
             }
-            else
-            {
-                AddPlayerToSquad(player, TeamSide.Red, redIndex++);
-            }
-            isBlueTurn = !isBlueTurn;
         }
+        else if (SelectedDraftMode.Value == LineupMod.Snake)
+        {
+            int playerIndex = 0;
+            int round = 0;
+            while (playerIndex < shuffled.Count)
+            {
+                bool isEvenRound = (round % 2 == 0);
+                int bluePicks = isEvenRound ? 1 : 2;
+                int redPicks = isEvenRound ? 2 : 1;
+
+                for (int i = 0; i < bluePicks && playerIndex < shuffled.Count; i++)
+                {
+                    AddPlayerToSquad(shuffled[playerIndex], TeamSide.Green, blueIndex++);
+                    playerIndex++;
+                }
+
+                for (int i = 0; i < redPicks && playerIndex < shuffled.Count; i++)
+                {
+                    AddPlayerToSquad(shuffled[playerIndex], TeamSide.Red, redIndex++);
+                    playerIndex++;
+                }
+
+                round++;
+            }
+        }
+        _suppressAvailablePlayersUpdate = false;
+        UpdateAvailablePlayers();
     }
 
     private void AddPlayerToSquad(PlayerModel player, TeamSide teamSide, int squadNumber)
@@ -409,6 +455,16 @@ public class LineupDataManager : IDataManager
         return _appConfig.teams.Where(t => t.side == side).FirstOrDefault().icon;
     }
 
+    public Sprite GetTeamIconForSide(TeamSide side)
+    {
+        return GetTeamIcon(side);
+    }
+
+    public PlayerModel GetPlayerById(int id)
+    {
+        return _allPlayers.FirstOrDefault(p => p.id == id);
+    }
+
     public void SaveLineup()
     {
         if (CurrentLineup.Value == null)
@@ -421,6 +477,47 @@ public class LineupDataManager : IDataManager
         lineup.playersRed = SquadRed.Select(sp => sp.playerId).ToList();
         lineup.captainBlue = SquadGreen.FirstOrDefault(sp => sp.isCaptain)?.playerId;
         lineup.captainRed = SquadRed.FirstOrDefault(sp => sp.isCaptain)?.playerId;
+
+        if (!_appModel.lineups.Contains(lineup))
+        {
+            _appModel.lineups.Add(lineup);
+        }
+
+        DataManager.Instance.SaveAppModel();
+    }
+
+    private void TryUpdateAvailablePlayers()
+    {
+        if (_suppressAvailablePlayersUpdate) return;
+        UpdateAvailablePlayers();
+    }
+
+    private void UpdateAvailablePlayers()
+    {
+        var addedPlayerIds = new HashSet<int>();
+        foreach (var player in SquadGreen)
+        {
+            addedPlayerIds.Add(player.playerId);
+        }
+        foreach (var player in SquadRed)
+        {
+            addedPlayerIds.Add(player.playerId);
+        }
+
+        var available = PlayersPool.Where(p => !addedPlayerIds.Contains(p.id)).ToList();
+
+        if (!string.IsNullOrEmpty(SearchQuery.Value))
+        {
+            var query = SearchQuery.Value.ToLower();
+            available = available.Where(p => 
+                p.name != null && p.name.ToLower().Contains(query)).ToList();
+        }
+
+        AvailablePlayers.Clear();
+        foreach (var player in available)
+        {
+            AvailablePlayers.Add(player);
+        }
     }
 
     public void Dispose()

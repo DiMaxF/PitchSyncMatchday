@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public enum LineupMode
+public enum LineupMod
 {
     Alternate,
     Snake

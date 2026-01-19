@@ -144,6 +144,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2835392692790434358}
   - component: {fileID: 3987264453466704031}
+  - component: {fileID: 8126022526385758372}
+  - component: {fileID: -5831946867407745372}
+  - component: {fileID: -8287427475454592291}
   m_Layer: 5
   m_Name: SquadPlayerCardRed
   m_TagString: Untagged
@@ -189,6 +192,52 @@ MonoBehaviour:
   squadNumberText: {fileID: 5842637271624072940}
   removeButton: {fileID: 2915200950218207053}
   captainToggle: {fileID: 4820898418950989855}
+--- !u!114 &8126022526385758372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369386322459815381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
+--- !u!114 &-5831946867407745372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369386322459815381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a2890fe56abea43b257dff10da3c7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PositionAnimation
+  rectTransform: {fileID: 1427211132127506844}
+  hidePosition: {x: 200, y: 0}
+  config: {fileID: 11400000, guid: bf60640975c797b4b88d8e9d8a501e48, type: 2}
+  order: 0
+  parallel: 0
+--- !u!114 &-8287427475454592291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369386322459815381}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a081075a88da3e347b1084b8c0cf86a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScaleAnimation
+  targetTransform: {fileID: 2835392692790434358}
+  hideScale: {x: 0.9, y: 0.9, z: 0.9}
+  config: {fileID: 11400000, guid: 7483795b513ddd94bb8146195b3c4505, type: 2}
+  order: 1
+  parallel: 0
 --- !u!1 &3277036878478218765
 GameObject:
   m_ObjectHideFlags: 0

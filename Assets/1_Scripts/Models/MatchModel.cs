@@ -15,6 +15,10 @@ public class MatchModel
     public string notes = "";
     public List<MatchEvent> events = new List<MatchEvent>();
     public int? lineupId;
+    public string pitchName = "";
+    public PitchSize pitchSize = PitchSize.Size7x7;
+    public int totalDurationMinutes = 60;
+    public int elapsedSeconds = 0;
 
     public MatchModel() { }
 

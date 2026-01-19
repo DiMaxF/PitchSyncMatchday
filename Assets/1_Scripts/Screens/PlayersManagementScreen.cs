@@ -57,7 +57,7 @@ public class PlayersManagementScreen : UIScreen
             AddToDispose(backButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    ScreenManager?.Show(Screens.HomeScreen);
+                    ScreenManager?.Show(Screens.LineupScreen);
                 }));
         }
     }

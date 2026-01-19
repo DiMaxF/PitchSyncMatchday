@@ -12,9 +12,16 @@ public class LineupScreen : UIScreen
     [SerializeField] private Button playersButton;
     [SerializeField] private Button autoBalanceButton;
     [SerializeField] private Button saveButton;
+    [SerializeField] private PlayerSearchPanel addPlayer;
 
     private LineupDataManager Lineup => DataManager.Lineup;
 
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        addPlayer.gameObject.SetActive(false);
+    }
     protected override void SubscribeToData()
     {
         base.SubscribeToData();
@@ -26,7 +33,7 @@ public class LineupScreen : UIScreen
             AddToDispose(UIManager.SubscribeToView(draftModes, (ToggleButtonModel data) =>
             {
                 string modeName = data.name.Split(' ')[0];
-                if (Enum.TryParse<LineupMode>(modeName, out var mode))
+                if (Enum.TryParse<LineupMod>(modeName, out var mode))
                 {
                     Lineup.SelectDraftMode(mode);
                 }
@@ -36,18 +43,34 @@ public class LineupScreen : UIScreen
 
         if (squadBluePanel != null)
         {
-            AddToDispose(Lineup.SquadGreen.ObserveAdd().Subscribe(_ => UpdateSquadPanels()));
-            AddToDispose(Lineup.SquadGreen.ObserveRemove().Subscribe(_ => UpdateSquadPanels()));
-            AddToDispose(Lineup.SquadGreen.ObserveReplace().Subscribe(_ => UpdateSquadPanels()));
-            AddToDispose(Lineup.SquadGreen.ObserveReset().Subscribe(_ => UpdateSquadPanels()));
+            AddToDispose(Lineup.SquadGreen.ObserveAdd().Subscribe(_ => { UpdateSquadPanels(); UpdateSaveButtonState(); }));
+            AddToDispose(Lineup.SquadGreen.ObserveRemove().Subscribe(_ => { UpdateSquadPanels(); UpdateSaveButtonState(); }));
+            AddToDispose(Lineup.SquadGreen.ObserveReplace().Subscribe(_ => { UpdateSquadPanels(); UpdateSaveButtonState(); }));
+            AddToDispose(Lineup.SquadGreen.ObserveReset().Subscribe(_ => { UpdateSquadPanels(); UpdateSaveButtonState(); }));
+
+            AddToDispose(UIManager.SubscribeToView(squadBluePanel, (SquadPanelModel data) =>
+            {
+                if (addPlayer != null && data != null)
+                {
+                    addPlayer.InitForTeam(data.teamSide);
+                }
+            }));
         }
 
         if (squadRedPanel != null)
         {
-            AddToDispose(Lineup.SquadRed.ObserveAdd().Subscribe(_ => UpdateSquadPanels()));
-            AddToDispose(Lineup.SquadRed.ObserveRemove().Subscribe(_ => UpdateSquadPanels()));
-            AddToDispose(Lineup.SquadRed.ObserveReplace().Subscribe(_ => UpdateSquadPanels()));
-            AddToDispose(Lineup.SquadRed.ObserveReset().Subscribe(_ => UpdateSquadPanels()));
+            AddToDispose(Lineup.SquadRed.ObserveAdd().Subscribe(_ => { UpdateSquadPanels(); UpdateSaveButtonState(); }));
+            AddToDispose(Lineup.SquadRed.ObserveRemove().Subscribe(_ => { UpdateSquadPanels(); UpdateSaveButtonState(); }));
+            AddToDispose(Lineup.SquadRed.ObserveReplace().Subscribe(_ => { UpdateSquadPanels(); UpdateSaveButtonState(); }));
+            AddToDispose(Lineup.SquadRed.ObserveReset().Subscribe(_ => { UpdateSquadPanels(); UpdateSaveButtonState(); }));
+
+            AddToDispose(UIManager.SubscribeToView(squadRedPanel, (SquadPanelModel data) =>
+            {
+                if (addPlayer != null && data != null)
+                {
+                    addPlayer.InitForTeam(data.teamSide);
+                }
+            }));
         }
 
         if (squadBluePanel != null && squadBluePanel.playersList != null)
@@ -106,7 +129,12 @@ public class LineupScreen : UIScreen
                 .Subscribe(_ =>
                 {
                     Lineup.SaveLineup();
-                    //ScreenManager?.Show(Screens.LineupViewScreen);
+                    var savedLineup = Lineup.CurrentLineup.Value;
+                    if (savedLineup != null)
+                    {
+                        DataManager.MatchCenter.CurrentLineup.Value = savedLineup;
+                    }
+                    ScreenManager?.Show(Screens.MatchCenterScreen);
                 }));
         }
     }
@@ -160,6 +188,18 @@ public class LineupScreen : UIScreen
             {
                 squadRedPanel.playersList.Init(Lineup.SquadRedAsObject);
             }
+        }
+
+        UpdateSaveButtonState();
+    }
+
+    private void UpdateSaveButtonState()
+    {
+        if (saveButton != null)
+        {
+            bool hasGreenPlayers = Lineup.SquadGreen.Count > 0;
+            bool hasRedPlayers = Lineup.SquadRed.Count > 0;
+            saveButton.interactable = hasGreenPlayers && hasRedPlayers;
         }
     }
 }

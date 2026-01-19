@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public enum WalletScreens
+public enum MatchCenterTabs
 {
-    Summary,
+    Lineup,
     Scoreboard,
     Notes
 }
