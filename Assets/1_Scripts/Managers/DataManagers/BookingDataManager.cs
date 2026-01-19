@@ -590,6 +590,16 @@ public class BookingDataManager : IDataManager
     {
         if (CurrentDraft.Value == null) return;
 
+        if (string.IsNullOrEmpty(CurrentDraft.Value.dateTimeIso) && !string.IsNullOrEmpty(SelectedDateTimeIso.Value))
+        {
+            CurrentDraft.Value.dateTimeIso = SelectedDateTimeIso.Value;
+        }
+        
+        if (string.IsNullOrEmpty(CurrentDraft.Value.dateTimeIso) && SelectedDate.Value.HasValue && !string.IsNullOrEmpty(SelectedTime.Value))
+        {
+            CombineDateAndTime();
+        }
+
         CurrentDraft.Value.status = BookingStatus.Confirmed;
         CurrentDraft.Value.qrPayload = JsonUtility.ToJson(CurrentDraft.Value);
 
@@ -707,14 +717,12 @@ public class BookingDataManager : IDataManager
         PastBookings.Clear();
 
         var upcoming = _allBookings
-            .Where(b => b.status != BookingStatus.Canceled && b.status != BookingStatus.Finished)
             .Where(b => DateTime.TryParse(b.dateTimeIso, out var date) && date > now)
             .OrderBy(b => DateTime.Parse(b.dateTimeIso))
             .ToList();
 
         var past = _allBookings
-            .Where(b => b.status == BookingStatus.Canceled || b.status == BookingStatus.Finished ||
-                        (DateTime.TryParse(b.dateTimeIso, out var date) && date <= now))
+            .Where(b => DateTime.TryParse(b.dateTimeIso, out var date) && date <= now)
             .OrderByDescending(b => DateTime.Parse(b.dateTimeIso))
             .ToList();
 

@@ -64,10 +64,18 @@ public class AvailabilityPlannerScreen : UIScreen
 
         if (continueButton != null)
         {
+            var canContinue = Observable.CombineLatest(
+                Booking.SelectedDate,
+                Booking.SelectedTime,
+                (date, time) => date.HasValue && !string.IsNullOrEmpty(time)
+            );
+
+            AddToDispose(canContinue.SubscribeToInteractable(continueButton));
+
             AddToDispose(continueButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    OnContinueClicked();
+                    ScreenManager?.Show(Screens.BookingBuilderScreen);
                 }));
         }
 
@@ -102,30 +110,6 @@ public class AvailabilityPlannerScreen : UIScreen
                 Booking.SelectTimeSlot(data, Booking.EveningTimes);
             }));
         }
-
-        continueButton.OnClickAsObservable()
-        .Subscribe(_ =>
-        {
-            ScreenManager.Show(Screens.BookingBuilderScreen);
-        })
-        .AddTo(this);
-    }
-
-    private void OnContinueClicked()
-    {
-        if (!Booking.SelectedDate.Value.HasValue)
-        {
-            Debug.LogWarning("Не выбрана дата");
-            return;
-        }
-
-        if (string.IsNullOrEmpty(Booking.SelectedTime.Value))
-        {
-            Debug.LogWarning("Не выбрано время");
-            return;
-        }
-
-        ScreenManager?.Show(Screens.BookingBuilderScreen);
     }
 
     protected override void RefreshViews()

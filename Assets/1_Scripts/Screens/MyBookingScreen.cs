@@ -9,13 +9,31 @@ public class MyBookingScreen : UIScreen
     [SerializeField] private ListContainer categoryList;
     [SerializeField] private ListContainer cardList;
     [SerializeField] private Button backButton;
+    [SerializeField] private QrPanel qrPanel;
 
     private BookingDataManager Booking => DataManager.Booking;
+    private BookingConfirmDataManager BookingConfirm => DataManager.BookingConfirm;
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        
+        if (qrPanel != null)
+        {
+            qrPanel.gameObject.SetActive(false);
+        }
+    }
 
     protected override void SubscribeToData()
     {
         base.SubscribeToData();
-
+        //new Log($"{Booking.AllBookings.Count}", "MyBookingScreen");
+        
+        if (Booking.SelectedCategory.Value == null)
+        {
+            Booking.SelectCategory(BookingCategoryType.Upcoming);
+        }
+        
         if (categoryList != null)
         {
             categoryList.Init(Booking.CategoryFiltersAsObject);
@@ -51,8 +69,18 @@ public class MyBookingScreen : UIScreen
                 var booking = Booking.AllBookings.FirstOrDefault(b => b.id == bookingId);
                 if (booking != null)
                 {
-                    DataManager.BookingConfirm.InitializeForBooking(booking);
-                    ScreenManager?.Show(Screens.BookingConfirmScreen);
+                    BookingConfirm.InitializeForBooking(booking);
+                    
+                    AddToDispose(BookingConfirm.QRCodeTexture.Subscribe(texture =>
+                    {
+                        if (texture != null && qrPanel != null)
+                        {
+                            var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                            qrPanel.Init(sprite);
+                            qrPanel.gameObject.SetActive(true);
+                            qrPanel.Show();
+                        }
+                    }));
                 }
             }));
         }

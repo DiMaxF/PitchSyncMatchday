@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 8405643834226280321}
   - component: {fileID: 8099455213385903271}
   - component: {fileID: 2225087149709827183}
+  - component: {fileID: 612437630682145092}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -365,6 +366,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &612437630682145092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2921806859461069917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf6a75dbbd3e9b42b70481c935ea92c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LayoutUpdater
 --- !u!1 &3191461395210202228
 GameObject:
   m_ObjectHideFlags: 0
@@ -768,3 +781,4 @@ MonoBehaviour:
   noItemPrefab: {fileID: 0}
   spawnDelayPerItem: 0.05
   animateRemoval: 1
+  playShowOnSpawn: 1

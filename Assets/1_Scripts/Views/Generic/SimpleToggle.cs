@@ -69,8 +69,10 @@ public class SimpleToggle : UIView<bool>
 
     public override async UniTask HideAsync()
     {
-        var animController = GetComponent<AnimationController>();
-        if (animController != null)
-            await animController.PlayAsync(false);
+        if (_animController != null)
+        {
+            await _animController.PlayAsync(false);
+
+        }
     }
 }

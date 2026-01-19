@@ -120,8 +120,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 891479689010932039}
   m_HandleRect: {fileID: 5600168388569046261}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.99999976
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 8405643834226280321}
   - component: {fileID: 8501174476233953059}
   - component: {fileID: 2225087149709827183}
+  - component: {fileID: 3935121102849289968}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -365,6 +366,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 2
   m_VerticalFit: 0
+--- !u!114 &3935121102849289968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2921806859461069917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf6a75dbbd3e9b42b70481c935ea92c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LayoutUpdater
 --- !u!1 &3191461395210202228
 GameObject:
   m_ObjectHideFlags: 0
@@ -768,3 +781,4 @@ MonoBehaviour:
   noItemPrefab: {fileID: 0}
   spawnDelayPerItem: 0.05
   animateRemoval: 1
+  playShowOnSpawn: 1

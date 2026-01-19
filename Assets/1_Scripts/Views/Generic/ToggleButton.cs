@@ -71,4 +71,13 @@ public class ToggleButton : UIView<ToggleButtonModel>
             }
         }
     }
+
+    public override async UniTask HideAsync()
+    {
+        if (_animController != null)
+        {
+            await _animController.PlayAsync(false);
+
+        }
+    }
 }

@@ -9,7 +9,7 @@ public abstract class UIView : MonoBehaviour
 
     private CompositeDisposable _disposables = new CompositeDisposable();
     private bool _isSubscribed = false;
-    private AnimationController _animController;
+    protected AnimationController _animController;
 
     protected virtual void Awake()
     {
@@ -72,7 +72,11 @@ public abstract class UIView : MonoBehaviour
     public virtual async UniTask HideAsync()
     {
         if (_animController != null)
+        {
             await _animController.PlayAsync(false);
+            
+        }
+        gameObject.SetActive(false);
     }
 
     public virtual void Show() => ShowAsync().Forget();
