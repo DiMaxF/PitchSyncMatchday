@@ -11,7 +11,7 @@ public class PitchConfig : ScriptableObject
     public float rating;
     public int reviewsCount;
     public float basePricePerHour;
-    public string photoUrl;
+    public Sprite photo;
     public List<PitchSize> supportedSizes;
 }
 

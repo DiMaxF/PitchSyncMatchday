@@ -12,7 +12,7 @@ public class StadiumModel
     public float rating;           
     public int reviewsCount;        
     public float basePricePerHour; 
-    public string photoUrl;        
+    public Sprite photo;        
     public List<PitchSize> supportedSizes;
 
     public StadiumModel(PitchConfig config)
@@ -24,7 +24,7 @@ public class StadiumModel
         rating = config.rating;
         reviewsCount = config.reviewsCount;
         basePricePerHour = config.basePricePerHour;
-        photoUrl = config.photoUrl;
+        photo = config.photo;
         supportedSizes = new List<PitchSize>(config.supportedSizes);
     }
 }

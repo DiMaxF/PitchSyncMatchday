@@ -19,5 +19,5 @@ MonoBehaviour:
   rating: 4.7
   reviewsCount: 428
   basePricePerHour: 180
-  photoUrl: 
+  photo: {fileID: 657193517335828509, guid: 2f704aeb130c4984dae9ebc999bbfa26, type: 3}
   supportedSizes: 000000000100000002000000

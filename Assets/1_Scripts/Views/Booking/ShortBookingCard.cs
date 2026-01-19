@@ -21,6 +21,11 @@ public class ShortBookingCard : UIView<BookingModel>
             nameText.text = stadium != null ? stadium.name : string.Empty;
         }
 
+        if (imagePitch != null)
+        {
+            imagePitch.sprite = stadium != null ? stadium.photo : null;
+        }
+
         if (DateTime.TryParse(data.dateTimeIso, out var dateTime))
         {
             if (dateText != null)

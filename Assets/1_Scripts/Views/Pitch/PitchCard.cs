@@ -32,5 +32,6 @@ public class PitchCard : UIView<StadiumModel>
         if (ratingView != null) ratingView.Init(data.rating);
         if (priceText != null) priceText.text = $"From ${data.basePricePerHour}";
         if (locationNameText != null) locationNameText.text = $"{data.address}";
+        if (photo != null) photo.sprite = data.photo;
     }
 }
