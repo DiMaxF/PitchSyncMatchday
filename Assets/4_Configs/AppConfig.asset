@@ -22,4 +22,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: be6124a05212a9842b0d6132cea534af, type: 2}
   - {fileID: 11400000, guid: 9aae83cc94b57b34b88a0b978d9c40bf, type: 2}
   - {fileID: 11400000, guid: 110768bd6e6ec2048a4a0eb892d8e0dc, type: 2}
+  teams:
+  - {fileID: 11400000, guid: e09270a2fddfb734bb390b72da34d342, type: 2}
+  - {fileID: 11400000, guid: 54f64e83644207246a750bd3b48eb744, type: 2}
   extrasConfig: {fileID: 11400000, guid: cd4de4b316258dc44b48b95ed7693b02, type: 2}

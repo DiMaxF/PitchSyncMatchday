@@ -7,9 +7,9 @@ public class LineupModel
     public int id;
     public int? matchId;
     public List<int> playersBlue = new List<int>();
-    public List<int> playersOrange = new List<int>();
+    public List<int> playersRed = new List<int>();
     public int? captainBlue;
-    public int? captainOrange;
+    public int? captainRed;
 
     public LineupModel() { }
 

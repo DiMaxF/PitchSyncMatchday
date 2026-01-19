@@ -16,12 +16,14 @@ public class DataManager : MonoBehaviour
     public static BookingDataManager Booking => Instance._booking;
     public static BookingConfirmDataManager BookingConfirm => Instance._bookingConfirm;
     public static ProfileDataManager Profile => Instance._profile;
+    public static LineupDataManager Lineup => Instance._lineup;
 
     private NavigationDataManager _navbar;
     private PitchFinderDataManager _pitchFinder;
     private BookingDataManager _booking;
     private BookingConfirmDataManager _bookingConfirm;
     private ProfileDataManager _profile;
+    private LineupDataManager _lineup;
 
 
 
@@ -63,6 +65,7 @@ public class DataManager : MonoBehaviour
         _booking = new BookingDataManager(_appModel, config);
         _bookingConfirm = new BookingConfirmDataManager(_appModel, config);
         _profile = new ProfileDataManager(_appModel);
+        _lineup = new LineupDataManager(_appModel, config);
     }
 
     private void OnApplicationPause(bool pauseStatus)
