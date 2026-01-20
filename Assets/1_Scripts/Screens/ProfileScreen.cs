@@ -12,6 +12,8 @@ public class ProfileScreen : UIScreen
     [SerializeField] private Text matchesPlayedText;
     [SerializeField] private Text bookingsText;
     [SerializeField] private Text lineupCreatedText;
+    [SerializeField] private ProfileEditPanel profileEditPanel;
+    [SerializeField] private Image avatar;
 
     private ProfileDataManager Profile => DataManager.Profile;
 
@@ -24,6 +26,12 @@ public class ProfileScreen : UIScreen
             AddToDispose(editButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
+                    if (profileEditPanel != null)
+                    {
+                        var profileInfoData = Profile.BuildProfileInfo();
+                        profileEditPanel.Init(profileInfoData);
+                        profileEditPanel.Show();
+                    }
                 }));
         }
 
@@ -84,6 +92,13 @@ public class ProfileScreen : UIScreen
 
             AddToDispose(Profile.ProfileName.Subscribe(_ => UpdateProfileInfo()));
             AddToDispose(Profile.ProfileEmail.Subscribe(_ => UpdateProfileInfo()));
+            AddToDispose(Profile.ProfileUserpicPath.Subscribe(_ => UpdateProfileInfo()));
+        }
+
+        if (avatar != null)
+        {
+            AddToDispose(Profile.ProfileUserpicPath.Subscribe(_ => UpdateAvatar()));
+            UpdateAvatar();
         }
     }
 
@@ -93,6 +108,25 @@ public class ProfileScreen : UIScreen
         {
             var profileInfoData = Profile.BuildProfileInfo();
             profileInfo.Init(profileInfoData);
+        }
+    }
+
+    private void UpdateAvatar()
+    {
+        if (avatar != null)
+        {
+            Sprite userpicSprite = null;
+            if (!string.IsNullOrEmpty(Profile.ProfileUserpicPath.Value))
+            {
+                userpicSprite = FileUtils.LoadImageAsSprite(Profile.ProfileUserpicPath.Value);
+            }
+            
+            if (userpicSprite == null)
+            {
+                userpicSprite = Resources.Load<Sprite>("ic_profile_0");
+            }
+            
+            avatar.sprite = userpicSprite;
         }
     }
 

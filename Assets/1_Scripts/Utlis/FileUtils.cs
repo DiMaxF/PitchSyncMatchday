@@ -52,49 +52,6 @@ public static class FileUtils
         return new T();
     }
 
-    public static void SaveImage(Sprite sprite, string fileName)
-    {
-        if (sprite == null)
-        {
-            Debug.LogError("Cannot save null sprite");
-            return;
-        }
-
-        try
-        {
-            Texture2D sourceTexture = sprite.texture;
-            Rect rect = sprite.textureRect;
-            
-            RenderTexture fullTexture = RenderTexture.GetTemporary(
-                sourceTexture.width, 
-                sourceTexture.height, 
-                0, 
-                RenderTextureFormat.Default, 
-                RenderTextureReadWrite.Linear);
-            
-            Graphics.Blit(sourceTexture, fullTexture);
-            RenderTexture previous = RenderTexture.active;
-            RenderTexture.active = fullTexture;
-            
-            Texture2D readableTexture = new Texture2D((int)rect.width, (int)rect.height);
-            int yCoord = sourceTexture.height - (int)rect.y - (int)rect.height;
-            readableTexture.ReadPixels(new Rect(rect.x, yCoord, rect.width, rect.height), 0, 0);
-            readableTexture.Apply();
-            
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(fullTexture);
-            
-            byte[] bytes = readableTexture.EncodeToPNG();
-            string filePath = GetFilePath(fileName);
-            File.WriteAllBytes(filePath, bytes);
-            
-            UnityEngine.Object.Destroy(readableTexture);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Failed to save image {fileName}: {ex.Message}");
-        }
-    }
 
     public static void SaveImage(Texture2D texture, string fileName)
     {
@@ -171,6 +128,111 @@ public static class FileUtils
         catch (Exception ex)
         {
             Debug.LogError($"Failed to delete file {fileName}: {ex.Message}");
+        }
+    }
+
+    public static Sprite ProcessAvatarImage(Texture2D sourceTexture, int maxSize = 500)
+    {
+        if (sourceTexture == null) return null;
+
+        int size = Mathf.Min(sourceTexture.width, sourceTexture.height);
+        int x = (sourceTexture.width - size) / 2;
+        int y = (sourceTexture.height - size) / 2;
+
+        Texture2D croppedTexture = new Texture2D(size, size);
+        Color[] pixels = sourceTexture.GetPixels(x, y, size, size);
+        croppedTexture.SetPixels(pixels);
+        croppedTexture.Apply();
+
+        Texture2D resizedTexture = croppedTexture;
+        if (size > maxSize)
+        {
+            resizedTexture = ResizeTexture(croppedTexture, maxSize, maxSize);
+            UnityEngine.Object.Destroy(croppedTexture);
+        }
+
+        Sprite sprite = Sprite.Create(resizedTexture, new Rect(0, 0, resizedTexture.width, resizedTexture.height), new Vector2(0.5f, 0.5f));
+        return sprite;
+    }
+
+    private static Texture2D ResizeTexture(Texture2D source, int targetWidth, int targetHeight)
+    {
+        RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight);
+        RenderTexture.active = rt;
+        Graphics.Blit(source, rt);
+        
+        Texture2D result = new Texture2D(targetWidth, targetHeight);
+        result.ReadPixels(new Rect(0, 0, targetWidth, targetHeight), 0, 0);
+        result.Apply();
+        
+        RenderTexture.active = null;
+        RenderTexture.ReleaseTemporary(rt);
+        
+        return result;
+    }
+
+    public static void SaveImage(Sprite sprite, string fileName, int maxSize = 500)
+    {
+        if (sprite == null)
+        {
+            Debug.LogError("Cannot save null sprite");
+            return;
+        }
+
+        try
+        {
+            Texture2D sourceTexture = sprite.texture;
+            Rect rect = sprite.textureRect;
+            
+            RenderTexture fullTexture = RenderTexture.GetTemporary(
+                sourceTexture.width, 
+                sourceTexture.height, 
+                0, 
+                RenderTextureFormat.Default, 
+                RenderTextureReadWrite.Linear);
+            
+            Graphics.Blit(sourceTexture, fullTexture);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = fullTexture;
+            
+            Texture2D readableTexture = new Texture2D((int)rect.width, (int)rect.height);
+            int yCoord = sourceTexture.height - (int)rect.y - (int)rect.height;
+            readableTexture.ReadPixels(new Rect(rect.x, yCoord, rect.width, rect.height), 0, 0);
+            readableTexture.Apply();
+            
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(fullTexture);
+            
+            Texture2D finalTexture = readableTexture;
+            if (readableTexture.width > maxSize || readableTexture.height > maxSize)
+            {
+                int newWidth = readableTexture.width;
+                int newHeight = readableTexture.height;
+                
+                if (newWidth > newHeight)
+                {
+                    newHeight = (int)(newHeight * ((float)maxSize / newWidth));
+                    newWidth = maxSize;
+                }
+                else
+                {
+                    newWidth = (int)(newWidth * ((float)maxSize / newHeight));
+                    newHeight = maxSize;
+                }
+                
+                finalTexture = ResizeTexture(readableTexture, newWidth, newHeight);
+                UnityEngine.Object.Destroy(readableTexture);
+            }
+            
+            byte[] bytes = finalTexture.EncodeToPNG();
+            string filePath = GetFilePath(fileName);
+            File.WriteAllBytes(filePath, bytes);
+            
+            UnityEngine.Object.Destroy(finalTexture);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to save image {fileName}: {ex.Message}");
         }
     }
 }

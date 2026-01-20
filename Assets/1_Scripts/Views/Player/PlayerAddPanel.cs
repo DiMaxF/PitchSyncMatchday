@@ -220,18 +220,14 @@ public class PlayerAddPanel : UIView
                 return;
             }
 
-            int size = Mathf.Min(sourceTexture.width, sourceTexture.height);
-            int x = (sourceTexture.width - size) / 2;
-            int y = (sourceTexture.height - size) / 2;
-
-            Texture2D croppedTexture = new Texture2D(size, size);
-            Color[] pixels = sourceTexture.GetPixels(x, y, size, size);
-            croppedTexture.SetPixels(pixels);
-            croppedTexture.Apply();
-
-            Sprite sprite = Sprite.Create(croppedTexture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+            Sprite sprite = FileUtils.ProcessAvatarImage(sourceTexture, 500);
             
             UnityEngine.Object.Destroy(sourceTexture);
+            
+            if (sprite == null)
+            {
+                return;
+            }
             
             _selectedAvatar = sprite;
             
@@ -244,13 +240,13 @@ public class PlayerAddPanel : UIView
             {
                 var playerId = _editingPlayerId.Value;
                 var fileName = $"player_{playerId}_avatar.png";
-                FileUtils.SaveImage(sprite, fileName);
+                FileUtils.SaveImage(sprite, fileName, 500);
                 _avatarPath = fileName;
             }
             else
             {
                 var tempFileName = $"player_temp_{DateTime.UtcNow.Ticks}_avatar.png";
-                FileUtils.SaveImage(sprite, tempFileName);
+                FileUtils.SaveImage(sprite, tempFileName, 500);
                 _avatarPath = tempFileName;
             }
         }

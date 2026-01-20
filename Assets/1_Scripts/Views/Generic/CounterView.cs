@@ -19,8 +19,11 @@ public class CounterView : UIView<int>
         }).AddTo(this);
         minusButton.OnClickAsObservable().Subscribe(_ =>
         {
-            DataProperty.Value--;
-            Trigger(DataProperty.Value);
+            if (DataProperty.Value > 0)
+            {
+                DataProperty.Value--;
+                Trigger(DataProperty.Value);
+            }
         }).AddTo(this);
     }
 
@@ -28,6 +31,11 @@ public class CounterView : UIView<int>
     {
         base.UpdateUI();
         var data = DataProperty.Value;
+        if (data < 0)
+        {
+            data = 0;
+            DataProperty.Value = 0;
+        }
         value.text = data.ToString();   
 
     }

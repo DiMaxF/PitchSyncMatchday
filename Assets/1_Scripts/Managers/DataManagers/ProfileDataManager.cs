@@ -14,6 +14,7 @@ public class ProfileDataManager : IDataManager
     public ReactiveProperty<MatchDuration> DefaultDuration { get; }
     public ReactiveProperty<string> ProfileName { get; }
     public ReactiveProperty<string> ProfileEmail { get; }
+    public ReactiveProperty<string> ProfileUserpicPath { get; }
 
     public ProfileDataManager(AppModel appModel)
     {
@@ -27,6 +28,7 @@ public class ProfileDataManager : IDataManager
         DefaultDuration = new ReactiveProperty<MatchDuration>(appModel.defaultDuration);
         ProfileName = new ReactiveProperty<string>(appModel.profileName);
         ProfileEmail = new ReactiveProperty<string>(appModel.profileEmail);
+        ProfileUserpicPath = new ReactiveProperty<string>(appModel.profileUserpicPath);
 
         MatchesPlayed.Subscribe(value => _appModel.matchesPlayed = value).AddTo(_disposables);
         BookingsCount.Subscribe(value => _appModel.bookingsCount = value).AddTo(_disposables);
@@ -36,14 +38,15 @@ public class ProfileDataManager : IDataManager
         DefaultDuration.Subscribe(value => _appModel.defaultDuration = value).AddTo(_disposables);
         ProfileName.Subscribe(value => _appModel.profileName = value).AddTo(_disposables);
         ProfileEmail.Subscribe(value => _appModel.profileEmail = value).AddTo(_disposables);
+        ProfileUserpicPath.Subscribe(value => _appModel.profileUserpicPath = value).AddTo(_disposables);
     }
 
     public ProfileInfo BuildProfileInfo()
     {
         Sprite userpicSprite = null;
-        if (!string.IsNullOrEmpty(_appModel.profileUserpicPath))
+        if (!string.IsNullOrEmpty(ProfileUserpicPath.Value))
         {
-            userpicSprite = FileUtils.LoadImageAsSprite(_appModel.profileUserpicPath);
+            userpicSprite = FileUtils.LoadImageAsSprite(ProfileUserpicPath.Value);
         }
         
         if (userpicSprite == null)
@@ -57,6 +60,20 @@ public class ProfileDataManager : IDataManager
             name = ProfileName.Value,
             email = ProfileEmail.Value
         };
+    }
+
+    public void UpdateProfile(string name, string email, Sprite userpic, string userpicPath)
+    {
+        ProfileName.Value = name;
+        ProfileEmail.Value = email;
+        
+        if (userpic != null && !string.IsNullOrEmpty(userpicPath))
+        {
+            FileUtils.SaveImage(userpic, userpicPath, 500);
+            ProfileUserpicPath.SetValueAndForceNotify(userpicPath);
+        }
+        
+        DataManager.Instance.SaveAppModel();
     }
 
     public void Dispose()

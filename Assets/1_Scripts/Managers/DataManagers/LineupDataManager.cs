@@ -85,7 +85,7 @@ public class LineupDataManager : IDataManager
         if (avatar != null)
         {
             player.avatar = avatar;
-            FileUtils.SaveImage(avatar, fileName);
+            FileUtils.SaveImage(avatar, fileName, 500);
             player.avatarPath = fileName;
         }
 

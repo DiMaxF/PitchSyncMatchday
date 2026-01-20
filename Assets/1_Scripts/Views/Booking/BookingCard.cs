@@ -2,12 +2,14 @@ using System;
 using System.Linq;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 public class BookingCard : UIView<BookingModel>
 {
     [SerializeField] private Button showQr;
     [SerializeField] private Button action;
+    [SerializeField] private Image background;
     [SerializeField] private Text statusText;
     [SerializeField] private Text pitchNameText;
     [SerializeField] private Text dateTimeText;
@@ -53,6 +55,11 @@ public class BookingCard : UIView<BookingModel>
         }
 
         var stadium = GetStadiumById(data.stadiumId);
+
+        if (background != null)
+        {
+            background.sprite = FileUtils.LoadImageAsSprite(stadium.photoPath);
+            }
         if (pitchNameText != null)
         {
             pitchNameText.text = stadium != null ? stadium.name : string.Empty;

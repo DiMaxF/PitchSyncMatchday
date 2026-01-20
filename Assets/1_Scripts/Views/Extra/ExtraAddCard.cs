@@ -22,22 +22,15 @@ public class ExtraAddCard : UIView<BookingExtraModel>
             {
                 if (DataProperty.Value != null)
                 {
-                    var currentQuantity = DataProperty.Value.currentQuantity;
                     var maxQuantity = DataProperty.Value.maxQuantity;
-
                     int clampedQuantity = Mathf.Clamp(quantity, 0, maxQuantity);
 
-                    if (clampedQuantity == currentQuantity && quantity != currentQuantity)
+                    if (clampedQuantity != quantity)
                     {
-                        if (quantity > maxQuantity)
-                        {
-                        }
-                        else if (quantity < 0)
-                        {
-                        }
+                        counterView.Init(clampedQuantity);
                     }
 
-                    Booking.SetExtraQuantity(DataProperty.Value.type, quantity);
+                    Booking.SetExtraQuantity(DataProperty.Value.type, clampedQuantity);
                 }
             }).AddTo(this);
         }
