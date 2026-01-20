@@ -132,7 +132,7 @@ public class LineupScreen : UIScreen
                     var savedLineup = Lineup.CurrentLineup.Value;
                     if (savedLineup != null)
                     {
-                        DataManager.MatchCenter.CurrentLineup.Value = savedLineup;
+                        DataManager.MatchCenter.InitializeFromLineup(savedLineup.id);
                     }
                     ScreenManager?.Show(Screens.MatchCenterScreen);
                 }));

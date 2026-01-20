@@ -10,6 +10,7 @@ public class MatchCenterDataManager : IDataManager
     private readonly AppConfig _appConfig;
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
     private IDisposable _timerSubscription;
+    private bool _isSyncingNotes = false;
 
     public ReactiveProperty<MatchModel> CurrentMatch { get; } = new ReactiveProperty<MatchModel>(null);
     public ReactiveProperty<LineupModel> CurrentLineup { get; } = new ReactiveProperty<LineupModel>(null);
@@ -18,8 +19,11 @@ public class MatchCenterDataManager : IDataManager
     public ReactiveProperty<int> ScoreRed { get; } = new ReactiveProperty<int>(0);
     public ReactiveProperty<string> Notes { get; } = new ReactiveProperty<string>("");
     public ReactiveCollection<MatchEvent> Events { get; } = new ReactiveCollection<MatchEvent>();
+    public ReactiveCollection<string> NotesItems { get; } = new ReactiveCollection<string>();
     private readonly ReactiveCollection<object> _eventsAsObject = new ReactiveCollection<object>();
     public ReactiveCollection<object> EventsAsObject => _eventsAsObject;
+    private readonly ReactiveCollection<object> _notesItemsAsObject = new ReactiveCollection<object>();
+    public ReactiveCollection<object> NotesItemsAsObject => _notesItemsAsObject;
 
     public ReactiveProperty<MatchCenterTabs> SelectedTab { get; } = new ReactiveProperty<MatchCenterTabs>(MatchCenterTabs.Lineup);
     public ReactiveCollection<ToggleButtonModel> Tabs { get; } = new ReactiveCollection<ToggleButtonModel>();
@@ -46,6 +50,7 @@ public class MatchCenterDataManager : IDataManager
         }
 
         BindEventsCollection();
+        BindNotesCollection();
         InitializeTabs();
         InitializeTimerStates();
         SubscribeToChanges();
@@ -69,6 +74,59 @@ public class MatchCenterDataManager : IDataManager
             _eventsAsObject.Clear();
             foreach (var evt in Events) _eventsAsObject.Add(evt);
         }).AddTo(_disposables);
+    }
+
+    private void LoadNotesItemsFromString(string notes)
+    {
+        if (_isSyncingNotes) return;
+        _isSyncingNotes = true;
+
+        NotesItems.Clear();
+        if (!string.IsNullOrWhiteSpace(notes))
+        {
+            var parts = notes.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var part in parts)
+            {
+                var trimmed = part.Trim();
+                if (!string.IsNullOrEmpty(trimmed))
+                {
+                    NotesItems.Add(trimmed);
+                }
+            }
+        }
+
+        _isSyncingNotes = false;
+    }
+
+    private void UpdateNotesFromItems()
+    {
+        if (_isSyncingNotes) return;
+        _isSyncingNotes = true;
+        Notes.Value = string.Join("\n", NotesItems);
+        _isSyncingNotes = false;
+    }
+
+    private void BindNotesCollection()
+    {
+        _notesItemsAsObject.Clear();
+        foreach (var note in NotesItems)
+        {
+            _notesItemsAsObject.Add(note);
+        }
+
+        NotesItems.ObserveAdd().Subscribe(e => _notesItemsAsObject.Insert(e.Index, e.Value)).AddTo(_disposables);
+        NotesItems.ObserveRemove().Subscribe(e => _notesItemsAsObject.RemoveAt(e.Index)).AddTo(_disposables);
+        NotesItems.ObserveReplace().Subscribe(e => _notesItemsAsObject[e.Index] = e.NewValue).AddTo(_disposables);
+        NotesItems.ObserveReset().Subscribe(_ =>
+        {
+            _notesItemsAsObject.Clear();
+            foreach (var note in NotesItems) _notesItemsAsObject.Add(note);
+        }).AddTo(_disposables);
+
+        NotesItems.ObserveAdd().Subscribe(_ => UpdateNotesFromItems()).AddTo(_disposables);
+        NotesItems.ObserveRemove().Subscribe(_ => UpdateNotesFromItems()).AddTo(_disposables);
+        NotesItems.ObserveReplace().Subscribe(_ => UpdateNotesFromItems()).AddTo(_disposables);
+        NotesItems.ObserveReset().Subscribe(_ => UpdateNotesFromItems()).AddTo(_disposables);
     }
 
     private void SubscribeToChanges()
@@ -173,6 +231,7 @@ public class MatchCenterDataManager : IDataManager
         ScoreBlue.Value = match.scoreBlue;
         ScoreRed.Value = match.scoreOrange;
         Notes.Value = match.notes ?? "";
+        LoadNotesItemsFromString(Notes.Value);
 
         if (match.status == MatchStatus.Live)
         {
@@ -244,6 +303,10 @@ public class MatchCenterDataManager : IDataManager
         {
             PauseMatch();
         }
+        else if (state == TimerState.Finish)
+        {
+            FinishMatch();
+        }
     }
 
     private void StartTimer()
@@ -279,6 +342,9 @@ public class MatchCenterDataManager : IDataManager
     {
         if (CurrentMatch.Value == null) return;
 
+        int oldScoreBlue = ScoreBlue.Value;
+        int oldScoreRed = ScoreRed.Value;
+
         if (team == TeamSide.Green)
         {
             ScoreBlue.Value++;
@@ -289,7 +355,14 @@ public class MatchCenterDataManager : IDataManager
         }
 
         var currentMinute = ElapsedSeconds.Value / 60;
-        var evt = new MatchEvent(ElapsedSeconds.Value, MatchEventType.Goal, team, playerId, $"Goal - {currentMinute}'");
+        string description = "Goal";
+        
+        if (ScoreBlue.Value == ScoreRed.Value && (oldScoreBlue != oldScoreRed))
+        {
+            description = "equalized";
+        }
+
+        var evt = new MatchEvent(ElapsedSeconds.Value, MatchEventType.Goal, team, playerId, description);
         AddEvent(evt);
     }
 
@@ -322,6 +395,13 @@ public class MatchCenterDataManager : IDataManager
     public void UpdateNotes(string notes)
     {
         Notes.Value = notes;
+        LoadNotesItemsFromString(notes);
+    }
+
+    public void AddNote(string note)
+    {
+        if (string.IsNullOrWhiteSpace(note)) return;
+        NotesItems.Add(note.Trim());
     }
 
     public void FinishMatch()

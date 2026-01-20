@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class ScoreboardTab : UIView
 {
     [SerializeField] private Text score;
-    [SerializeField] private Button goalRed;
     [SerializeField] private Button goalGreen;
+    [SerializeField] private Button goalRed;
 
     [SerializeField] private Text timer;
     [SerializeField] private ListContainer timerStates;
@@ -19,24 +19,43 @@ public class ScoreboardTab : UIView
     {
         base.Subscribe();
 
+
         if (goalGreen != null)
         {
             goalGreen.OnClickAsObservable()
-                .Subscribe(_ => MatchCenter.AddGoal(TeamSide.Green))
+                .Subscribe(_ =>
+                {
+                    if (MatchCenter != null)
+                    {
+                        MatchCenter.AddGoal(TeamSide.Green);
+                    }
+                })
                 .AddTo(this);
         }
 
         if (goalRed != null)
         {
             goalRed.OnClickAsObservable()
-                .Subscribe(_ => MatchCenter.AddGoal(TeamSide.Red))
+                .Subscribe(_ =>
+                {
+                    if (MatchCenter != null)
+                    {
+                        MatchCenter.AddGoal(TeamSide.Red);
+                    }
+                })
                 .AddTo(this);
         }
 
         if (finishTimer != null)
         {
             finishTimer.OnClickAsObservable()
-                .Subscribe(_ => MatchCenter.FinishMatch())
+                .Subscribe(_ =>
+                {
+                    if (MatchCenter != null)
+                    {
+                        MatchCenter.FinishMatch();
+                    }
+                })
                 .AddTo(this);
         }
 
@@ -46,16 +65,26 @@ public class ScoreboardTab : UIView
 
             AddToDispose(UIManager.SubscribeToView(timerStates, (ToggleButtonModel data) =>
             {
-                if (Enum.TryParse<TimerState>(data.name, out var state))
+                if (data != null && Enum.TryParse<TimerState>(data.name, out var state))
                 {
                     MatchCenter.SelectTimerState(state);
                 }
             }));
         }
 
-        AddToDispose(MatchCenter.ScoreBlue.Subscribe(_ => UpdateScore()));
-        AddToDispose(MatchCenter.ScoreRed.Subscribe(_ => UpdateScore()));
-        AddToDispose(MatchCenter.ElapsedSeconds.Subscribe(_ => UpdateTimer()));
+        if (MatchCenter != null)
+        {
+            AddToDispose(MatchCenter.ScoreBlue.Subscribe(_ => UpdateScore()));
+            AddToDispose(MatchCenter.ScoreRed.Subscribe(_ => UpdateScore()));
+            AddToDispose(MatchCenter.ElapsedSeconds.Subscribe(_ => UpdateTimer()));
+            AddToDispose(MatchCenter.CurrentTimerState.Subscribe(_ => UpdateTimerStates()));
+        }
+    }
+
+    public override void Init()
+    {
+        base.Init();
+        UpdateUI();
     }
 
     public override void UpdateUI()
@@ -63,11 +92,12 @@ public class ScoreboardTab : UIView
         base.UpdateUI();
         UpdateScore();
         UpdateTimer();
+        UpdateTimerStates();
     }
 
     private void UpdateScore()
     {
-        if (score != null)
+        if (score != null && MatchCenter != null)
         {
             score.text = $"{MatchCenter.ScoreBlue.Value} — {MatchCenter.ScoreRed.Value}";
         }
@@ -75,12 +105,20 @@ public class ScoreboardTab : UIView
 
     private void UpdateTimer()
     {
-        if (timer != null)
+        if (timer != null && MatchCenter != null)
         {
             int totalSeconds = MatchCenter.ElapsedSeconds.Value;
             int minutes = totalSeconds / 60;
             int seconds = totalSeconds % 60;
             timer.text = $"{minutes:D2}:{seconds:D2}";
+        }
+    }
+
+    private void UpdateTimerStates()
+    {
+        if (timerStates != null && MatchCenter != null)
+        {
+            timerStates.Init(MatchCenter.TimerStatesAsObject);
         }
     }
 }

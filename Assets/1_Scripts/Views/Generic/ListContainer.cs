@@ -16,6 +16,7 @@ public class ListContainer : UIView<ReactiveCollection<object>>
     private readonly Stack<UIView> _pooledItems = new Stack<UIView>();
     private CompositeDisposable _collectionDisposables;
     private bool _isInitialized = false;
+    private int _collectionVersion = 0;
 
     private LayoutUpdater _updater;
 
@@ -54,11 +55,25 @@ public class ListContainer : UIView<ReactiveCollection<object>>
             OnItemAdded(e.Index, e.Value);
             UpdateNoItemView();
         }).AddTo(_collectionDisposables);
-        collection.ObserveRemove().Subscribe(e => OnItemRemoved(e.Index, e.Value)).AddTo(_collectionDisposables);
-        collection.ObserveReset().Subscribe(_ => OnCollectionReset()).AddTo(_collectionDisposables);
-        collection.ObserveMove().Subscribe(e => OnItemMoved(e.OldIndex, e.NewIndex)).AddTo(_collectionDisposables);
-        collection.ObserveReplace().Subscribe(e => OnItemReplaced(e.Index, e.NewValue)).AddTo(_collectionDisposables);
+        collection.ObserveRemove().Subscribe(e =>
+        {
+            OnItemRemoved(e.Index, e.Value);
+        }).AddTo(_collectionDisposables);
+        collection.ObserveReset().Subscribe(_ =>
+        {
+            _collectionVersion++;
+            OnCollectionReset();
+        }).AddTo(_collectionDisposables);
+        collection.ObserveMove().Subscribe(e =>
+        {
+            OnItemMoved(e.OldIndex, e.NewIndex);
+        }).AddTo(_collectionDisposables);
+        collection.ObserveReplace().Subscribe(e =>
+        {
+            OnItemReplaced(e.Index, e.NewValue);
+        }).AddTo(_collectionDisposables);
 
+        _collectionVersion++;
         ClearAllItems();
 
         for (int i = 0; i < collection.Count; i++)
@@ -91,20 +106,22 @@ public class ListContainer : UIView<ReactiveCollection<object>>
 
         _activeItems.Insert(index, instance);
 
-        AnimateItemAppear(instance, index).Forget();
+        var version = _collectionVersion;
+        AnimateItemAppear(instance, index, version).Forget();
         _updater?.ForceUpdate();
     }
     [SerializeField] private bool playShowOnSpawn = true;
-    private async UniTask AnimateItemAppear(UIView item, int index)
+    private async UniTask AnimateItemAppear(UIView item, int index, int version)
     {
         await UniTask.Delay(TimeSpan.FromSeconds(index * spawnDelayPerItem),
             cancellationToken: this.GetCancellationTokenOnDestroy());
 
-        if (item != null)
+        if (item != null && version == _collectionVersion && _activeItems.Contains(item))
         {
             if (playShowOnSpawn)
             {
                 await item.ShowAsync();
+                item.UpdateUI();
             }
             else
             {

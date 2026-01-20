@@ -19,9 +19,11 @@ public class BookingDataManager : IDataManager
     
     private readonly ReactiveCollection<object> _categoryFiltersAsObject = new ReactiveCollection<object>();
     private readonly ReactiveCollection<object> _filteredBookingsAsObject = new ReactiveCollection<object>();
+    private readonly ReactiveCollection<object> _upcomingBookingsAsObject = new ReactiveCollection<object>();
     
     public ReactiveCollection<object> CategoryFiltersAsObject => _categoryFiltersAsObject;
     public ReactiveCollection<object> FilteredBookingsAsObject => _filteredBookingsAsObject;
+    public ReactiveCollection<object> UpcomingBookingsAsObject => _upcomingBookingsAsObject;
 
     // Текущий черновик
     public ReactiveProperty<BookingModel> CurrentDraft { get; } = new ReactiveProperty<BookingModel>(null);
@@ -655,6 +657,27 @@ public class BookingDataManager : IDataManager
     {
         BindMirror(CategoryFilters, _categoryFiltersAsObject);
         BindMirror(FilteredBookings, _filteredBookingsAsObject);
+        BindUpcomingBookingsMirror();
+    }
+    
+    private void BindUpcomingBookingsMirror()
+    {
+        UpdateUpcomingBookingsMirror();
+        
+        UpcomingBookings.ObserveAdd().Subscribe(_ => UpdateUpcomingBookingsMirror()).AddTo(_disposables);
+        UpcomingBookings.ObserveRemove().Subscribe(_ => UpdateUpcomingBookingsMirror()).AddTo(_disposables);
+        UpcomingBookings.ObserveReplace().Subscribe(_ => UpdateUpcomingBookingsMirror()).AddTo(_disposables);
+        UpcomingBookings.ObserveReset().Subscribe(_ => UpdateUpcomingBookingsMirror()).AddTo(_disposables);
+    }
+    
+    private void UpdateUpcomingBookingsMirror()
+    {
+        _upcomingBookingsAsObject.Clear();
+        int count = Mathf.Min(3, UpcomingBookings.Count);
+        for (int i = 0; i < count; i++)
+        {
+            _upcomingBookingsAsObject.Add(UpcomingBookings[i]);
+        }
     }
     
     public void SelectCategory(BookingCategoryType? categoryType)

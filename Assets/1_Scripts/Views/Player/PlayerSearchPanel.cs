@@ -57,6 +57,7 @@ public class PlayerSearchPanel : UIView
             searchBar.text = "";
         }
         Lineup.SearchQuery.Value = "";
+        Lineup.RefreshAvailablePlayers();
         Show();
     }
 

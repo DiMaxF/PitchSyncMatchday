@@ -63,16 +63,51 @@ public class LineupDataManager : IDataManager
 
     private void InitializePlayers()
     {
+        NormalizePlayersFromAppModel();
+        SyncPlayersPoolFromAllPlayers();
+    }
+
+    private void NormalizePlayersFromAppModel()
+    {
+        _allPlayers.Clear();
+
+        if (_appModel.players == null)
+        {
+            _appModel.players = new List<PlayerModel>();
+        }
+
+        var seenIds = new HashSet<int>();
+        var normalized = new List<PlayerModel>();
+
         foreach (var player in _appModel.players)
         {
+            if (player == null) continue;
+            if (!seenIds.Add(player.id)) continue;
+
             if (!string.IsNullOrEmpty(player.avatarPath))
             {
                 player.avatar = FileUtils.LoadImageAsSprite(player.avatarPath);
             }
-            
-            _allPlayers.Add(player);
+
+            normalized.Add(player);
+        }
+
+        _appModel.players = normalized;
+        _allPlayers.AddRange(normalized);
+    }
+
+    private void SyncPlayersPoolFromAllPlayers()
+    {
+        PlayersPool.Clear();
+        foreach (var player in _allPlayers)
+        {
             PlayersPool.Add(player);
         }
+    }
+
+    private PlayerModel GetPlayerFromAll(int playerId)
+    {
+        return _allPlayers.FirstOrDefault(p => p.id == playerId);
     }
 
     public void AddPlayer(string name, PlayerPosition position, Sprite avatar, string avatarPath)
@@ -90,28 +125,27 @@ public class LineupDataManager : IDataManager
         }
 
         _allPlayers.Add(player);
-        PlayersPool.Add(player);
         _appModel.players.Add(player);
+        SyncPlayersPoolFromAllPlayers();
+        UpdateAvailablePlayers();
         DataManager.Instance.SaveAppModel();
     }
 
     public void RemovePlayer(int playerId)
     {
-        var player = _allPlayers.FirstOrDefault(p => p.id == playerId);
-        if (player == null) return;
-
-        _allPlayers.Remove(player);
-        PlayersPool.Remove(player);
-        _appModel.players.Remove(player);
+        _allPlayers.RemoveAll(p => p != null && p.id == playerId);
+        _appModel.players.RemoveAll(p => p != null && p.id == playerId);
+        SyncPlayersPoolFromAllPlayers();
 
         RemovePlayerFromTeam(playerId, TeamSide.Green);
         RemovePlayerFromTeam(playerId, TeamSide.Red);
+        UpdateAvailablePlayers();
         DataManager.Instance.SaveAppModel();
     }
 
     public void UpdatePlayer(int playerId, string name, PlayerPosition position, Sprite avatar, string avatarPath)
     {
-        var player = _allPlayers.FirstOrDefault(p => p.id == playerId);
+        var player = GetPlayerFromAll(playerId);
         if (player == null) return;
 
         player.name = name;
@@ -125,19 +159,33 @@ public class LineupDataManager : IDataManager
             player.avatarPath = fileName;
         }
 
-        var poolIndex = PlayersPool.IndexOf(player);
-        if (poolIndex >= 0)
+        for (int i = 0; i < _allPlayers.Count; i++)
         {
-            PlayersPool[poolIndex] = player;
+            if (_allPlayers[i].id == playerId)
+            {
+                _allPlayers[i] = player;
+                break;
+            }
         }
-
-        var appIndex = _appModel.players.IndexOf(player);
-        if (appIndex >= 0)
+        for (int i = 0; i < _appModel.players.Count; i++)
         {
-            _appModel.players[appIndex] = player;
+            if (_appModel.players[i].id == playerId)
+            {
+                _appModel.players[i] = player;
+                break;
+            }
+        }
+        for (int i = 0; i < PlayersPool.Count; i++)
+        {
+            if (PlayersPool[i].id == playerId)
+            {
+                PlayersPool[i] = player;
+                break;
+            }
         }
 
         UpdateSquadPlayerInfo(playerId, name, position);
+        UpdateAvailablePlayers();
         DataManager.Instance.SaveAppModel();
     }
 
@@ -238,7 +286,7 @@ public class LineupDataManager : IDataManager
 
     public void SelectPlayerForTeam(int playerId, TeamSide teamSide)
     {
-        var player = _allPlayers.FirstOrDefault(p => p.id == playerId);
+        var player = GetPlayerFromAll(playerId);
         if (player == null) return;
 
         var targetSquad = teamSide == TeamSide.Green ? SquadGreen : SquadRed;
@@ -255,6 +303,7 @@ public class LineupDataManager : IDataManager
         if (existingInOther != null)
         {
             otherSquad.Remove(existingInOther);
+            RenumberSquad(teamSide == TeamSide.Green ? TeamSide.Red : TeamSide.Green);
         }
 
         var squadNumber = targetSquad.Count + 1;
@@ -269,6 +318,7 @@ public class LineupDataManager : IDataManager
         };
 
         targetSquad.Add(squadPlayer);
+        UpdateAvailablePlayers();
     }
 
     public void RemovePlayerFromTeam(int playerId, TeamSide teamSide)
@@ -279,6 +329,7 @@ public class LineupDataManager : IDataManager
         {
             squad.Remove(player);
             RenumberSquad(teamSide);
+            UpdateAvailablePlayers();
         }
     }
 
@@ -464,7 +515,7 @@ public class LineupDataManager : IDataManager
 
     public PlayerModel GetPlayerById(int id)
     {
-        return _allPlayers.FirstOrDefault(p => p.id == id);
+        return GetPlayerFromAll(id);
     }
 
     public void SaveLineup()
@@ -496,6 +547,19 @@ public class LineupDataManager : IDataManager
 
     private void UpdateAvailablePlayers()
     {
+        if (_suppressAvailablePlayersUpdate) return;
+
+        var allPlayers = new List<PlayerModel>();
+        var seenAllIds = new HashSet<int>();
+        foreach (var player in _allPlayers)
+        {
+            if (player == null) continue;
+            if (seenAllIds.Add(player.id))
+            {
+                allPlayers.Add(player);
+            }
+        }
+
         var addedPlayerIds = new HashSet<int>();
         foreach (var player in SquadGreen)
         {
@@ -506,12 +570,12 @@ public class LineupDataManager : IDataManager
             addedPlayerIds.Add(player.playerId);
         }
 
-        var available = PlayersPool.Where(p => !addedPlayerIds.Contains(p.id)).ToList();
+        var available = allPlayers.Where(p => !addedPlayerIds.Contains(p.id)).ToList();
 
         if (!string.IsNullOrEmpty(SearchQuery.Value))
         {
             var query = SearchQuery.Value.ToLower();
-            available = available.Where(p => 
+            available = available.Where(p =>
                 p.name != null && p.name.ToLower().Contains(query)).ToList();
         }
 
@@ -520,6 +584,11 @@ public class LineupDataManager : IDataManager
         {
             AvailablePlayers.Add(player);
         }
+    }
+
+    public void RefreshAvailablePlayers()
+    {
+        UpdateAvailablePlayers();
     }
 
     public void Dispose()

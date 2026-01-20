@@ -41,17 +41,32 @@ public class MatchCenterScreen : UIScreen
     {
         if (tabLineup != null)
         {
-            tabLineup.gameObject.SetActive(tab == MatchCenterTabs.Lineup);
+            bool isActive = tab == MatchCenterTabs.Lineup;
+            tabLineup.gameObject.SetActive(isActive);
+            if (isActive && tabLineup is UIView lineupView)
+            {
+                lineupView.UpdateUI();
+            }
         }
 
         if (tabScoreboard != null)
         {
-            tabScoreboard.gameObject.SetActive(tab == MatchCenterTabs.Scoreboard);
+            bool isActive = tab == MatchCenterTabs.Scoreboard;
+            tabScoreboard.gameObject.SetActive(isActive);
+            if (isActive && tabScoreboard is UIView scoreboardView)
+            {
+                scoreboardView.UpdateUI();
+            }
         }
 
         if (tabNotes != null)
         {
-            tabNotes.gameObject.SetActive(tab == MatchCenterTabs.Notes);
+            bool isActive = tab == MatchCenterTabs.Notes;
+            tabNotes.gameObject.SetActive(isActive);
+            if (isActive && tabNotes is UIView notesView)
+            {
+                notesView.UpdateUI();
+            }
         }
     }
 
