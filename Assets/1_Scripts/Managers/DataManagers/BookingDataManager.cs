@@ -66,11 +66,13 @@ public class BookingDataManager : IDataManager
 
     private Dictionary<ExtraType, BookingExtraConfig.ExtraConfigData> _extraConfigs;
     private AppConfig _config;
+    private readonly AppModel _appModel;
 
     private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
     public BookingDataManager(AppModel appModel, AppConfig config)
     {
+        _appModel = appModel;
         _config = config;
 
         if (appModel.bookings == null || appModel.bookings.Count == 0)
@@ -194,9 +196,8 @@ public class BookingDataManager : IDataManager
         SelectedExtras.Value = initialExtras;
         DeselectAllTimes();
 
-        CurrentDraft.Value = new BookingModel
+        CurrentDraft.Value = new BookingModel(stadium.id, null, _appModel)
         {
-            stadiumId = stadium.id,
             status = BookingStatus.Draft,
             totalCost = 0f,
             extras = new List<BookingExtra>(initialExtras),

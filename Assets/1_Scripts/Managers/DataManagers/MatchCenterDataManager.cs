@@ -119,7 +119,7 @@ public class MatchCenterDataManager : IDataManager
         var lineup = _appModel.lineups.FirstOrDefault(l => l.id == lineupId);
         if (lineup == null) return;
 
-        var match = new MatchModel();
+        var match = new MatchModel(null, _appModel);
         match.lineupId = lineupId;
         match.pitchName = "Custom Match";
         match.pitchSize = _appModel.defaultPitchSize;
@@ -142,7 +142,7 @@ public class MatchCenterDataManager : IDataManager
 
         if (match == null)
         {
-            match = new MatchModel(bookingId);
+            match = new MatchModel(bookingId, _appModel);
             var stadium = _appModel.stadiums.FirstOrDefault(s => s.id == booking.stadiumId);
             match.pitchName = stadium != null ? stadium.name : "Unknown Pitch";
             match.pitchSize = booking.pitchSize;

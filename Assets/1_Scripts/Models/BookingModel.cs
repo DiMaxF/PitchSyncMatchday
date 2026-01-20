@@ -17,12 +17,10 @@ public class BookingModel
 
     public BookingModel() { }
 
-    public BookingModel(int stadiumId, string dateTimeIso)
+    public BookingModel(int stadiumId, string dateTimeIso, AppModel appModel)
     {
-        id = GenerateId();
+        id = IdGenerator.GetNextId(appModel, "Booking");
         this.stadiumId = stadiumId;
         this.dateTimeIso = dateTimeIso;
     }
-
-    private static int GenerateId() => (int)(DateTime.UtcNow.Ticks & 0xFFFFFFFF);
 }

@@ -44,6 +44,7 @@ public class LineupDataManager : IDataManager
         _appModel = appModel;
         _appConfig = appConfig;
 
+        ConfigImageInitializer.InitializeTeamIcons(appConfig);
         InitializePlayers();
         InitializeDraftModes();
         BindCollections();
@@ -76,8 +77,7 @@ public class LineupDataManager : IDataManager
 
     public void AddPlayer(string name, PlayerPosition position, Sprite avatar, string avatarPath)
     {
-        var maxId = _allPlayers.Count > 0 ? _allPlayers.Max(p => p.id) : 0;
-        var newId = maxId + 1;
+        var newId = IdGenerator.GetNextId(_appModel, "Player");
         
         var player = new PlayerModel(newId, name, position);
         var fileName = $"player_{newId}_avatar.png";
@@ -452,7 +452,9 @@ public class LineupDataManager : IDataManager
 
     private Sprite GetTeamIcon(TeamSide side) 
     {
-        return _appConfig.teams.Where(t => t.side == side).FirstOrDefault().icon;
+        var icon = ConfigImageInitializer.GetTeamIcon(side);
+        if (icon != null) return icon;
+        return _appConfig.teams.Where(t => t.side == side).FirstOrDefault()?.icon;
     }
 
     public Sprite GetTeamIconForSide(TeamSide side)
@@ -469,7 +471,7 @@ public class LineupDataManager : IDataManager
     {
         if (CurrentLineup.Value == null)
         {
-            CurrentLineup.Value = new LineupModel();
+            CurrentLineup.Value = new LineupModel(null, _appModel);
         }
 
         var lineup = CurrentLineup.Value;

@@ -90,7 +90,7 @@ public class WalletDataManager : IDataManager
     {
         var wallet = new WalletModel
         {
-            id = GenerateId(),
+            id = IdGenerator.GetNextId(_appModel, "Wallet"),
             bookingId = bookingId,
             matchId = matchId,
             createdAt = DateTime.UtcNow,
@@ -143,7 +143,7 @@ public class WalletDataManager : IDataManager
 
         var participant = new ParticipantModel
         {
-            id = GenerateId(),
+            id = IdGenerator.GetNextId(_appModel, "Participant"),
             playerId = playerId,
             name = name,
             paidAmount = 0,
@@ -188,7 +188,7 @@ public class WalletDataManager : IDataManager
 
         var expense = new ExpenseModel
         {
-            id = GenerateId(),
+            id = IdGenerator.GetNextId(_appModel, "Expense"),
             name = name,
             amount = amount,
             type = type,
@@ -273,8 +273,6 @@ public class WalletDataManager : IDataManager
 
         DataManager.Instance.SaveAppModel();
     }
-
-    private static int GenerateId() => (int)(DateTime.UtcNow.Ticks & 0xFFFFFFFF);
 
     public void Dispose()
     {

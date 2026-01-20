@@ -55,6 +55,8 @@ public class DataManager : MonoBehaviour
         {
             _appModel = new AppModel();
         }
+        
+        IdGenerator.InitializeIds(_appModel);
     }
 
     public void SaveAppModel()
@@ -64,6 +66,7 @@ public class DataManager : MonoBehaviour
 
     public void InitManagers() 
     {
+        ConfigImageInitializer.InitializeTeamIcons(config);
         _navbar = new NavigationDataManager(config);
         _pitchFinder = new PitchFinderDataManager(config, _appModel);
         _booking = new BookingDataManager(_appModel, config);

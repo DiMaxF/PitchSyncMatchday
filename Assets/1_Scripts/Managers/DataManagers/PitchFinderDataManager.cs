@@ -42,6 +42,16 @@ public class PitchFinderDataManager : IDataManager
                 }
             }
         }
+        else
+        {
+            foreach (var stadium in appModel.stadiums)
+            {
+                if (stadium.photo == null && !string.IsNullOrEmpty(stadium.photoPath))
+                {
+                    stadium.photo = FileUtils.LoadImageAsSprite(stadium.photoPath);
+                }
+            }
+        }
 
         _allPitches = appModel.stadiums;
 

@@ -13,11 +13,9 @@ public class LineupModel
 
     public LineupModel() { }
 
-    public LineupModel(int? matchId = null)
+    public LineupModel(int? matchId, AppModel appModel)
     {
-        id = GenerateId();
+        id = IdGenerator.GetNextId(appModel, "Lineup");
         this.matchId = matchId;
     }
-
-    private static int GenerateId() => (int)(DateTime.UtcNow.Ticks & 0xFFFFFFFF);
 }

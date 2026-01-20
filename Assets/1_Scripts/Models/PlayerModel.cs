@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 [Serializable]
@@ -7,7 +8,25 @@ public class PlayerModel
     public int id;
     public string name;
     public PlayerPosition position;
-    public Sprite avatar;
+    [NonSerialized]
+    private Sprite _avatarCache;
+    
+    public Sprite avatar
+    {
+        get
+        {
+            if (_avatarCache == null && !string.IsNullOrEmpty(avatarPath))
+            {
+                _avatarCache = FileUtils.LoadImageAsSprite(avatarPath);
+            }
+            return _avatarCache;
+        }
+        set
+        {
+            _avatarCache = value;
+        }
+    }
+    
     public string avatarPath;
 
     public PlayerModel() { }
@@ -18,7 +37,5 @@ public class PlayerModel
         this.name = name;
         this.position = position;
     }
-
-    private static int GenerateId() => (int)(DateTime.UtcNow.Ticks & 0xFFFFFFFF);
 }
 

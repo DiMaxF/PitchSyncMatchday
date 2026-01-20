@@ -10,6 +10,7 @@ public class AppModel
     public List<MatchModel> matches = new List<MatchModel>();
     public List<LineupModel> lineups = new List<LineupModel>();
     public List<WalletModel> wallets = new List<WalletModel>();
+    public Dictionary<string, int> lastIds = new Dictionary<string, int>();
     
     public int matchesPlayed = 0;
     public int bookingsCount = 0;

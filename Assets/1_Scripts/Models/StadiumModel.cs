@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 [Serializable]
@@ -12,8 +13,27 @@ public class StadiumModel
     public float rating;           
     public int reviewsCount;        
     public float basePricePerHour; 
-    public Sprite photo;        
+    public string photoPath;
     public List<PitchSize> supportedSizes;
+
+    [NonSerialized]
+    private Sprite _photoCache;
+
+    public Sprite photo
+    {
+        get
+        {
+            if (_photoCache == null && !string.IsNullOrEmpty(photoPath))
+            {
+                _photoCache = FileUtils.LoadImageAsSprite(photoPath);
+            }
+            return _photoCache;
+        }
+        set
+        {
+            _photoCache = value;
+        }
+    }
 
     public StadiumModel(PitchConfig config)
     {
@@ -24,7 +44,14 @@ public class StadiumModel
         rating = config.rating;
         reviewsCount = config.reviewsCount;
         basePricePerHour = config.basePricePerHour;
-        photo = config.photo;
         supportedSizes = new List<PitchSize>(config.supportedSizes);
+        
+        if (config.photo != null)
+        {
+            string fileName = $"stadium_{id}_photo.png";
+            FileUtils.SaveImage(config.photo, fileName);
+            photoPath = fileName;
+            _photoCache = config.photo;
+        }
     }
 }

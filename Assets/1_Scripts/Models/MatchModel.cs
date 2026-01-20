@@ -22,11 +22,9 @@ public class MatchModel
 
     public MatchModel() { }
 
-    public MatchModel(int? bookingId = null)
+    public MatchModel(int? bookingId, AppModel appModel)
     {
-        id = GenerateId();
+        id = IdGenerator.GetNextId(appModel, "Match");
         this.bookingId = bookingId;
     }
-
-    private static int GenerateId() => (int)(DateTime.UtcNow.Ticks & 0xFFFFFFFF);
 }

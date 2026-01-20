@@ -62,19 +62,33 @@ public static class FileUtils
 
         try
         {
-            Texture2D texture = sprite.texture;
+            Texture2D sourceTexture = sprite.texture;
             Rect rect = sprite.textureRect;
-            Texture2D croppedTexture = new Texture2D((int)rect.width, (int)rect.height);
-
-            Color[] pixels = texture.GetPixels((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-            croppedTexture.SetPixels(pixels);
-            croppedTexture.Apply();
-
-            byte[] bytes = croppedTexture.EncodeToPNG();
+            
+            RenderTexture fullTexture = RenderTexture.GetTemporary(
+                sourceTexture.width, 
+                sourceTexture.height, 
+                0, 
+                RenderTextureFormat.Default, 
+                RenderTextureReadWrite.Linear);
+            
+            Graphics.Blit(sourceTexture, fullTexture);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = fullTexture;
+            
+            Texture2D readableTexture = new Texture2D((int)rect.width, (int)rect.height);
+            int yCoord = sourceTexture.height - (int)rect.y - (int)rect.height;
+            readableTexture.ReadPixels(new Rect(rect.x, yCoord, rect.width, rect.height), 0, 0);
+            readableTexture.Apply();
+            
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(fullTexture);
+            
+            byte[] bytes = readableTexture.EncodeToPNG();
             string filePath = GetFilePath(fileName);
             File.WriteAllBytes(filePath, bytes);
-
-            UnityEngine.Object.Destroy(croppedTexture);
+            
+            UnityEngine.Object.Destroy(readableTexture);
         }
         catch (Exception ex)
         {
