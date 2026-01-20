@@ -14,8 +14,8 @@ public class WalletDataManager : IDataManager
     public ReactiveCollection<ExpenseModel> Expenses { get; } = new ReactiveCollection<ExpenseModel>();
     public ReactiveProperty<SplitMode> CurrentSplitMode { get; } = new ReactiveProperty<SplitMode>(SplitMode.Equal);
     public ReactiveCollection<ToggleButtonModel> ExpenseTypes { get; } = new ReactiveCollection<ToggleButtonModel>();
-    public ReactiveProperty<decimal> TotalCost { get; } = new ReactiveProperty<decimal>(0);
-    public ReactiveProperty<decimal> TotalPaid { get; } = new ReactiveProperty<decimal>(0);
+    public ReactiveProperty<float> TotalCost { get; } = new ReactiveProperty<float>(0);
+    public ReactiveProperty<float> TotalPaid { get; } = new ReactiveProperty<float>(0);
 
     private readonly ReactiveCollection<object> _participantsAsObject = new ReactiveCollection<object>();
     private readonly ReactiveCollection<object> _expensesAsObject = new ReactiveCollection<object>();
@@ -29,14 +29,11 @@ public class WalletDataManager : IDataManager
     {
         _appModel = appModel;
 
-        if (_appModel.wallets == null)
-        {
-            _appModel.wallets = new List<WalletModel>();
-        }
-
         BindCollections();
         InitializeExpenseTypes();
         CurrentSplitMode.Subscribe(_ => RecalculateOwedAmounts()).AddTo(_disposables);
+        
+        LoadWallet();
     }
 
     private void InitializeExpenseTypes()
@@ -86,34 +83,71 @@ public class WalletDataManager : IDataManager
         Participants.ObserveReplace().Subscribe(_ => { RecalculateOwedAmounts(); RecalculateTotals(); }).AddTo(_disposables);
     }
 
-    public void InitializeWallet(int? bookingId = null, int? matchId = null)
+    private void LoadWallet()
     {
-        var wallet = new WalletModel
+        WalletModel wallet = null;
+        
+        if (FileUtils.FileExists("Wallet.json"))
+        {
+            wallet = FileUtils.LoadJson<WalletModel>("Wallet.json");
+            
+            if (wallet != null && wallet.id > 0)
+            {
+                if (wallet.participants == null)
+                {
+                    wallet.participants = new List<ParticipantModel>();
+                }
+                if (wallet.expenses == null)
+                {
+                    wallet.expenses = new List<ExpenseModel>();
+                }
+                
+                CurrentWallet.Value = wallet;
+                LoadWalletData(wallet);
+                return;
+            }
+        }
+        
+        wallet = new WalletModel
         {
             id = IdGenerator.GetNextId(_appModel, "Wallet"),
-            bookingId = bookingId,
-            matchId = matchId,
             createdAt = DateTime.UtcNow,
-            splitMode = SplitMode.Equal
+            splitMode = SplitMode.Equal,
+            participants = new List<ParticipantModel>(),
+            expenses = new List<ExpenseModel>()
         };
 
-        if (!_appModel.wallets.Contains(wallet))
+        CurrentWallet.Value = wallet;
+        LoadWalletData(wallet);
+    }
+
+    public void InitializeWallet(int? bookingId = null, int? matchId = null)
+    {
+        if (CurrentWallet.Value == null)
         {
-            _appModel.wallets.Add(wallet);
+            LoadWallet();
         }
 
-        CurrentWallet.Value = wallet;
-        LoadWalletData(wallet);
+        if (CurrentWallet.Value != null)
+        {
+            if (bookingId.HasValue)
+            {
+                CurrentWallet.Value.bookingId = bookingId;
+            }
+            if (matchId.HasValue)
+            {
+                CurrentWallet.Value.matchId = matchId;
+            }
+            SaveWallet();
+        }
     }
 
-    public void LoadWallet(WalletModel wallet)
-    {
-        CurrentWallet.Value = wallet;
-        LoadWalletData(wallet);
-    }
+    private bool _isLoading = false;
 
     private void LoadWalletData(WalletModel wallet)
     {
+        _isLoading = true;
+
         Participants.Clear();
         Expenses.Clear();
 
@@ -134,10 +168,23 @@ public class WalletDataManager : IDataManager
         }
 
         CurrentSplitMode.Value = wallet.splitMode;
-        RecalculateTotals();
+        
+        float totalCost = Expenses.Sum(e => e.amount);
+        float totalPaid = Participants.Sum(p => p.paidAmount);
+
+        TotalCost.Value = totalCost;
+        TotalPaid.Value = totalPaid;
+
+        CurrentWallet.Value.totalCost = totalCost;
+        CurrentWallet.Value.totalPaid = totalPaid;
+
+        RecalculateOwedAmounts();
+        
+        _isLoading = false;
     }
 
-    public void AddParticipant(int? playerId, string name)
+    public void AddParticipant(int? playerId, string name,
+         float amount)
     {
         if (CurrentWallet.Value == null) return;
 
@@ -146,7 +193,7 @@ public class WalletDataManager : IDataManager
             id = IdGenerator.GetNextId(_appModel, "Participant"),
             playerId = playerId,
             name = name,
-            paidAmount = 0,
+            paidAmount = amount,
             owedAmount = 0
         };
 
@@ -154,7 +201,7 @@ public class WalletDataManager : IDataManager
         SaveWallet();
     }
 
-    public void UpdateParticipant(int participantId, decimal paidAmount, decimal owedAmount)
+    public void UpdateParticipant(int participantId, float paidAmount, float owedAmount)
     {
         var participant = Participants.FirstOrDefault(p => p.id == participantId);
         if (participant == null) return;
@@ -182,7 +229,7 @@ public class WalletDataManager : IDataManager
         }
     }
 
-    public void AddExpense(string name, decimal amount, ExtraType type)
+    public void AddExpense(string name, float amount, ExtraType type)
     {
         if (CurrentWallet.Value == null) return;
 
@@ -223,8 +270,8 @@ public class WalletDataManager : IDataManager
     {
         if (CurrentWallet.Value == null) return;
 
-        decimal totalCost = Expenses.Sum(e => e.amount);
-        decimal totalPaid = Participants.Sum(p => p.paidAmount);
+        float totalCost = Expenses.Sum(e => e.amount);
+        float totalPaid = Participants.Sum(p => p.paidAmount);
 
         TotalCost.Value = totalCost;
         TotalPaid.Value = totalPaid;
@@ -233,45 +280,58 @@ public class WalletDataManager : IDataManager
         CurrentWallet.Value.totalPaid = totalPaid;
 
         RecalculateOwedAmounts();
-        SaveWallet();
+        
+        if (!_isLoading)
+        {
+            SaveWallet();
+        }
     }
 
     private void RecalculateOwedAmounts()
     {
         if (CurrentWallet.Value == null || Participants.Count == 0) return;
 
-        decimal totalCost = Expenses.Sum(e => e.amount);
+        float totalCost = Expenses.Sum(e => e.amount);
 
         if (CurrentSplitMode.Value == SplitMode.Equal)
         {
-            decimal perPerson = totalCost / Participants.Count;
+            float perPerson = totalCost / Participants.Count;
 
             for (int i = 0; i < Participants.Count; i++)
             {
                 var p = Participants[i];
-                Participants[i] = new ParticipantModel
+                float newOwedAmount = perPerson - p.paidAmount;
+                
+                if (Mathf.Abs(p.owedAmount - newOwedAmount) > 0.01f)
                 {
-                    id = p.id,
-                    playerId = p.playerId,
-                    name = p.name,
-                    paidAmount = p.paidAmount,
-                    owedAmount = perPerson - p.paidAmount
-                };
+                    Participants[i] = new ParticipantModel
+                    {
+                        id = p.id,
+                        playerId = p.playerId,
+                        name = p.name,
+                        paidAmount = p.paidAmount,
+                        owedAmount = newOwedAmount
+                    };
+                }
             }
         }
-
-        SaveWallet();
     }
 
     private void SaveWallet()
     {
-        if (CurrentWallet.Value == null) return;
+        if (CurrentWallet.Value == null || _isLoading) return;
 
         CurrentWallet.Value.participants = Participants.ToList();
         CurrentWallet.Value.expenses = Expenses.ToList();
+        
+        if (CurrentWallet.Value.createdAt == default(DateTime))
+        {
+            CurrentWallet.Value.createdAt = DateTime.UtcNow;
+        }
+        
         CurrentWallet.Value.lastModified = DateTime.UtcNow;
 
-        DataManager.Instance.SaveAppModel();
+        FileUtils.SaveJson(CurrentWallet.Value, "Wallet.json");
     }
 
     public void Dispose()

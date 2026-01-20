@@ -8,8 +8,8 @@ public class WalletModel
     public int? bookingId;                  
     public int? matchId;                     
 
-    public decimal totalCost;               
-    public decimal totalPaid;             
+    public float totalCost;               
+    public float totalPaid;             
 
     public List<ParticipantModel> participants = new List<ParticipantModel>();
     public List<ExpenseModel> expenses = new List<ExpenseModel>();

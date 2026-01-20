@@ -187,6 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eae8ceea3a3223499272867fa8bfad4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SquadPlayerCard
+  image: {fileID: 1367376266632726423}
   nameText: {fileID: 9064587821879016421}
   positionBadge: {fileID: 319285134638459849}
   squadNumberText: {fileID: 5842637271624072940}

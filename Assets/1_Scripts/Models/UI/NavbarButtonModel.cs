@@ -14,4 +14,12 @@ public class NavbarButtonModel
         screen = config.screen;
         selected = isSelected;
     }
+
+    public NavbarButtonModel(string label, Sprite icon, Screens screen, bool selected)
+    {
+        this.label = label;
+        this.icon = icon;
+        this.screen = screen;
+        this.selected = selected;
+    }
 }

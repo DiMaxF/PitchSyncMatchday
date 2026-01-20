@@ -63,9 +63,9 @@ public static class IdGenerator
             appModel.lastIds["Lineup"] = 0;
         }
 
-        if (appModel.wallets != null && appModel.wallets.Count > 0)
+        if (appModel.wallet != null && appModel.wallet.id > 0)
         {
-            appModel.lastIds["Wallet"] = appModel.wallets.Max(w => w.id);
+            appModel.lastIds["Wallet"] = appModel.wallet.id;
         }
         else
         {
@@ -83,20 +83,15 @@ public static class IdGenerator
 
         int maxParticipantId = 0;
         int maxExpenseId = 0;
-        if (appModel.wallets != null)
+        if (appModel.wallet != null)
         {
-            foreach (var wallet in appModel.wallets)
+            if (appModel.wallet.participants != null && appModel.wallet.participants.Count > 0)
             {
-                if (wallet.participants != null && wallet.participants.Count > 0)
-                {
-                    var max = wallet.participants.Max(p => p.id);
-                    if (max > maxParticipantId) maxParticipantId = max;
-                }
-                if (wallet.expenses != null && wallet.expenses.Count > 0)
-                {
-                    var max = wallet.expenses.Max(e => e.id);
-                    if (max > maxExpenseId) maxExpenseId = max;
-                }
+                maxParticipantId = appModel.wallet.participants.Max(p => p.id);
+            }
+            if (appModel.wallet.expenses != null && appModel.wallet.expenses.Count > 0)
+            {
+                maxExpenseId = appModel.wallet.expenses.Max(e => e.id);
             }
         }
         appModel.lastIds["Participant"] = maxParticipantId;

@@ -32,9 +32,14 @@ public class NavigationDataManager : IDataManager
 
     private void UpdateButtonsSelection()
     {
-        foreach (var model in Buttons)
+        for (int i = 0; i < Buttons.Count; i++)
         {
-            model.selected = model.screen == SelectedScreen.Value;
+            var model = Buttons[i];
+            var newSelected = model.screen == SelectedScreen.Value;
+            if (model.selected != newSelected)
+            {
+                Buttons[i] = new NavbarButtonModel(model.label, model.icon, model.screen, newSelected);
+            }
         }
     }
 

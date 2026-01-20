@@ -1,4 +1,3 @@
-using NUnit.Framework.Constraints;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +5,8 @@ using UnityEngine.UI;
 public class AddParticipantsPanel : UIView
 {
     [SerializeField] private Text selectedPlayerText;
+    [SerializeField] private InputField nameInput;
+    [SerializeField] private InputField amountInput;
     [SerializeField] private Button closeButton;
     [SerializeField] private Button saveButton;
     [SerializeField] private Button dropdownShow;
@@ -38,11 +39,30 @@ public class AddParticipantsPanel : UIView
                 {
                     selectedPlayer = player;
                     selectedPlayerText.text = selectedPlayer.name;
+                    if (nameInput != null && string.IsNullOrWhiteSpace(nameInput.text))
+                    {
+                        nameInput.text = selectedPlayer.name;
+                    }
+
                     HideDropdown();
+                    UpdateSaveButtonState();
                 }
             }));
         }
-        selectedPlayerText.text = "None";
+
+        selectedPlayer = null;
+        if (selectedPlayerText != null)
+        {
+            selectedPlayerText.text = "None";
+        }
+
+        if (nameInput != null)
+        {
+            AddToDispose(nameInput.OnValueChangedAsObservable()
+                .Subscribe(_ => UpdateSaveButtonState())
+                .AddTo(this));
+        }
+
         if (dropdownShow != null)
         {
             dropdownShow.OnClickAsObservable()
@@ -70,13 +90,48 @@ public class AddParticipantsPanel : UIView
                 .Subscribe(_ => Hide())
                 .AddTo(this);
         }
+
+        UpdateSaveButtonState();
     }
 
 
     private void Save() 
     {
-        Wallet.AddParticipant(selectedPlayer.id, selectedPlayer.name);
+        string participantName = "";
+        int? playerId = null;
+        float amount= 0;
+
+        if (selectedPlayer != null)
+        {
+            playerId = selectedPlayer.id;
+            participantName = selectedPlayer.name;
+        }
+
+        if (nameInput != null && !string.IsNullOrWhiteSpace(nameInput.text))
+        {
+            participantName = nameInput.text;
+        }
+        if (amountInput != null && float.TryParse(amountInput.text, out var am))
+        {
+            amount = am;
+        }
+        if (string.IsNullOrWhiteSpace(participantName))
+        {
+            return;
+        }
+
+        Wallet.AddParticipant(playerId, participantName, amount);
         Hide();
+    }
+
+    private void UpdateSaveButtonState()
+    {
+        if (saveButton == null) return;
+
+        bool hasPlayer = selectedPlayer != null;
+        bool hasName = nameInput != null && !string.IsNullOrWhiteSpace(nameInput.text);
+
+        saveButton.interactable = hasPlayer || hasName;
     }
 
     private void ShowDropdown()
@@ -113,7 +168,17 @@ public class AddParticipantsPanel : UIView
 
     public void InitForAdd()
     {
+        selectedPlayer = null;
+        if (selectedPlayerText != null)
+        {
+            selectedPlayerText.text = "None";
+        }
+        if (nameInput != null)
+        {
+            nameInput.text = "";
+        }
         HideDropdown();
+        UpdateSaveButtonState();
         Show();
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class SquadPlayerCard : UIView<SquadPlayerModel>
 {
+    [SerializeField] private Image image;
     [SerializeField] private Text nameText;
     [SerializeField] private Text positionBadge;
     [SerializeField] private Text squadNumberText;
@@ -49,7 +50,11 @@ public class SquadPlayerCard : UIView<SquadPlayerModel>
         {
             nameText.text = data.name;
         }
-
+        if (image != null)
+        {
+            image.sprite = DataManager.Lineup.GetPlayerById(data.playerId).avatar;
+        }
+        
         if (positionBadge != null)
         {
             positionBadge.text = data.position.ToString();

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class PlayerAddCard : UIView<PlayerModel>
 {
+    [SerializeField] private Image avatar;
     [SerializeField] private Text nameText;
     [SerializeField] private Text positionBadge;
     [SerializeField] private Button selectButton;
@@ -40,6 +41,11 @@ public class PlayerAddCard : UIView<PlayerModel>
         if (positionBadge != null)
         {
             positionBadge.text = data.position.ToString();
+        }
+
+        if (avatar != null) 
+        {
+            avatar.sprite = data.avatar;    
         }
     }
 }

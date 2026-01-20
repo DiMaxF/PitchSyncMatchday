@@ -111,23 +111,23 @@ public class WalletScreen : UIScreen
 
     private void UpdateTotals()
     {
-        decimal totalCostValue = Wallet.TotalCost.Value;
-        decimal totalPaidValue = Wallet.TotalPaid.Value;
-        decimal remaining = totalCostValue - totalPaidValue;
+        float totalCostValue = Wallet.TotalCost.Value;
+        float totalPaidValue = Wallet.TotalPaid.Value;
+        float remaining = totalCostValue - totalPaidValue;
 
         if (totalCost != null)
         {
-            totalCost.text = $"${totalCostValue}";
+            totalCost.text = $"${totalCostValue:F2}";
         }
 
         if (paidText != null)
         {
-            paidText.text = $"${totalPaidValue}";
+            paidText.text = $"${totalPaidValue:F2}";
         }
 
         if (remainigText != null)
         {
-            remainigText.text = $"${remaining}";
+            remainigText.text = $"${remaining:F2}";
         }
     }
 

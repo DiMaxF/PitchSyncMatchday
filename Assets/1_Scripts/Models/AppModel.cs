@@ -9,7 +9,7 @@ public class AppModel
     public List<PlayerModel> players = new List<PlayerModel>();
     public List<MatchModel> matches = new List<MatchModel>();
     public List<LineupModel> lineups = new List<LineupModel>();
-    public List<WalletModel> wallets = new List<WalletModel>();
+    public WalletModel wallet;
     public Dictionary<string, int> lastIds = new Dictionary<string, int>();
     
     public int matchesPlayed = 0;

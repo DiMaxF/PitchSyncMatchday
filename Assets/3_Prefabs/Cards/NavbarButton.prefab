@@ -421,7 +421,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.0000038146973}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6025767587862651705
@@ -475,6 +475,10 @@ GameObject:
   - component: {fileID: 9146828898663836121}
   - component: {fileID: 7497404351583856359}
   - component: {fileID: 6142054275217410316}
+  - component: {fileID: 5837863045012195361}
+  - component: {fileID: 3249879612975690395}
+  - component: {fileID: 2470618468325801554}
+  - component: {fileID: 1946167013650184267}
   m_Layer: 5
   m_Name: NavbarButton
   m_TagString: Untagged
@@ -569,6 +573,69 @@ MonoBehaviour:
   iconImage: {fileID: 3375780375407258574}
   action: {fileID: 7358760364805388540}
   label: {fileID: 1536574006439071502}
+--- !u!114 &5837863045012195361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7253384125848035625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1915fd8e2335d41bb260ef954b5bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationController
+--- !u!114 &3249879612975690395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7253384125848035625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10aeba8df91f3254aaf34a7e0e25c08a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColorAnimation
+  graphic: {fileID: 259960692274035634}
+  hideColor: {r: 0, g: 0, b: 0, a: 0}
+  config: {fileID: 11400000, guid: ec2e54d1c84aa434c8ae2c5e0da613e3, type: 2}
+  order: 0
+  parallel: 1
+--- !u!114 &2470618468325801554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7253384125848035625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10aeba8df91f3254aaf34a7e0e25c08a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColorAnimation
+  graphic: {fileID: 2842683674823553377}
+  hideColor: {r: 0, g: 0, b: 0, a: 0}
+  config: {fileID: 11400000, guid: ec2e54d1c84aa434c8ae2c5e0da613e3, type: 2}
+  order: 0
+  parallel: 1
+--- !u!114 &1946167013650184267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7253384125848035625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10aeba8df91f3254aaf34a7e0e25c08a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColorAnimation
+  graphic: {fileID: 1536574006439071502}
+  hideColor: {r: 0.47843137, g: 0.47843137, b: 0.47843137, a: 1}
+  config: {fileID: 11400000, guid: ec2e54d1c84aa434c8ae2c5e0da613e3, type: 2}
+  order: 0
+  parallel: 1
 --- !u!1 &8433680103440588465
 GameObject:
   m_ObjectHideFlags: 0

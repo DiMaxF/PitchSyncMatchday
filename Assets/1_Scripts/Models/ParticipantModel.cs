@@ -7,6 +7,6 @@ public class ParticipantModel
     public int id;                    
     public int? playerId;            
     public string name;            
-    public decimal paidAmount;   
-    public decimal owedAmount;     
+    public float paidAmount;   
+    public float owedAmount;     
 }
