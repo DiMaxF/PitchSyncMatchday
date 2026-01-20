@@ -6,6 +6,7 @@ public enum Screens
     AvailabilityPlannerScreen,
     BookingBuilderScreen,
     BookingConfirmScreen,
+    BookingDetailsScreen,
     MyBookingScreen,
     WalletScreen,
     ProfileScreen,

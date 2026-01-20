@@ -61,6 +61,8 @@ public class MyBookingScreen : UIScreen
             {
                 if (booking != null)
                 {
+                    BookingConfirm.InitializeForBooking(booking);
+                    ScreenManager?.Show(Screens.BookingDetailsScreen);
                 }
             }));
 
