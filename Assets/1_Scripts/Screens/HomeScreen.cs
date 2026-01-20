@@ -10,6 +10,7 @@ public class HomeScreen : UIScreen
     [SerializeField] private Button walletButton;
     [SerializeField] private Button lineupButton;
     [SerializeField] private Button notificationsButton;
+    [SerializeField] private Button bookPitchButton;
     [SerializeField] private ListContainer upcomingEvents;
 
     private BookingDataManager Booking => DataManager.Booking;
@@ -68,6 +69,14 @@ public class HomeScreen : UIScreen
                 }
             }));
         }
+
+        if (bookPitchButton != null && Booking.UpcomingBookingsAsObject != null)
+        {
+            UpdateBookPitchButtonVisibility();
+            
+            AddToDispose(Booking.UpcomingBookingsAsObject.ObserveCountChanged()
+                .Subscribe(_ => UpdateBookPitchButtonVisibility()));
+        }
     }
 
     protected override void RefreshViews()
@@ -77,6 +86,24 @@ public class HomeScreen : UIScreen
         if (upcomingEvents != null)
         {
             upcomingEvents.Init(Booking.UpcomingBookingsAsObject);
+        }
+        
+        UpdateBookPitchButtonVisibility();
+    }
+
+    private void UpdateBookPitchButtonVisibility()
+    {
+        if (bookPitchButton == null) return;
+        if (Booking.UpcomingBookingsAsObject == null) return;
+
+        int count = Booking.UpcomingBookingsAsObject.Count;
+        if (count == 0)
+        {
+            bookPitchButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            bookPitchButton.gameObject.SetActive(false);
         }
     }
 }

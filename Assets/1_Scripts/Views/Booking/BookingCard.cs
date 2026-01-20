@@ -10,7 +10,7 @@ public class BookingCard : UIView<BookingModel>
     [SerializeField] private Button showQr;
     [SerializeField] private Button action;
     [SerializeField] private Image background;
-    [SerializeField] private Text statusText;
+    [SerializeField] private StatusBooking statusText;
     [SerializeField] private Text pitchNameText;
     [SerializeField] private Text dateTimeText;
     [SerializeField] private Text pitchInfoText;
@@ -51,7 +51,7 @@ public class BookingCard : UIView<BookingModel>
 
         if (statusText != null)
         {
-            statusText.text = data.status.ToString();
+            statusText.Init(data);
         }
 
         var stadium = GetStadiumById(data.stadiumId);

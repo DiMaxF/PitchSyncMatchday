@@ -10,7 +10,7 @@ public class BookingDetailsScreen : UIScreen
     [SerializeField] private Text location;
     [SerializeField] private Text startTime;
     [SerializeField] private Text endTime;
-    [SerializeField] private Text statusBooking;
+    [SerializeField] private StatusBooking statusBooking;
     [SerializeField] private ShortBookingCard shortBooking;
     [SerializeField] private ListContainer extras;
     [SerializeField] private Text basePrice;
@@ -94,7 +94,7 @@ public class BookingDetailsScreen : UIScreen
 
         if (statusBooking != null)
         {
-            statusBooking.text = booking.status.ToString();
+            statusBooking.Init(booking.status);
         }
 
         if (DateTime.TryParse(booking.dateTimeIso, out var dateTime))
