@@ -188,8 +188,8 @@ public class BookingDataManager : IDataManager
     public void StartNewBooking(StadiumModel stadium)
     {
         SelectedStadium.Value = stadium;
-        SelectedPitchSize.Value = PitchSize.Size7x7;
-        SelectedDuration.Value = MatchDuration.Min60;
+        SelectedPitchSize.Value = DataManager.Profile.DefaultPitchSize.Value;
+        SelectedDuration.Value = DataManager.Profile.DefaultDuration.Value;
         SelectedDateTimeIso.Value = null;
         SelectedDate.Value = null;
         SelectedTime.Value = null;
@@ -203,7 +203,8 @@ public class BookingDataManager : IDataManager
             status = BookingStatus.Draft,
             totalCost = 0f,
             extras = new List<BookingExtra>(initialExtras),
-            duration = MatchDuration.Min60
+            duration = DataManager.Profile.DefaultDuration.Value,
+            pitchSize = DataManager.Profile.DefaultPitchSize.Value
         };
 
         UpdateAllAvailableExtrasModels();

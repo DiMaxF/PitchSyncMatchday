@@ -14,7 +14,7 @@ public class ShortExtraCard : UIView<BookingExtraModel>
 
         if (valueText != null)
         {
-            valueText.text = $"{data.currentQuantity}x {name}";
+            valueText.text = $"{data.currentQuantity}x {data.name}";
         }
 
         if (icon != null && data.icon != null)

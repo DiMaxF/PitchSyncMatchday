@@ -1,0 +1,845 @@
+fileFormatVersion: 2
+guid: b72708adc7b9c884ea921b662d5bd2dc
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -206831705294054148
+    second: Welcome to PitchSync Matchday_0
+  - first:
+      213: 555604465507153334
+    second: Welcome to PitchSync Matchday_1
+  - first:
+      213: 8675899832576260135
+    second: Welcome to PitchSync Matchday_2
+  - first:
+      213: -75799732978284266
+    second: Welcome to PitchSync Matchday_3
+  - first:
+      213: -7508568622825647240
+    second: Welcome to PitchSync Matchday_4
+  - first:
+      213: -2009956577096237808
+    second: Welcome to PitchSync Matchday_5
+  - first:
+      213: -1813351296673411763
+    second: Welcome to PitchSync Matchday_6
+  - first:
+      213: -2678816368952384159
+    second: Welcome to PitchSync Matchday_7
+  - first:
+      213: -4641970503283422340
+    second: Welcome to PitchSync Matchday_8
+  - first:
+      213: -811915270792442259
+    second: Welcome to PitchSync Matchday_9
+  - first:
+      213: 4966309893083120084
+    second: Welcome to PitchSync Matchday_10
+  - first:
+      213: -1324508571806629958
+    second: Welcome to PitchSync Matchday_11
+  - first:
+      213: -7645383170156925796
+    second: Welcome to PitchSync Matchday_12
+  - first:
+      213: -5488966715008809236
+    second: Welcome to PitchSync Matchday_13
+  - first:
+      213: 1374278614202778893
+    second: Welcome to PitchSync Matchday_14
+  - first:
+      213: 3753835804843501635
+    second: Welcome to PitchSync Matchday_15
+  - first:
+      213: -6478547924657143522
+    second: Welcome to PitchSync Matchday_16
+  - first:
+      213: 415121622827912550
+    second: Welcome to PitchSync Matchday_17
+  - first:
+      213: 2703556922375805143
+    second: Welcome to PitchSync Matchday_18
+  - first:
+      213: 7023431606503779153
+    second: Welcome to PitchSync Matchday_19
+  - first:
+      213: -1581399273215484761
+    second: Welcome to PitchSync Matchday_20
+  - first:
+      213: 6056188978752020071
+    second: Welcome to PitchSync Matchday_21
+  - first:
+      213: 6970383145572655900
+    second: Welcome to PitchSync Matchday_22
+  - first:
+      213: 5438639428030028894
+    second: Welcome to PitchSync Matchday_23
+  - first:
+      213: 7159400962912298941
+    second: Welcome to PitchSync Matchday_24
+  - first:
+      213: 927362271409480933
+    second: Welcome to PitchSync Matchday_25
+  - first:
+      213: 3275674565440944872
+    second: Welcome to PitchSync Matchday_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_0
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 99
+        width: 82
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfcd8ade8af212df0800000000000000
+      internalID: -206831705294054148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_1
+      rect:
+        serializedVersion: 2
+        x: 226
+        y: 98
+        width: 42
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b5bc225157e5b700800000000000000
+      internalID: 555604465507153334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_2
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 99
+        width: 13
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 728349b4eecf66870800000000000000
+      internalID: 8675899832576260135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_3
+      rect:
+        serializedVersion: 2
+        x: 291
+        y: 98
+        width: 41
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61982c16b84b2fef0800000000000000
+      internalID: -75799732978284266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_4
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 98
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87355d0ae943cc790800000000000000
+      internalID: -7508568622825647240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_5
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 99
+        width: 67
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 01df73074233b14e0800000000000000
+      internalID: -2009956577096237808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_6
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 98
+        width: 43
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4d89cc6a9ea5d6e0800000000000000
+      internalID: -1813351296673411763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_7
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 98
+        width: 31
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 165671694bee2dad0800000000000000
+      internalID: -2678816368952384159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_8
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 98
+        width: 44
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7b43f5eb68649fb0800000000000000
+      internalID: -4641970503283422340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 14
+        width: 44
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6e83b8ec5f7bb4f0800000000000000
+      internalID: -811915270792442259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_10
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 57
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d14abdf880ebe440800000000000000
+      internalID: 4966309893083120084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_11
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 13
+        width: 31
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abf7183b8766e9de0800000000000000
+      internalID: -1324508571806629958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_12
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 14
+        width: 42
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9ceb03838426e590800000000000000
+      internalID: -7645383170156925796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_13
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 13
+        width: 43
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce605ffbad543d3b0800000000000000
+      internalID: -5488966715008809236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_14
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 14
+        width: 58
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0509fd4e1b621310800000000000000
+      internalID: 1374278614202778893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_15
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 13
+        width: 32
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 348e6dc96cd481430800000000000000
+      internalID: 3753835804843501635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_16
+      rect:
+        serializedVersion: 2
+        x: 565
+        y: 14
+        width: 41
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e118772ccf29716a0800000000000000
+      internalID: -6478547924657143522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_17
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 13
+        width: 44
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66dcd33aaeec2c500800000000000000
+      internalID: 415121622827912550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_18
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 14
+        width: 14
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d8124462b6f48520800000000000000
+      internalID: 2703556922375805143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_19
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 13
+        width: 40
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15ba8e995dd387160800000000000000
+      internalID: 7023431606503779153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_20
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 0
+        width: 46
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ac1ee75dbdbd0ae0800000000000000
+      internalID: -1581399273215484761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_21
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 14
+        width: 41
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76e56230ac7eb0450800000000000000
+      internalID: 6056188978752020071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_22
+      rect:
+        serializedVersion: 2
+        x: 321
+        y: 13
+        width: 40
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c136a3c4a86cbb060800000000000000
+      internalID: 6970383145572655900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_23
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 13
+        width: 39
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5cd921aebde97b40800000000000000
+      internalID: 5438639428030028894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_24
+      rect:
+        serializedVersion: 2
+        x: 521
+        y: 13
+        width: 41
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db72afe5e3d4b5360800000000000000
+      internalID: 7159400962912298941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_25
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 13
+        width: 38
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e4267d8217aedc00800000000000000
+      internalID: 927362271409480933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Welcome to PitchSync Matchday_26
+      rect:
+        serializedVersion: 2
+        x: 699
+        y: 0
+        width: 45
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8eab3e879a8857d20800000000000000
+      internalID: 3275674565440944872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Welcome to PitchSync Matchday_0: -206831705294054148
+      Welcome to PitchSync Matchday_1: 555604465507153334
+      Welcome to PitchSync Matchday_10: 4966309893083120084
+      Welcome to PitchSync Matchday_11: -1324508571806629958
+      Welcome to PitchSync Matchday_12: -7645383170156925796
+      Welcome to PitchSync Matchday_13: -5488966715008809236
+      Welcome to PitchSync Matchday_14: 1374278614202778893
+      Welcome to PitchSync Matchday_15: 3753835804843501635
+      Welcome to PitchSync Matchday_16: -6478547924657143522
+      Welcome to PitchSync Matchday_17: 415121622827912550
+      Welcome to PitchSync Matchday_18: 2703556922375805143
+      Welcome to PitchSync Matchday_19: 7023431606503779153
+      Welcome to PitchSync Matchday_2: 8675899832576260135
+      Welcome to PitchSync Matchday_20: -1581399273215484761
+      Welcome to PitchSync Matchday_21: 6056188978752020071
+      Welcome to PitchSync Matchday_22: 6970383145572655900
+      Welcome to PitchSync Matchday_23: 5438639428030028894
+      Welcome to PitchSync Matchday_24: 7159400962912298941
+      Welcome to PitchSync Matchday_25: 927362271409480933
+      Welcome to PitchSync Matchday_26: 3275674565440944872
+      Welcome to PitchSync Matchday_3: -75799732978284266
+      Welcome to PitchSync Matchday_4: -7508568622825647240
+      Welcome to PitchSync Matchday_5: -2009956577096237808
+      Welcome to PitchSync Matchday_6: -1813351296673411763
+      Welcome to PitchSync Matchday_7: -2678816368952384159
+      Welcome to PitchSync Matchday_8: -4641970503283422340
+      Welcome to PitchSync Matchday_9: -811915270792442259
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

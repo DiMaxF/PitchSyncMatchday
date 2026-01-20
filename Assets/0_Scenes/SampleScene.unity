@@ -26095,6 +26095,7 @@ GameObject:
   - component: {fileID: 1096195531}
   - component: {fileID: 1096195530}
   - component: {fileID: 1096195529}
+  - component: {fileID: 1096195535}
   m_Layer: 5
   m_Name: Participants
   m_TagString: Untagged
@@ -26232,6 +26233,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1096195527}
   m_CullTransparentMesh: 1
+--- !u!114 &1096195535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1096195527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf6a75dbbd3e9b42b70481c935ea92c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LayoutUpdater
 --- !u!1 &1105420703
 GameObject:
   m_ObjectHideFlags: 0
@@ -47963,6 +47976,7 @@ GameObject:
   - component: {fileID: 1841936145}
   - component: {fileID: 1841936144}
   - component: {fileID: 1841936143}
+  - component: {fileID: 1841936149}
   m_Layer: 5
   m_Name: ExpenseItems
   m_TagString: Untagged
@@ -48100,6 +48114,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1841936141}
   m_CullTransparentMesh: 1
+--- !u!114 &1841936149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1841936141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf6a75dbbd3e9b42b70481c935ea92c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LayoutUpdater
 --- !u!114 &1846654862 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 524738248505864617, guid: 2ad2005536b5f674396af08eb01ca641, type: 3}

@@ -1,6 +1,5 @@
 using UniRx;
 using UnityEngine;
-using System.Linq;
 
 public class NavigationDataManager : IDataManager
 {
@@ -10,12 +9,14 @@ public class NavigationDataManager : IDataManager
 
     public ReactiveCollection<NavbarButtonModel> Buttons { get; } = new ReactiveCollection<NavbarButtonModel>();
 
-    public ReactiveCollection<object> ButtonsAsObject => Buttons.Select(m => (object)m).ToReactiveCollection();
+    private readonly ReactiveCollection<object> _buttonsAsObject = new ReactiveCollection<object>();
+    public ReactiveCollection<object> ButtonsAsObject => _buttonsAsObject;
 
     public NavigationDataManager(AppConfig config)
     {
         _config = config;
         InitializeButtons();
+        BindButtons();
     }
 
     private void InitializeButtons()
@@ -28,6 +29,25 @@ public class NavigationDataManager : IDataManager
 
         UpdateButtonsSelection();
         SelectedScreen.Subscribe(_ => UpdateButtonsSelection());
+    }
+
+    private void BindButtons()
+    {
+        _buttonsAsObject.Clear();
+        foreach (var button in Buttons)
+        {
+            _buttonsAsObject.Add(button);
+        }
+
+        Buttons.ObserveAdd().Subscribe(e => _buttonsAsObject.Insert(e.Index, e.Value));
+        Buttons.ObserveRemove().Subscribe(e => _buttonsAsObject.RemoveAt(e.Index));
+        Buttons.ObserveReplace().Subscribe(e => _buttonsAsObject[e.Index] = e.NewValue);
+        Buttons.ObserveMove().Subscribe(e => _buttonsAsObject.Move(e.OldIndex, e.NewIndex));
+        Buttons.ObserveReset().Subscribe(_ =>
+        {
+            _buttonsAsObject.Clear();
+            foreach (var button in Buttons) _buttonsAsObject.Add(button);
+        });
     }
 
     private void UpdateButtonsSelection()

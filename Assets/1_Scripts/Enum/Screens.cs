@@ -12,5 +12,9 @@ public enum Screens
     ProfileScreen,
     PlayersManagementScreen,
     MatchCenterScreen,
-    FinishBookingScreen
+    FinishBookingScreen,
+
+    //Onboarding
+    LoadingScreen,
+    OnboradingScreen
 }
