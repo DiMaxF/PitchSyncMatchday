@@ -6,6 +6,7 @@ public class ConfirmPanel : UIView<bool>
 {
     [SerializeField] private Text title;
     [SerializeField] private Text subtitle;
+    [SerializeField] private Button closeButton;
     [SerializeField] private Button acceptButton;
     [SerializeField] private Button declineButton;
 
@@ -30,6 +31,16 @@ public class ConfirmPanel : UIView<bool>
         if (declineButton != null)
         {
             declineButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    Trigger(false);
+                    Hide();
+                })
+                .AddTo(this);
+        }
+        if (closeButton != null)
+        {
+            closeButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     Trigger(false);

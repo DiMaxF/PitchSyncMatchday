@@ -313,7 +313,7 @@ MonoBehaviour:
   showQr: {fileID: 6336841377771532263}
   action: {fileID: 5931845994184544985}
   background: {fileID: 974304970887557791}
-  statusText: {fileID: 0}
+  statusText: {fileID: 3973774705266521193}
   pitchNameText: {fileID: 4044005705253635799}
   dateTimeText: {fileID: 8753098548001956742}
   pitchInfoText: {fileID: 1038532424074138195}
@@ -520,6 +520,7 @@ GameObject:
   - component: {fileID: 2128446666476678342}
   - component: {fileID: 4030826387979403873}
   - component: {fileID: 974304970887557791}
+  - component: {fileID: 8139678639979214033}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -584,6 +585,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8139678639979214033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7007614980707111467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &8123211084182643375
 GameObject:
   m_ObjectHideFlags: 0
@@ -1242,3 +1257,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5234276151166616437, guid: 3bee56bf72eb3ac47acd14aab25b8f0a, type: 3}
   m_PrefabInstance: {fileID: 7985017336188802685}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3973774705266521193 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6482322532615152148, guid: 3bee56bf72eb3ac47acd14aab25b8f0a, type: 3}
+  m_PrefabInstance: {fileID: 7985017336188802685}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6984532bccab7f6439c6a2d6f9968d65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatusBooking

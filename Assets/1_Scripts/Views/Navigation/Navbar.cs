@@ -57,7 +57,7 @@ public class Navbar : UIView<ReactiveCollection<object>>
         if (canvasGroup == null) return;
 
         canvasGroup.interactable = false;
-        await UniTask.Delay(300);
+        await UniTask.Delay(700);
         canvasGroup.interactable = true;
     }
 }

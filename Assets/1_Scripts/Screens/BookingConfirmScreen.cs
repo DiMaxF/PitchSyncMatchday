@@ -83,6 +83,7 @@ public class BookingConfirmScreen : UIScreen
                 .Subscribe(_ =>
                 {
                     OnSaveClicked();
+                    ScreenManager.Show(Screens.MyBookingScreen);
                 }));
         }
 

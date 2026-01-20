@@ -85,10 +85,10 @@ public class NotificationsScreen : UIScreen
 
         var model = new ConfirmPanelModel
         {
-            title = "Удалить все уведомления",
-            subtitle = "Вы уверены, что хотите удалить все уведомления?",
-            acceptText = "Удалить",
-            declineText = "Отмена"
+            title = "Clear all notifications",
+            subtitle = "Are you sure you want to clear all notifications?",
+            acceptText = "Clear",
+            declineText = "Cancel"
         };
 
         confirmPanel.Init(model);

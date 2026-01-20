@@ -16,12 +16,16 @@ public class BookingDetailsScreen : UIScreen
     [SerializeField] private Text basePrice;
     [SerializeField] private Text extrasPrice;
     [SerializeField] private Text totalPrice;
+    [SerializeField] private Button checkInQrButton;
+    [SerializeField] private QrPanel qrPanel;
     [SerializeField] private Button showCheckInQrButton;
     [SerializeField] private Button showMatchCenter;
+    [SerializeField] private Button closeButton;
 
     private BookingConfirmDataManager BookingConfirm => DataManager.BookingConfirm;
     private MatchCenterDataManager MatchCenter => DataManager.MatchCenter;
     private BookingModel _currentBooking;
+    private IDisposable _qrCodeSubscription;
 
     protected override void SubscribeToData()
     {
@@ -37,6 +41,31 @@ public class BookingDetailsScreen : UIScreen
             _currentBooking = booking;
             UpdateBookingInfo(booking);
         }));
+
+        if (checkInQrButton != null && qrPanel != null)
+        {
+            AddToDispose(checkInQrButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (_currentBooking != null)
+                    {
+                        _qrCodeSubscription?.Dispose();
+                        BookingConfirm.InitializeForBooking(_currentBooking);
+                        
+                        _qrCodeSubscription = BookingConfirm.QRCodeTexture.Subscribe(texture =>
+                        {
+                            if (texture != null)
+                            {
+                                var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                                qrPanel.Init(sprite);
+                                qrPanel.gameObject.SetActive(true);
+                                qrPanel.Show();
+                            }
+                        });
+                        AddToDispose(_qrCodeSubscription);
+                    }
+                }));
+        }
 
         if (showCheckInQrButton != null)
         {
@@ -61,6 +90,16 @@ public class BookingDetailsScreen : UIScreen
                         MatchCenter.InitializeFromBooking(_currentBooking.id);
                         ScreenManager?.Show(Screens.MatchCenterScreen);
                     }
+                }));
+        }
+
+
+        if (closeButton != null)
+        {
+            AddToDispose(closeButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    ScreenManager?.Back();
                 }));
         }
     }

@@ -764,11 +764,11 @@ RectTransform:
   - {fileID: 6535617731947980502}
   m_Father: {fileID: 669278279376299980}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 773, y: -81}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -230, y: 0}
   m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &204095284583166583
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -907,6 +907,7 @@ MonoBehaviour:
   squadNumberText: {fileID: 7152974093065485706}
   removeButton: {fileID: 3629335248530580630}
   captainToggle: {fileID: 5627878755846473415}
+  swipeToDelete: {fileID: 0}
 --- !u!114 &6859457617650231748
 MonoBehaviour:
   m_ObjectHideFlags: 0
