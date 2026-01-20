@@ -453,6 +453,9 @@ public class MatchCenterDataManager : IDataManager
             DataManager.Booking.FinishBooking(CurrentMatch.Value.bookingId.Value, CurrentMatch.Value.id);
         }
 
+        DataManager.Notifications.ScheduleMatchFinished(CurrentMatch.Value);
+        DataManager.Notifications.ScheduleWalletRemindersAfterFinish(CurrentMatch.Value);
+
         _appModel.matchesPlayed++;
         DataManager.Instance.SaveAppModel();
     }

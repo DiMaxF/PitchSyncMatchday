@@ -19,6 +19,7 @@ public class DataManager : MonoBehaviour
     public static LineupDataManager Lineup => Instance._lineup;
     public static MatchCenterDataManager MatchCenter => Instance._matchCenter;
     public static WalletDataManager Wallet => Instance._wallet;
+    public static NotificationsDataManager Notifications => Instance._notifications;
 
     private NavigationDataManager _navbar;
     private PitchFinderDataManager _pitchFinder;
@@ -28,6 +29,7 @@ public class DataManager : MonoBehaviour
     private LineupDataManager _lineup;
     private MatchCenterDataManager _matchCenter;
     private WalletDataManager _wallet;
+    private NotificationsDataManager _notifications;
 
 
 
@@ -75,6 +77,7 @@ public class DataManager : MonoBehaviour
         _lineup = new LineupDataManager(_appModel, config);
         _matchCenter = new MatchCenterDataManager(_appModel, config);
         _wallet = new WalletDataManager(_appModel);
+        _notifications = new NotificationsDataManager(_appModel);
     }
 
     private void OnApplicationPause(bool pauseStatus)

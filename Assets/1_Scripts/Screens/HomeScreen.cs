@@ -9,6 +9,7 @@ public class HomeScreen : UIScreen
     [SerializeField] private Button myBookingButton;
     [SerializeField] private Button walletButton;
     [SerializeField] private Button lineupButton;
+    [SerializeField] private Button notificationsButton;
     [SerializeField] private ListContainer upcomingEvents;
 
     private BookingDataManager Booking => DataManager.Booking;
@@ -43,6 +44,14 @@ public class HomeScreen : UIScreen
             .Subscribe(_ =>
             {
                 ScreenManager.Show(Screens.LineupScreen);
+            })
+            .AddTo(this);
+
+
+        notificationsButton.OnClickAsObservable()
+            .Subscribe(_ =>
+            {
+                ScreenManager.Show(Screens.NotificationsScreen);
             })
             .AddTo(this);
 

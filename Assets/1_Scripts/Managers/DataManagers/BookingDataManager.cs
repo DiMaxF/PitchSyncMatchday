@@ -595,6 +595,8 @@ public class BookingDataManager : IDataManager
     {
         if (CurrentDraft.Value == null) return;
 
+        var confirmedBooking = CurrentDraft.Value;
+
         if (string.IsNullOrEmpty(CurrentDraft.Value.dateTimeIso) && !string.IsNullOrEmpty(SelectedDateTimeIso.Value))
         {
             CurrentDraft.Value.dateTimeIso = SelectedDateTimeIso.Value;
@@ -620,6 +622,8 @@ public class BookingDataManager : IDataManager
             DataManager.Profile.BookingsCount.Value = _appModel.bookingsCount;
             DataManager.Instance.SaveAppModel();
         }
+
+        DataManager.Notifications.ScheduleBookingNotifications(confirmedBooking);
 
         CurrentDraft.Value = null;
         SelectedStadium.Value = null;

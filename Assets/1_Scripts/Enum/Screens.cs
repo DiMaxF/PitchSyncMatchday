@@ -13,7 +13,7 @@ public enum Screens
     PlayersManagementScreen,
     MatchCenterScreen,
     FinishBookingScreen,
-
+    NotificationsScreen,
     //Onboarding
     LoadingScreen,
     OnboradingScreen
