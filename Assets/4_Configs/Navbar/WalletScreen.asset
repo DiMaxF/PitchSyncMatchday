@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NavigationButtonConfig
   buttonName: Wallet
   icon: {fileID: 1656882636569200869, guid: 6e90a422d89a3024ea944e319fa3f2bc, type: 3}
-  screen: 7
+  screen: 8

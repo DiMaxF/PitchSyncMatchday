@@ -75,34 +75,12 @@ public class LineupScreen : UIScreen
 
         if (squadBluePanel != null && squadBluePanel.playersList != null)
         {
-            AddToDispose(UIManager.SubscribeToView(squadBluePanel.playersList, (int playerId) =>
-            {
-                Lineup.RemovePlayerFromTeam(playerId, TeamSide.Green);
-            }));
-
-            AddToDispose(UIManager.SubscribeToView(squadBluePanel.playersList, (SquadPlayerModel player) =>
-            {
-                if (player != null)
-                {
-                    Lineup.ToggleCaptain(player.playerId, TeamSide.Green);
-                }
-            }));
+            squadBluePanel.playersList.Init(Lineup.SquadBlueAsObject);
         }
 
         if (squadRedPanel != null && squadRedPanel.playersList != null)
         {
-            AddToDispose(UIManager.SubscribeToView(squadRedPanel.playersList, (int playerId) =>
-            {
-                Lineup.RemovePlayerFromTeam(playerId, TeamSide.Red);
-            }));
-
-            AddToDispose(UIManager.SubscribeToView(squadRedPanel.playersList, (SquadPlayerModel player) =>
-            {
-                if (player != null)
-                {
-                    Lineup.ToggleCaptain(player.playerId, TeamSide.Red);
-                }
-            }));
+            squadRedPanel.playersList.Init(Lineup.SquadRedAsObject);
         }
 
         if (playersButton != null)
@@ -132,7 +110,14 @@ public class LineupScreen : UIScreen
                     var savedLineup = Lineup.CurrentLineup.Value;
                     if (savedLineup != null)
                     {
-                        DataManager.MatchCenter.InitializeFromLineup(savedLineup.id);
+                        if (DataManager.MatchCenter.HasPendingLineupRequest())
+                        {
+                            DataManager.MatchCenter.AttachLineupToCurrentMatch(savedLineup);
+                        }
+                        else
+                        {
+                            DataManager.MatchCenter.InitializeFromLineup(savedLineup.id);
+                        }
                     }
                     ScreenManager?.Show(Screens.MatchCenterScreen);
                 }));

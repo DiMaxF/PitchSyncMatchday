@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NavigationButtonConfig
   buttonName: Profile
   icon: {fileID: 21300000, guid: 9dc58b20cb6667d44b4cbcfac7efd9f5, type: 3}
-  screen: 8
+  screen: 9

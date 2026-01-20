@@ -20,6 +20,8 @@ public class ProfileDataManager : IDataManager
     {
         _appModel = appModel;
 
+        SyncCountersFromData();
+        
         MatchesPlayed = new ReactiveProperty<int>(appModel.matchesPlayed);
         BookingsCount = new ReactiveProperty<int>(appModel.bookingsCount);
         LineupCreatedCount = new ReactiveProperty<int>(appModel.lineupCreatedCount);
@@ -39,6 +41,27 @@ public class ProfileDataManager : IDataManager
         ProfileName.Subscribe(value => _appModel.profileName = value).AddTo(_disposables);
         ProfileEmail.Subscribe(value => _appModel.profileEmail = value).AddTo(_disposables);
         ProfileUserpicPath.Subscribe(value => _appModel.profileUserpicPath = value).AddTo(_disposables);
+    }
+
+    private void SyncCountersFromData()
+    {
+        if (_appModel.lineups != null)
+        {
+            _appModel.lineupCreatedCount = _appModel.lineups.Count;
+        }
+
+        if (_appModel.bookings != null)
+        {
+            _appModel.bookingsCount = _appModel.bookings.Count;
+        }
+    }
+
+    public void RefreshCounters()
+    {
+        SyncCountersFromData();
+        MatchesPlayed.Value = _appModel.matchesPlayed;
+        BookingsCount.Value = _appModel.bookingsCount;
+        LineupCreatedCount.Value = _appModel.lineupCreatedCount;
     }
 
     public ProfileInfo BuildProfileInfo()

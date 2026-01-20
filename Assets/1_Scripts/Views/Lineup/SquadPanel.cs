@@ -10,6 +10,8 @@ public class SquadPanel : UIView<SquadPanelModel>
     [SerializeField] public ListContainer playersList;
     [SerializeField] private Button addPlayerButton;
 
+    private LineupDataManager Lineup => DataManager.Lineup;
+
     protected override void Subscribe()
     {
         base.Subscribe();
@@ -22,6 +24,27 @@ public class SquadPanel : UIView<SquadPanelModel>
                     Trigger(DataProperty.Value);
                 })
                 .AddTo(this);
+        }
+
+        if (playersList != null)
+        {
+            AddToDispose(UIManager.SubscribeToView(playersList, (int playerId) =>
+            {
+                var data = DataProperty.Value;
+                if (data != null)
+                {
+                    Lineup.RemovePlayerFromTeam(playerId, data.teamSide);
+                }
+            }));
+
+            AddToDispose(UIManager.SubscribeToView(playersList, (SquadPlayerModel player) =>
+            {
+                var data = DataProperty.Value;
+                if (player != null && data != null)
+                {
+                    Lineup.ToggleCaptain(player.playerId, data.teamSide);
+                }
+            }));
         }
     }
 

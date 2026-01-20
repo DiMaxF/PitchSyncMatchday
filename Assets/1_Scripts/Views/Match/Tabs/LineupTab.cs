@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
@@ -10,6 +8,8 @@ public class LineupTab : UIView
     [SerializeField] private Button shareLineupImage;
     [SerializeField] private SquadPanel redSquad;
     [SerializeField] private SquadPanel greenSquad;
+    [SerializeField] private Button createLineupButton;
+    [SerializeField] private GameObject lineupEmptyState;
 
     private MatchCenterDataManager MatchCenter => DataManager.MatchCenter;
     private LineupDataManager Lineup => DataManager.Lineup;
@@ -25,9 +25,38 @@ public class LineupTab : UIView
                 if (lineup != null)
                 {
                     schemeView.Init(lineup);
-                    UpdateSquadPanels(lineup);
+                    SyncLineupToSquads(lineup);
+                    UpdateSquadPanels();
                 }
+                UpdateEmptyState();
             }));
+        }
+
+        if (createLineupButton != null)
+        {
+            createLineupButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    MatchCenter.RequestLineupForCurrentMatch();
+                    DataManager.Navigation.SelectScreen(Screens.LineupScreen);
+                })
+                .AddTo(this);
+        }
+
+        if (greenSquad != null)
+        {
+            AddToDispose(Lineup.SquadGreen.ObserveAdd().Subscribe(_ => UpdateSquadPanels()));
+            AddToDispose(Lineup.SquadGreen.ObserveRemove().Subscribe(_ => UpdateSquadPanels()));
+            AddToDispose(Lineup.SquadGreen.ObserveReplace().Subscribe(_ => UpdateSquadPanels()));
+            AddToDispose(Lineup.SquadGreen.ObserveReset().Subscribe(_ => UpdateSquadPanels()));
+        }
+
+        if (redSquad != null)
+        {
+            AddToDispose(Lineup.SquadRed.ObserveAdd().Subscribe(_ => UpdateSquadPanels()));
+            AddToDispose(Lineup.SquadRed.ObserveRemove().Subscribe(_ => UpdateSquadPanels()));
+            AddToDispose(Lineup.SquadRed.ObserveReplace().Subscribe(_ => UpdateSquadPanels()));
+            AddToDispose(Lineup.SquadRed.ObserveReset().Subscribe(_ => UpdateSquadPanels()));
         }
     }
 
@@ -37,73 +66,104 @@ public class LineupTab : UIView
         var lineup = MatchCenter.CurrentLineup.Value;
         if (lineup != null)
         {
-            UpdateSquadPanels(lineup);
+            SyncLineupToSquads(lineup);
+            UpdateSquadPanels();
+        }
+        UpdateEmptyState();
+    }
+
+    private void UpdateEmptyState()
+    {
+        bool hasLineup = MatchCenter.CurrentLineup.Value != null;
+
+        if (schemeView != null)
+        {
+            schemeView.gameObject.SetActive(hasLineup);
+        }
+        if (greenSquad != null)
+        {
+            greenSquad.gameObject.SetActive(hasLineup);
+        }
+        if (redSquad != null)
+        {
+            redSquad.gameObject.SetActive(hasLineup);
+        }
+        if (createLineupButton != null)
+        {
+            createLineupButton.gameObject.SetActive(!hasLineup);
+        }
+        if (lineupEmptyState != null)
+        {
+            lineupEmptyState.SetActive(!hasLineup);
         }
     }
 
-    private void UpdateSquadPanels(LineupModel lineup)
+    private void SyncLineupToSquads(LineupModel lineup)
+    {
+        Lineup.SquadGreen.Clear();
+        Lineup.SquadRed.Clear();
+
+        int greenIndex = 1;
+        foreach (var playerId in lineup.playersBlue)
+        {
+            var player = Lineup.GetPlayerById(playerId);
+            if (player == null) continue;
+
+            var squadPlayer = new SquadPlayerModel
+            {
+                playerId = player.id,
+                name = player.name,
+                position = player.position,
+                squadNumber = greenIndex++,
+                isCaptain = lineup.captainBlue.HasValue && lineup.captainBlue.Value == player.id,
+                teamSide = TeamSide.Green,
+                teamIcon = Lineup.GetTeamIconForSide(TeamSide.Green)
+            };
+            Lineup.SquadGreen.Add(squadPlayer);
+        }
+
+        int redIndex = 1;
+        foreach (var playerId in lineup.playersRed)
+        {
+            var player = Lineup.GetPlayerById(playerId);
+            if (player == null) continue;
+
+            var squadPlayer = new SquadPlayerModel
+            {
+                playerId = player.id,
+                name = player.name,
+                position = player.position,
+                squadNumber = redIndex++,
+                isCaptain = lineup.captainRed.HasValue && lineup.captainRed.Value == player.id,
+                teamSide = TeamSide.Red,
+                teamIcon = Lineup.GetTeamIconForSide(TeamSide.Red)
+            };
+            Lineup.SquadRed.Add(squadPlayer);
+        }
+    }
+
+    private void UpdateSquadPanels()
     {
         if (greenSquad != null)
         {
-            var greenPlayers = BuildSquadPlayers(lineup.playersBlue, TeamSide.Green, lineup.captainBlue);
-            var greenModel = new SquadPanelModel
-            {
-                teamSide = TeamSide.Green,
-                players = greenPlayers,
-                squadIcon = Lineup.GetTeamIconForSide(TeamSide.Green),
-                playerCount = greenPlayers.Count
-            };
-            greenSquad.Init(greenModel);
+            var panelModel = Lineup.BuildSquadPanelModel(TeamSide.Green);
+            greenSquad.Init(panelModel);
             
             if (greenSquad.playersList != null)
             {
-                var greenAsObject = greenPlayers.Cast<object>().ToList();
-                greenSquad.playersList.Init(greenAsObject);
+                greenSquad.playersList.Init(Lineup.SquadBlueAsObject);
             }
         }
 
         if (redSquad != null)
         {
-            var redPlayers = BuildSquadPlayers(lineup.playersRed, TeamSide.Red, lineup.captainRed);
-            var redModel = new SquadPanelModel
-            {
-                teamSide = TeamSide.Red,
-                players = redPlayers,
-                squadIcon = Lineup.GetTeamIconForSide(TeamSide.Red),
-                playerCount = redPlayers.Count
-            };
-            redSquad.Init(redModel);
+            var panelModel = Lineup.BuildSquadPanelModel(TeamSide.Red);
+            redSquad.Init(panelModel);
             
             if (redSquad.playersList != null)
             {
-                var redAsObject = redPlayers.Cast<object>().ToList();
-                redSquad.playersList.Init(redAsObject);
+                redSquad.playersList.Init(Lineup.SquadRedAsObject);
             }
         }
-    }
-
-    private List<SquadPlayerModel> BuildSquadPlayers(List<int> ids, TeamSide side, int? captainId)
-    {
-        var result = new List<SquadPlayerModel>();
-        int idx = 1;
-
-        foreach (var id in ids)
-        {
-            var player = Lineup.GetPlayerById(id);
-            if (player == null) continue;
-
-            result.Add(new SquadPlayerModel
-            {
-                playerId = player.id,
-                name = player.name,
-                position = player.position,
-                squadNumber = idx++,
-                isCaptain = captainId.HasValue && captainId.Value == player.id,
-                teamSide = side,
-                teamIcon = Lineup.GetTeamIconForSide(side)
-            });
-        }
-
-        return result;
     }
 }

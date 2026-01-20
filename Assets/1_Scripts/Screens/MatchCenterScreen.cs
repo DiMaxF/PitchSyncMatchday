@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MatchCenterScreen : UIScreen
 {
+    [SerializeField] private Button backButton;
     [SerializeField] private Text statusMatchText;
     [SerializeField] private Text subtitle;
     [SerializeField] private ListContainer screenTabs;
@@ -14,11 +16,18 @@ public class MatchCenterScreen : UIScreen
     [SerializeField] private UIView tabNotes;
 
     private MatchCenterDataManager MatchCenter => DataManager.MatchCenter;
+    private PitchFinderDataManager PitchFinder => DataManager.PitchFinder;
+    private BookingDataManager Booking => DataManager.Booking;
 
     protected override void SubscribeToData()
     {
         base.SubscribeToData();
-
+        backButton.OnClickAsObservable()
+        .Subscribe(_ =>
+        {
+            ScreenManager.Back();
+        })
+        .AddTo(this);
         if (screenTabs != null)
         {
             screenTabs.Init(MatchCenter.TabsAsObject);
@@ -33,8 +42,7 @@ public class MatchCenterScreen : UIScreen
         }
 
         AddToDispose(MatchCenter.SelectedTab.Subscribe(tab => UpdateActiveTab(tab)));
-
-        
+        AddToDispose(MatchCenter.CurrentMatch.Subscribe(_ => UpdateSubtitle()));
     }
 
     private void UpdateActiveTab(MatchCenterTabs tab)
@@ -74,5 +82,62 @@ public class MatchCenterScreen : UIScreen
     {
         base.RefreshViews();
         UpdateActiveTab(MatchCenter.SelectedTab.Value);
+        UpdateSubtitle();
+    }
+
+    private void UpdateSubtitle()
+    {
+        if (subtitle == null || MatchCenter == null || MatchCenter.CurrentMatch.Value == null)
+            return;
+
+        var match = MatchCenter.CurrentMatch.Value;
+        
+        if (match.bookingId.HasValue)
+        {
+            var booking = Booking.AllBookings.FirstOrDefault(b => b.id == match.bookingId.Value);
+            if (booking != null)
+            {
+                var stadium = PitchFinder.GetStadiumById(booking.stadiumId);
+                string stadiumName = stadium != null ? stadium.name : "Unknown Stadium";
+                
+                string timeText = "";
+                if (DateTime.TryParse(booking.dateTimeIso, out var dateTime))
+                {
+                    timeText = dateTime.ToString("h:mm tt");
+                }
+                
+                if (!string.IsNullOrEmpty(timeText))
+                {
+                    subtitle.text = $"{stadiumName} - {timeText}";
+                }
+                else
+                {
+                    subtitle.text = stadiumName;
+                }
+                return;
+            }
+        }
+        
+        if (!string.IsNullOrEmpty(match.pitchName))
+        {
+            string timeText = "";
+            if (DateTime.TryParse(match.startTimeIso, out var startTime))
+            {
+                timeText = startTime.ToString("h:mm tt");
+            }
+            
+            if (!string.IsNullOrEmpty(timeText))
+            {
+                subtitle.text = $"{match.pitchName} - {timeText}";
+            }
+            else
+            {
+                subtitle.text = match.pitchName;
+            }
+        }
+        else
+        {
+            subtitle.text = "";
+        }
     }
 }

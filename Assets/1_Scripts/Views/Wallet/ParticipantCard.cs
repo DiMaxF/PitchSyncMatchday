@@ -7,6 +7,8 @@ public class ParticipantCard : UIView<ParticipantModel>
     [SerializeField] private Text nameText;
     [SerializeField] private Image icon;
 
+    private LineupDataManager Lineup => DataManager.Lineup;
+
     public override void UpdateUI()
     {
         base.UpdateUI();
@@ -15,16 +17,33 @@ public class ParticipantCard : UIView<ParticipantModel>
 
         if (valueText != null)
         {
-            valueText.text = $"Paid ${data.paidAmount}";
+            valueText.text = $"Paid ${data.paidAmount:F2}";
         }
+        
         if (nameText != null)
         {
-            nameText.text = $"{data.name}";
+            nameText.text = data.name;
         }
 
-        /*if (icon != null && data.icon != null)
+        if (icon != null)
         {
-            //icon.sprite = data.;
-        }*/
+            Sprite avatarSprite = null;
+            
+            if (data.playerId.HasValue)
+            {
+                var player = Lineup.GetPlayerById(data.playerId.Value);
+                if (player != null)
+                {
+                    avatarSprite = player.avatar;
+                }
+            }
+            
+            if (avatarSprite == null)
+            {
+                avatarSprite = Resources.Load<Sprite>("ic_profile_0");
+            }
+            
+            icon.sprite = avatarSprite;
+        }
     }
 }

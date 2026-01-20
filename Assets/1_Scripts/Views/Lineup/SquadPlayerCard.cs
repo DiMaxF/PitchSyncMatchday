@@ -10,6 +10,7 @@ public class SquadPlayerCard : UIView<SquadPlayerModel>
     [SerializeField] private Text squadNumberText;
     [SerializeField] private Button removeButton;
     [SerializeField] private SimpleToggle captainToggle;
+    [SerializeField] private SwipeToDelete swipeToDelete;
 
     protected override void Subscribe()
     {
@@ -37,6 +38,20 @@ public class SquadPlayerCard : UIView<SquadPlayerModel>
                     Trigger(DataProperty.Value);
                 }
             }));
+        }
+
+        if (swipeToDelete != null)
+        {
+            System.Action onDelete = () =>
+            {
+                if (DataProperty.Value != null)
+                {
+                    UIManager.TriggerAction(this, DataProperty.Value.playerId);
+                }
+            };
+
+            swipeToDelete.OnDelete += onDelete;
+            AddToDispose(Disposable.Create(() => swipeToDelete.OnDelete -= onDelete));
         }
     }
 

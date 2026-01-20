@@ -113,6 +113,13 @@ public class ListContainer : UIView<ReactiveCollection<object>>
     [SerializeField] private bool playShowOnSpawn = true;
     private async UniTask AnimateItemAppear(UIView item, int index, int version)
     {
+        if (item != null && !playShowOnSpawn)
+        {
+            item.gameObject.SetActive(true);
+            item.UpdateUI();
+            return;
+        }
+
         await UniTask.Delay(TimeSpan.FromSeconds(index * spawnDelayPerItem),
             cancellationToken: this.GetCancellationTokenOnDestroy());
 
@@ -121,13 +128,8 @@ public class ListContainer : UIView<ReactiveCollection<object>>
             if (playShowOnSpawn)
             {
                 await item.ShowAsync();
-                item.UpdateUI();
             }
-            else
-            {
-                item.gameObject.SetActive(true);
-                item.UpdateUI();
-            }
+            item.UpdateUI();
         }
     }
 

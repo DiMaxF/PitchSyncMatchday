@@ -49,6 +49,7 @@ public class ProfileScreen : UIScreen
             AddToDispose(walletButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
+                    ScreenManager?.Show(Screens.WalletScreen);
                 }));
         }
 

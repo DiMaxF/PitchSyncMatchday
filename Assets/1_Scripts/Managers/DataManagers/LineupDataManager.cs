@@ -306,6 +306,29 @@ public class LineupDataManager : IDataManager
             RenumberSquad(teamSide == TeamSide.Green ? TeamSide.Red : TeamSide.Green);
         }
 
+        bool shouldBeCaptain = targetSquad.Count == 0;
+        
+        if (!shouldBeCaptain)
+        {
+            for (int i = 0; i < targetSquad.Count; i++)
+            {
+                var p = targetSquad[i];
+                if (p.isCaptain)
+                {
+                    targetSquad[i] = new SquadPlayerModel
+                    {
+                        playerId = p.playerId,
+                        name = p.name,
+                        position = p.position,
+                        squadNumber = p.squadNumber,
+                        isCaptain = false,
+                        teamSide = p.teamSide,
+                        teamIcon = p.teamIcon
+                    };
+                }
+            }
+        }
+
         var squadNumber = targetSquad.Count + 1;
         var squadPlayer = new SquadPlayerModel
         {
@@ -313,8 +336,9 @@ public class LineupDataManager : IDataManager
             name = player.name,
             position = player.position,
             squadNumber = squadNumber,
-            isCaptain = false,
-            teamSide = teamSide
+            isCaptain = shouldBeCaptain,
+            teamSide = teamSide,
+            teamIcon = GetTeamIcon(teamSide)
         };
 
         targetSquad.Add(squadPlayer);
@@ -526,14 +550,18 @@ public class LineupDataManager : IDataManager
         }
 
         var lineup = CurrentLineup.Value;
+        bool isNewLineup = !_appModel.lineups.Contains(lineup);
+        
         lineup.playersBlue = SquadGreen.Select(sp => sp.playerId).ToList();
         lineup.playersRed = SquadRed.Select(sp => sp.playerId).ToList();
         lineup.captainBlue = SquadGreen.FirstOrDefault(sp => sp.isCaptain)?.playerId;
         lineup.captainRed = SquadRed.FirstOrDefault(sp => sp.isCaptain)?.playerId;
 
-        if (!_appModel.lineups.Contains(lineup))
+        if (isNewLineup)
         {
             _appModel.lineups.Add(lineup);
+            _appModel.lineupCreatedCount++;
+            DataManager.Profile.LineupCreatedCount.Value = _appModel.lineupCreatedCount;
         }
 
         DataManager.Instance.SaveAppModel();

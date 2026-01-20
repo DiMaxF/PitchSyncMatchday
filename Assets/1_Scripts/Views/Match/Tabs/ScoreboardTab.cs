@@ -12,6 +12,7 @@ public class ScoreboardTab : UIView
     [SerializeField] private Text timer;
     [SerializeField] private ListContainer timerStates;
     [SerializeField] private Button finishTimer;
+    [SerializeField] private ScreensManager screensManager;
 
     private MatchCenterDataManager MatchCenter => DataManager.MatchCenter;
 
@@ -51,9 +52,9 @@ public class ScoreboardTab : UIView
             finishTimer.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    if (MatchCenter != null)
+                    if (MatchCenter != null && MatchCenter.CurrentMatch.Value != null)
                     {
-                        MatchCenter.FinishMatch();
+                        screensManager.Show(Screens.FinishBookingScreen);
                     }
                 })
                 .AddTo(this);

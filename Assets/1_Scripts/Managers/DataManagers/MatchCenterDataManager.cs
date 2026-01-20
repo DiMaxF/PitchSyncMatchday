@@ -35,6 +35,8 @@ public class MatchCenterDataManager : IDataManager
     private readonly ReactiveCollection<object> _timerStatesAsObject = new ReactiveCollection<object>();
     public ReactiveCollection<object> TimerStatesAsObject => _timerStatesAsObject;
 
+    public int? PendingBookingId { get; private set; }
+
     public MatchCenterDataManager(AppModel appModel, AppConfig appConfig)
     {
         _appModel = appModel;
@@ -217,6 +219,36 @@ public class MatchCenterDataManager : IDataManager
         InitializeMatch(match, lineup);
     }
 
+    public bool HasPendingLineupRequest()
+    {
+        return PendingBookingId.HasValue || (CurrentMatch.Value != null && CurrentMatch.Value.bookingId.HasValue && CurrentLineup.Value == null);
+    }
+
+    public void RequestLineupForCurrentMatch()
+    {
+        if (CurrentMatch.Value != null && CurrentMatch.Value.bookingId.HasValue)
+        {
+            PendingBookingId = CurrentMatch.Value.bookingId;
+        }
+    }
+
+    public void AttachLineupToCurrentMatch(LineupModel lineup)
+    {
+        if (CurrentMatch.Value == null || lineup == null) return;
+
+        CurrentMatch.Value.lineupId = lineup.id;
+        CurrentLineup.Value = lineup;
+        lineup.matchId = CurrentMatch.Value.id;
+
+        if (!_appModel.lineups.Contains(lineup))
+        {
+            _appModel.lineups.Add(lineup);
+        }
+
+        PendingBookingId = null;
+        SaveMatch();
+    }
+
     private void InitializeMatch(MatchModel match, LineupModel lineup)
     {
         if (!_appModel.matches.Contains(match))
@@ -226,6 +258,7 @@ public class MatchCenterDataManager : IDataManager
 
         CurrentMatch.Value = match;
         CurrentLineup.Value = lineup;
+        PendingBookingId = lineup == null ? match.bookingId : null;
 
         ElapsedSeconds.Value = match.elapsedSeconds;
         ScoreBlue.Value = match.scoreBlue;
@@ -417,12 +450,7 @@ public class MatchCenterDataManager : IDataManager
 
         if (CurrentMatch.Value.bookingId.HasValue)
         {
-            var booking = _appModel.bookings.FirstOrDefault(b => b.id == CurrentMatch.Value.bookingId.Value);
-            if (booking != null)
-            {
-                booking.status = BookingStatus.Finished;
-                booking.matchId = CurrentMatch.Value.id;
-            }
+            DataManager.Booking.FinishBooking(CurrentMatch.Value.bookingId.Value, CurrentMatch.Value.id);
         }
 
         _appModel.matchesPlayed++;
@@ -515,6 +543,8 @@ public class MatchCenterDataManager : IDataManager
     {
         foreach (TimerState state in Enum.GetValues(typeof(TimerState)))
         {
+            if (state == TimerState.Finish) continue; // Skip Finish state
+            
             TimerStates.Add(new ToggleButtonModel
             {
                 name = state.ToString(),
@@ -546,7 +576,9 @@ public class MatchCenterDataManager : IDataManager
 
     private void UpdateTimerStatesSelection()
     {
-        var states = Enum.GetValues(typeof(TimerState)).Cast<TimerState>().ToList();
+        var states = Enum.GetValues(typeof(TimerState)).Cast<TimerState>()
+            .Where(s => s != TimerState.Finish) // Exclude Finish state
+            .ToList();
         for (int i = 0; i < TimerStates.Count && i < states.Count; i++)
         {
             var state = states[i];

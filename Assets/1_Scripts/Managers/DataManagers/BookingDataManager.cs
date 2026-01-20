@@ -607,9 +607,18 @@ public class BookingDataManager : IDataManager
         CurrentDraft.Value.status = BookingStatus.Confirmed;
         CurrentDraft.Value.qrPayload = JsonUtility.ToJson(CurrentDraft.Value);
 
+        bool isNewBooking = !_allBookings.Contains(CurrentDraft.Value);
+        
         _allBookings.Add(CurrentDraft.Value);
         AllBookings.Add(CurrentDraft.Value);
         UpdateFilteredBookings();
+
+        if (isNewBooking)
+        {
+            _appModel.bookingsCount++;
+            DataManager.Profile.BookingsCount.Value = _appModel.bookingsCount;
+            DataManager.Instance.SaveAppModel();
+        }
 
         CurrentDraft.Value = null;
         SelectedStadium.Value = null;
@@ -642,6 +651,21 @@ public class BookingDataManager : IDataManager
         {
             booking.status = BookingStatus.Canceled;
             UpdateFilteredBookings();
+        }
+    }
+
+    public void FinishBooking(int bookingId, int? matchId = null)
+    {
+        var booking = _allBookings.FirstOrDefault(b => b.id == bookingId);
+        if (booking != null)
+        {
+            booking.status = BookingStatus.Finished;
+            if (matchId.HasValue)
+            {
+                booking.matchId = matchId;
+            }
+            UpdateFilteredBookings();
+            DataManager.Instance.SaveAppModel();
         }
     }
 

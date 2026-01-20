@@ -11,6 +11,8 @@ public class ScreensManager : MonoBehaviour
     private NavigationDataManager Navigation => DataManager.Navigation;
 
     private UIScreen _currentScreen;
+    private readonly Stack<Screens> _screenHistory = new Stack<Screens>();
+    private bool _isNavigatingBack = false;
 
     private void Start()
     {
@@ -26,7 +28,31 @@ public class ScreensManager : MonoBehaviour
 
     public void Show(Screens screen)
     {
+        if (!_isNavigatingBack && _currentScreen != null && _currentScreen.ScreenType != screen)
+        {
+            _screenHistory.Push(_currentScreen.ScreenType);
+        }
+        _isNavigatingBack = false;
         Navigation.SelectScreen(screen);
+    }
+
+    public void Back()
+    {
+        if (_screenHistory.Count == 0) return;
+
+        _isNavigatingBack = true;
+        var previousScreen = _screenHistory.Pop();
+        Navigation.SelectScreen(previousScreen);
+    }
+
+    public bool CanGoBack()
+    {
+        return _screenHistory.Count > 0;
+    }
+
+    public void ClearHistory()
+    {
+        _screenHistory.Clear();
     }
 
     private async void ShowScreen(Screens screen)

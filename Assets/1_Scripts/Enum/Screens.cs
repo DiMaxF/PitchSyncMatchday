@@ -11,5 +11,6 @@ public enum Screens
     WalletScreen,
     ProfileScreen,
     PlayersManagementScreen,
-    MatchCenterScreen
+    MatchCenterScreen,
+    FinishBookingScreen
 }
