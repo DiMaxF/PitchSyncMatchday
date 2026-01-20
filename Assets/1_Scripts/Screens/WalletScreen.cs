@@ -117,17 +117,17 @@ public class WalletScreen : UIScreen
 
         if (totalCost != null)
         {
-            totalCost.text = totalCostValue.ToString("F2");
+            totalCost.text = $"${totalCostValue}";
         }
 
         if (paidText != null)
         {
-            paidText.text = totalPaidValue.ToString("F2");
+            paidText.text = $"${totalPaidValue}";
         }
 
         if (remainigText != null)
         {
-            remainigText.text = remaining.ToString("F2");
+            remainigText.text = $"${remaining}";
         }
     }
 

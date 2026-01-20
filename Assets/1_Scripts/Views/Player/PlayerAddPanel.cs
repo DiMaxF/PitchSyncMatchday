@@ -1,8 +1,12 @@
 using System;
+using System.IO;
 using System.Linq;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class PlayerAddPanel : UIView
 {
@@ -20,7 +24,16 @@ public class PlayerAddPanel : UIView
 
     private LineupDataManager Lineup => DataManager.Lineup;
 
+    protected override void OnEnable()
+    {
+        base.OnEnable();
 
+        if (roles != null)
+        {
+            InitializeRoles();
+            roles.Init(Lineup.PositionFiltersAsObject);
+        }
+    }
     protected override void Subscribe()
     {
         base.Subscribe();
@@ -35,6 +48,7 @@ public class PlayerAddPanel : UIView
                 if (Enum.TryParse<PlayerPosition>(data.name, out var position))
                 {
                     _selectedPosition = position;
+                    UpdateRolesSelection();
                 }
             }));
         }
@@ -72,16 +86,15 @@ public class PlayerAddPanel : UIView
 
     private void InitializeRoles()
     {
-        if (Lineup.PositionFilters.Count == 0)
+        Lineup.PositionFilters.Clear();
+
+        foreach (PlayerPosition position in Enum.GetValues(typeof(PlayerPosition)))
         {
-            foreach (PlayerPosition position in Enum.GetValues(typeof(PlayerPosition)))
+            Lineup.PositionFilters.Add(new ToggleButtonModel
             {
-                Lineup.PositionFilters.Add(new ToggleButtonModel
-                {
-                    name = position.ToString(),
-                    selected = position == _selectedPosition
-                });
-            }
+                name = position.ToString(),
+                selected = position == _selectedPosition
+            });
         }
     }
 
@@ -117,6 +130,7 @@ public class PlayerAddPanel : UIView
         _editingPlayerId = player.id;
         _selectedPosition = player.position;
         _selectedAvatar = player.avatar;
+        _avatarPath = player.avatarPath;
         
         if (nameInput != null)
         {
@@ -139,11 +153,15 @@ public class PlayerAddPanel : UIView
             var filter = Lineup.PositionFilters[i];
             if (Enum.TryParse<PlayerPosition>(filter.name, out var position))
             {
-                Lineup.PositionFilters[i] = new ToggleButtonModel
+                var newSelected = position == _selectedPosition;
+                if (filter.selected != newSelected)
                 {
-                    name = filter.name,
-                    selected = position == _selectedPosition
-                };
+                    Lineup.PositionFilters[i] = new ToggleButtonModel
+                    {
+                        name = filter.name,
+                        selected = newSelected
+                    };
+                }
             }
         }
     }
@@ -169,6 +187,77 @@ public class PlayerAddPanel : UIView
 
     private void OnAddImageClicked()
     {
+#if UNITY_ANDROID
+        NativeFilePicker.PickFile(OnImagePicked, "image/*");
+#elif UNITY_IOS
+        NativeFilePicker.PickFile(OnImagePicked, "public.image");
+#elif UNITY_EDITOR
+        string path = UnityEditor.EditorUtility.OpenFilePanel("Select image", "", "png,jpg,jpeg");
+        if (!string.IsNullOrEmpty(path))
+        {
+            OnImagePicked(path);
+        }
+#else
+        Debug.LogWarning("File picker not supported on this platform");
+#endif
+    }
+
+    private void OnImagePicked(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            return;
+        }
+
+        try
+        {
+            byte[] imageData = File.ReadAllBytes(path);
+            Texture2D sourceTexture = new Texture2D(2, 2);
+            
+            if (!sourceTexture.LoadImage(imageData))
+            {
+                Debug.LogError("Failed to load image from path: " + path);
+                return;
+            }
+
+            int size = Mathf.Min(sourceTexture.width, sourceTexture.height);
+            int x = (sourceTexture.width - size) / 2;
+            int y = (sourceTexture.height - size) / 2;
+
+            Texture2D croppedTexture = new Texture2D(size, size);
+            Color[] pixels = sourceTexture.GetPixels(x, y, size, size);
+            croppedTexture.SetPixels(pixels);
+            croppedTexture.Apply();
+
+            Sprite sprite = Sprite.Create(croppedTexture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+            
+            UnityEngine.Object.Destroy(sourceTexture);
+            
+            _selectedAvatar = sprite;
+            
+            if (avatar != null)
+            {
+                avatar.sprite = sprite;
+            }
+
+            if (_editingPlayerId.HasValue)
+            {
+                var playerId = _editingPlayerId.Value;
+                var fileName = $"player_{playerId}_avatar.png";
+                FileUtils.SaveImage(sprite, fileName);
+                _avatarPath = fileName;
+            }
+            else
+            {
+                var tempFileName = $"player_temp_{DateTime.UtcNow.Ticks}_avatar.png";
+                FileUtils.SaveImage(sprite, tempFileName);
+                _avatarPath = tempFileName;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to process image: {ex.Message}");
+        }
     }
 
 }

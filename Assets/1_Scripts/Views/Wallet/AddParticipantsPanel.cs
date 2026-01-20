@@ -1,16 +1,21 @@
+using NUnit.Framework.Constraints;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AddParticipantsPanel : UIView
 {
+    [SerializeField] private Text selectedPlayerText;
     [SerializeField] private Button closeButton;
+    [SerializeField] private Button saveButton;
     [SerializeField] private Button dropdownShow;
     [SerializeField] private Button dropdownHide;
     [SerializeField] private ListContainer dropdownPlayers;
 
     private WalletDataManager Wallet => DataManager.Wallet;
     private LineupDataManager Lineup => DataManager.Lineup;
+
+    private PlayerModel selectedPlayer;
 
     protected override void OnEnable()
     {
@@ -31,17 +36,24 @@ public class AddParticipantsPanel : UIView
             {
                 if (player != null)
                 {
-                    Wallet.AddParticipant(player.id, player.name);
+                    selectedPlayer = player;
+                    selectedPlayerText.text = selectedPlayer.name;
                     HideDropdown();
-                    Hide();
                 }
             }));
         }
-
+        selectedPlayerText.text = "None";
         if (dropdownShow != null)
         {
             dropdownShow.OnClickAsObservable()
                 .Subscribe(_ => ShowDropdown())
+                .AddTo(this);
+        }
+
+        if (saveButton != null)
+        {
+            saveButton.OnClickAsObservable()
+                .Subscribe(_ => Save())
                 .AddTo(this);
         }
 
@@ -60,15 +72,22 @@ public class AddParticipantsPanel : UIView
         }
     }
 
+
+    private void Save() 
+    {
+        Wallet.AddParticipant(selectedPlayer.id, selectedPlayer.name);
+        Hide();
+    }
+
     private void ShowDropdown()
     {
         if (dropdownPlayers != null)
         {
-            dropdownPlayers.gameObject.SetActive(true);
+            dropdownPlayers.Show();
         }
         if (dropdownShow != null)
         {
-            dropdownShow.gameObject.SetActive(false);
+            //dropdownShow.gameObject.SetActive(false);
         }
         if (dropdownHide != null)
         {
@@ -80,11 +99,11 @@ public class AddParticipantsPanel : UIView
     {
         if (dropdownPlayers != null)
         {
-            dropdownPlayers.gameObject.SetActive(false);
+            dropdownPlayers.Hide();
         }
         if (dropdownShow != null)
         {
-            dropdownShow.gameObject.SetActive(true);
+            //dropdownShow.gameObject.SetActive(true);
         }
         if (dropdownHide != null)
         {
