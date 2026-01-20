@@ -8,8 +8,6 @@ public class MatchCenterScreen : UIScreen
     [SerializeField] private Text statusMatchText;
     [SerializeField] private Text subtitle;
     [SerializeField] private ListContainer screenTabs;
-    [SerializeField] private MatchSchemeView schemeView;
-    [SerializeField] private Button shareLineupImage;
 
     [SerializeField] private UIView tabLineup;
     [SerializeField] private UIView tabScoreboard;
@@ -36,16 +34,7 @@ public class MatchCenterScreen : UIScreen
 
         AddToDispose(MatchCenter.SelectedTab.Subscribe(tab => UpdateActiveTab(tab)));
 
-        if (schemeView != null)
-        {
-            AddToDispose(MatchCenter.CurrentLineup.Subscribe(lineup =>
-            {
-                if (lineup != null)
-                {
-                    schemeView.Init(lineup);
-                }
-            }));
-        }
+        
     }
 
     private void UpdateActiveTab(MatchCenterTabs tab)

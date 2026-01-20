@@ -6,6 +6,8 @@ public class HomeScreen : UIScreen
 {
     [SerializeField] private Button pitchFinderButton;
     [SerializeField] private Button myBookingButton;
+    [SerializeField] private Button walletButton;
+    [SerializeField] private Button lineupButton;
 
     protected override void SubscribeToData()
     {
@@ -21,6 +23,18 @@ public class HomeScreen : UIScreen
             .Subscribe(_ =>
             {
                 ScreenManager.Show(Screens.MyBookingScreen);
+            })
+            .AddTo(this);
+        walletButton.OnClickAsObservable()
+            .Subscribe(_ =>
+            {
+                ScreenManager.Show(Screens.WalletScreen);
+            })
+            .AddTo(this);
+        lineupButton.OnClickAsObservable()
+            .Subscribe(_ =>
+            {
+                ScreenManager.Show(Screens.LineupScreen);
             })
             .AddTo(this);
     }
