@@ -24,6 +24,16 @@ public class ScreensManager : MonoBehaviour
 
         Navigation.SelectedScreen.Subscribe(ShowScreen).AddTo(this);
         ShowScreen(Navigation.SelectedScreen.Value);
+
+        var loadingScreen = screens.FirstOrDefault(s => s.ScreenType == Screens.LoadingScreen);
+        if (loadingScreen != null)
+        {
+            ShowScreen(Screens.LoadingScreen);
+        }
+        else
+        {
+            ShowScreen(Navigation.SelectedScreen.Value);
+        }
     }
 
     public void Show(Screens screen)

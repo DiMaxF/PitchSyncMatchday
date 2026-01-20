@@ -9,8 +9,11 @@ public class SquadPanel : UIView<SquadPanelModel>
     [SerializeField] private Text playerCountText;
     [SerializeField] public ListContainer playersList;
     [SerializeField] private Button addPlayerButton;
+    [SerializeField] private ConfirmPanel confirmPanel;
 
     private LineupDataManager Lineup => DataManager.Lineup;
+    private int? _pendingPlayerIdToRemove;
+    private TeamSide? _pendingTeamSide;
 
     protected override void Subscribe()
     {
@@ -33,7 +36,7 @@ public class SquadPanel : UIView<SquadPanelModel>
                 var data = DataProperty.Value;
                 if (data != null)
                 {
-                    Lineup.RemovePlayerFromTeam(playerId, data.teamSide);
+                    ShowConfirmRemoveFromTeam(playerId, data.teamSide);
                 }
             }));
 
@@ -46,6 +49,39 @@ public class SquadPanel : UIView<SquadPanelModel>
                 }
             }));
         }
+
+        if (confirmPanel != null)
+        {
+            AddToDispose(UIManager.SubscribeToView(confirmPanel, (bool confirmed) =>
+            {
+                if (confirmed && _pendingPlayerIdToRemove.HasValue && _pendingTeamSide.HasValue)
+                {
+                    Lineup.RemovePlayerFromTeam(_pendingPlayerIdToRemove.Value, _pendingTeamSide.Value);
+                }
+                _pendingPlayerIdToRemove = null;
+                _pendingTeamSide = null;
+            }));
+        }
+    }
+
+    private void ShowConfirmRemoveFromTeam(int playerId, TeamSide teamSide)
+    {
+        var player = Lineup.GetPlayerById(playerId);
+        if (player == null || confirmPanel == null) return;
+
+        _pendingPlayerIdToRemove = playerId;
+        _pendingTeamSide = teamSide;
+
+        var model = new ConfirmPanelModel
+        {
+            title = "Remove Player",
+            subtitle = $"Are you sure you want to remove {player.name} from the team?",
+            acceptText = "Remove",
+            declineText = "Cancel"
+        };
+
+        confirmPanel.Init(model);
+        confirmPanel.Show();
     }
 
     public override void UpdateUI()

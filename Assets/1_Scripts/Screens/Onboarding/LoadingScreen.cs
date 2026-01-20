@@ -7,16 +7,18 @@ public class LoadingScreen : UIScreen
     {
         base.OnEnable();
         Application.targetFrameRate = 60;
-
     }
 
-    private void Start()
+    protected override void SubscribeToData()
     {
-        ScreenManager?.Show(Screens.LoadingScreen);
+        base.SubscribeToData();
+
+        // Показать экран автоматически при инициализации
+        ShowAsync().Forget();
         WaitForLoad();
     }
 
-    private async void WaitForLoad() 
+    private async void WaitForLoad()
     {
         await UniTask.Delay(2893);
         ScreenManager?.Show(Screens.OnboradingScreen);

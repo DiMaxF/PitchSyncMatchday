@@ -8,13 +8,19 @@ public class PlayersManagementScreen : UIScreen
     [SerializeField] private Button addButton;
     [SerializeField] private PlayerAddPanel addPanel;
     [SerializeField] private ListContainer players;
+    [SerializeField] private ConfirmPanel confirmPanel;
 
     private LineupDataManager Lineup => DataManager.Lineup;
+    private int? _pendingPlayerIdToRemove;
 
     protected override void OnEnable()
     {
         base.OnEnable();
         addPanel.gameObject.SetActive(false);
+        if (confirmPanel != null)
+        {
+            confirmPanel.gameObject.SetActive(false);
+        }
     }
 
     protected override void SubscribeToData()
@@ -35,7 +41,7 @@ public class PlayersManagementScreen : UIScreen
 
             AddToDispose(UIManager.SubscribeToView(players, (int playerId) =>
             {
-                Lineup.RemovePlayer(playerId);
+                ShowConfirmRemovePlayer(playerId);
             }));
         }
 
@@ -60,5 +66,36 @@ public class PlayersManagementScreen : UIScreen
                     ScreenManager?.Show(Screens.LineupScreen);
                 }));
         }
+
+        if (confirmPanel != null)
+        {
+            AddToDispose(UIManager.SubscribeToView(confirmPanel, (bool confirmed) =>
+            {
+                if (confirmed && _pendingPlayerIdToRemove.HasValue)
+                {
+                    Lineup.RemovePlayer(_pendingPlayerIdToRemove.Value);
+                }
+                _pendingPlayerIdToRemove = null;
+            }));
+        }
+    }
+
+    private void ShowConfirmRemovePlayer(int playerId)
+    {
+        var player = Lineup.GetPlayerById(playerId);
+        if (player == null || confirmPanel == null) return;
+
+        _pendingPlayerIdToRemove = playerId;
+
+        var model = new ConfirmPanelModel
+        {
+            title = "Delete Player",
+            subtitle = $"Are you sure you want to delete {player.name}? This action cannot be undone.",
+            acceptText = "Delete",
+            declineText = "Cancel"
+        };
+
+        confirmPanel.Init(model);
+        confirmPanel.Show();
     }
 }

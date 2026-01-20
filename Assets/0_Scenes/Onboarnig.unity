@@ -1100,6 +1100,7 @@ GameObject:
   - component: {fileID: 1054762960}
   - component: {fileID: 1054762962}
   - component: {fileID: 1054762961}
+  - component: {fileID: 1054762963}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -1164,6 +1165,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1054762959}
   m_CullTransparentMesh: 1
+--- !u!111 &1054762963
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054762959}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Animation: {fileID: 7400000, guid: e38530bd183d26745a9610bbfb1bbf5a, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: e38530bd183d26745a9610bbfb1bbf5a, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0
 --- !u!1 &1094716460
 GameObject:
   m_ObjectHideFlags: 0
@@ -1532,7 +1550,7 @@ PrefabInstance:
     - target: {fileID: 7350191246525022547, guid: c4222da58f6cab1499530cd9aa0ba63a, type: 3}
       propertyPath: itemPrefab
       value: 
-      objectReference: {fileID: 3205439370869345102, guid: a8d8f7d55e543c342bcc7f2be2e20b03, type: 3}
+      objectReference: {fileID: 3205439370869345102, guid: 6e76ee3e1328a6845b28454319b0abb1, type: 3}
     - target: {fileID: 7350191246525022547, guid: c4222da58f6cab1499530cd9aa0ba63a, type: 3}
       propertyPath: noItemPrefab
       value: 

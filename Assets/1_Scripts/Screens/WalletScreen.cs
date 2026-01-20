@@ -1,3 +1,4 @@
+using System.Linq;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,14 +17,18 @@ public class WalletScreen : UIScreen
     [SerializeField] private SimpleToggle manualToggle;
     [SerializeField] private AddParticipantsPanel addParticipantsPanel;
     [SerializeField] private AddExpensePanel addExpensePanel;
+    [SerializeField] private ConfirmPanel confirmPanel;
 
     private WalletDataManager Wallet => DataManager.Wallet;
+    private int? _pendingParticipantIdToRemove;
+    private int? _pendingExpenseIdToRemove;
 
     protected override void OnEnable()
     {
         base.OnEnable();
         if (addParticipantsPanel != null) addParticipantsPanel.gameObject.SetActive(false);
         if (addExpensePanel != null) addExpensePanel.gameObject.SetActive(false);
+        if (confirmPanel != null) confirmPanel.gameObject.SetActive(false);
     }
 
     protected override void SubscribeToData()
@@ -41,7 +46,7 @@ public class WalletScreen : UIScreen
 
             AddToDispose(UIManager.SubscribeToView(participants, (int participantId) =>
             {
-                Wallet.RemoveParticipant(participantId);
+                ShowConfirmRemoveParticipant(participantId);
             }));
         }
 
@@ -63,7 +68,7 @@ public class WalletScreen : UIScreen
 
             AddToDispose(UIManager.SubscribeToView(expenses, (int expenseId) =>
             {
-                Wallet.RemoveExpense(expenseId);
+                ShowConfirmRemoveExpense(expenseId);
             }));
         }
 
@@ -107,6 +112,69 @@ public class WalletScreen : UIScreen
 
         AddToDispose(Wallet.TotalCost.Subscribe(_ => UpdateTotals()));
         AddToDispose(Wallet.TotalPaid.Subscribe(_ => UpdateTotals()));
+
+        if (confirmPanel != null)
+        {
+            AddToDispose(UIManager.SubscribeToView(confirmPanel, (bool confirmed) =>
+            {
+                if (confirmed)
+                {
+                    if (_pendingParticipantIdToRemove.HasValue)
+                    {
+                        Wallet.RemoveParticipant(_pendingParticipantIdToRemove.Value);
+                        _pendingParticipantIdToRemove = null;
+                    }
+                    else if (_pendingExpenseIdToRemove.HasValue)
+                    {
+                        Wallet.RemoveExpense(_pendingExpenseIdToRemove.Value);
+                        _pendingExpenseIdToRemove = null;
+                    }
+                }
+                else
+                {
+                    _pendingParticipantIdToRemove = null;
+                    _pendingExpenseIdToRemove = null;
+                }
+            }));
+        }
+    }
+
+    private void ShowConfirmRemoveParticipant(int participantId)
+    {
+        var participant = Wallet.Participants.FirstOrDefault(p => p.id == participantId);
+        if (participant == null || confirmPanel == null) return;
+
+        _pendingParticipantIdToRemove = participantId;
+
+        var model = new ConfirmPanelModel
+        {
+            title = "Remove Participant",
+            subtitle = $"Are you sure you want to remove {participant.name}?",
+            acceptText = "Remove",
+            declineText = "Cancel"
+        };
+
+        confirmPanel.Init(model);
+        confirmPanel.Show();
+    }
+
+    private void ShowConfirmRemoveExpense(int expenseId)
+    {
+        var expense = Wallet.Expenses.FirstOrDefault(e => e.id == expenseId);
+        if (expense == null || confirmPanel == null) return;
+
+        _pendingExpenseIdToRemove = expenseId;
+
+        var model = new ConfirmPanelModel
+        {
+            title = "Remove Expense",
+            subtitle = $"Are you sure you want to remove {expense.name} (${expense.amount:F2})?",
+            acceptText = "Remove",
+            declineText = "Cancel"
+        };
+
+        confirmPanel.Init(model);
+        confirmPanel.Show();
     }
 
     private void UpdateTotals()
