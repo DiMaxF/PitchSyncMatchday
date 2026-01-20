@@ -9,14 +9,14 @@ public class MatchSchemeView : UIView<LineupModel>
     [SerializeField] private Transform playersContainer;
     [SerializeField] private PlayerIcon playerPrefab;
 
-    [SerializeField] private float minIconSize = 40f;
-    [SerializeField] private float maxIconSize = 90f;
+    [SerializeField] private float minIconSize = 35f;
+    [SerializeField] private float maxIconSize = 85f;
 
-    [SerializeField] private float sideMargin = 0.08f;
-    [SerializeField] private float gkY = 0.08f;
-    [SerializeField] private float dfY = 0.28f;
-    [SerializeField] private float mfY = 0.55f;
-    [SerializeField] private float fwY = 0.80f;
+    [SerializeField] private float sideMargin = 0.15f;
+    [SerializeField] private float gkY = 0.07f;
+    [SerializeField] private float dfY = 0.20f;
+    [SerializeField] private float mfY = 0.34f;
+    [SerializeField] private float fwY = 0.47f;
 
     private readonly List<PlayerIcon> _icons = new List<PlayerIcon>();
     private LineupDataManager Lineup => DataManager.Lineup;
@@ -97,14 +97,29 @@ public class MatchSchemeView : UIView<LineupModel>
     {
         if (line.Count == 0) return;
 
-        float y = isTopTeam ? 1f - yNorm : yNorm;
         var xs = GetLineXs(line.Count);
+        float arcStrength = 0.05f; // Сила изгиба линии (чем больше, тем сильнее дуга)
 
         for (int i = 0; i < line.Count; i++)
         {
             var model = line[i];
+            float xNorm = xs[i];
+            
+            // Расчет смещения по Y (эффект дуги)
+            // Центральные игроки чуть "впереди", крайние чуть "сзади"
+            float yOffset = 0f;
+            if (line.Count >= 3)
+            {
+                float distFromCenter = Mathf.Abs(xNorm - 0.5f) * 2f; // 0 (центр) -> 1 (край)
+                // yOffset отрицательный (назад к своим воротам)
+                yOffset = -(distFromCenter * distFromCenter) * arcStrength;
+            }
+
+            float finalYNorm = yNorm + yOffset;
+            float y = isTopTeam ? 1f - finalYNorm : finalYNorm;
+
             var icon = SpawnIcon(model);
-            var anchored = NormalizedToAnchored(xs[i], y);
+            var anchored = NormalizedToAnchored(xNorm, y);
             icon.ApplyLayout(anchored, iconSize);
         }
     }
@@ -118,8 +133,16 @@ public class MatchSchemeView : UIView<LineupModel>
             return xs;
         }
 
-        float left = sideMargin;
-        float right = 1f - sideMargin;
+        // Адаптивная ширина: если игроков мало, они стоят ближе к центру
+        // Если много - ближе к краям
+        // 2 игрока -> отступы большие
+        // 4+ игрока -> отступы минимальные (sideMargin)
+        float tWidth = Mathf.Clamp01((count - 2) / 3f); 
+        float currentMargin = Mathf.Lerp(0.25f, sideMargin, tWidth);
+
+        float left = currentMargin;
+        float right = 1f - currentMargin;
+        
         for (int i = 0; i < count; i++)
         {
             float t = (float)i / (count - 1);

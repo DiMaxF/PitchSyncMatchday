@@ -26,6 +26,11 @@ public class MatchCenterDataManager : IDataManager
     private readonly ReactiveCollection<object> _tabsAsObject = new ReactiveCollection<object>();
     public ReactiveCollection<object> TabsAsObject => _tabsAsObject;
 
+    public ReactiveProperty<TimerState> CurrentTimerState { get; } = new ReactiveProperty<TimerState>(TimerState.Pause);
+    public ReactiveCollection<ToggleButtonModel> TimerStates { get; } = new ReactiveCollection<ToggleButtonModel>();
+    private readonly ReactiveCollection<object> _timerStatesAsObject = new ReactiveCollection<object>();
+    public ReactiveCollection<object> TimerStatesAsObject => _timerStatesAsObject;
+
     public MatchCenterDataManager(AppModel appModel, AppConfig appConfig)
     {
         _appModel = appModel;
@@ -42,8 +47,10 @@ public class MatchCenterDataManager : IDataManager
 
         BindEventsCollection();
         InitializeTabs();
+        InitializeTimerStates();
         SubscribeToChanges();
         SelectedTab.Subscribe(_ => UpdateTabsSelection()).AddTo(_disposables);
+        CurrentTimerState.Subscribe(_ => UpdateTimerStatesSelection()).AddTo(_disposables);
     }
 
     private void BindEventsCollection()
@@ -167,6 +174,16 @@ public class MatchCenterDataManager : IDataManager
         ScoreRed.Value = match.scoreOrange;
         Notes.Value = match.notes ?? "";
 
+        if (match.status == MatchStatus.Live)
+        {
+            CurrentTimerState.Value = TimerState.Start;
+            StartTimer();
+        }
+        else
+        {
+            CurrentTimerState.Value = TimerState.Pause;
+        }
+
         Events.Clear();
         if (match.events != null)
         {
@@ -187,6 +204,7 @@ public class MatchCenterDataManager : IDataManager
         }
 
         CurrentMatch.Value.status = MatchStatus.Live;
+        CurrentTimerState.Value = TimerState.Start;
         StartTimer();
         AutoSave();
     }
@@ -194,6 +212,7 @@ public class MatchCenterDataManager : IDataManager
     public void PauseMatch()
     {
         StopTimer();
+        CurrentTimerState.Value = TimerState.Pause;
         AutoSave();
     }
 
@@ -201,7 +220,29 @@ public class MatchCenterDataManager : IDataManager
     {
         if (CurrentMatch.Value != null && CurrentMatch.Value.status == MatchStatus.Live)
         {
+            CurrentTimerState.Value = TimerState.Start;
             StartTimer();
+        }
+    }
+
+    public void SelectTimerState(TimerState state)
+    {
+        if (CurrentMatch.Value == null) return;
+
+        if (state == TimerState.Start)
+        {
+            if (CurrentMatch.Value.status == MatchStatus.Upcoming)
+            {
+                StartMatch();
+            }
+            else if (CurrentMatch.Value.status == MatchStatus.Live)
+            {
+                ResumeMatch();
+            }
+        }
+        else if (state == TimerState.Pause)
+        {
+            PauseMatch();
         }
     }
 
@@ -288,6 +329,7 @@ public class MatchCenterDataManager : IDataManager
         if (CurrentMatch.Value == null) return;
 
         StopTimer();
+        CurrentTimerState.Value = TimerState.Pause;
         CurrentMatch.Value.status = MatchStatus.Finished;
         CurrentMatch.Value.endTimeIso = DateTime.UtcNow.ToString("o");
 
@@ -387,6 +429,59 @@ public class MatchCenterDataManager : IDataManager
     public void SelectTab(MatchCenterTabs tab)
     {
         SelectedTab.Value = tab;
+    }
+
+    private void InitializeTimerStates()
+    {
+        foreach (TimerState state in Enum.GetValues(typeof(TimerState)))
+        {
+            TimerStates.Add(new ToggleButtonModel
+            {
+                name = state.ToString(),
+                selected = state == CurrentTimerState.Value
+            });
+        }
+
+        BindTimerStatesCollection();
+        UpdateTimerStatesSelection();
+    }
+
+    private void BindTimerStatesCollection()
+    {
+        _timerStatesAsObject.Clear();
+        foreach (var state in TimerStates)
+        {
+            _timerStatesAsObject.Add(state);
+        }
+
+        TimerStates.ObserveAdd().Subscribe(e => _timerStatesAsObject.Insert(e.Index, e.Value)).AddTo(_disposables);
+        TimerStates.ObserveRemove().Subscribe(e => _timerStatesAsObject.RemoveAt(e.Index)).AddTo(_disposables);
+        TimerStates.ObserveReplace().Subscribe(e => _timerStatesAsObject[e.Index] = e.NewValue).AddTo(_disposables);
+        TimerStates.ObserveReset().Subscribe(_ =>
+        {
+            _timerStatesAsObject.Clear();
+            foreach (var state in TimerStates) _timerStatesAsObject.Add(state);
+        }).AddTo(_disposables);
+    }
+
+    private void UpdateTimerStatesSelection()
+    {
+        var states = Enum.GetValues(typeof(TimerState)).Cast<TimerState>().ToList();
+        for (int i = 0; i < TimerStates.Count && i < states.Count; i++)
+        {
+            var state = states[i];
+            var model = TimerStates[i];
+            var newSelected = CurrentTimerState.Value == state;
+
+            if (model.selected != newSelected)
+            {
+                TimerStates[i] = new ToggleButtonModel
+                {
+                    name = model.name,
+                    selected = newSelected
+                };
+            }
+        }
     }
 
     public void Dispose()
