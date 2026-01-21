@@ -12,7 +12,8 @@ public class ScreensManager : MonoBehaviour
 
     private UIScreen _currentScreen;
     private readonly Stack<Screens> _screenHistory = new Stack<Screens>();
-    private bool _isNavigatingBack = false;
+    private bool _isTransitioning = false;
+    private Screens? _pendingScreen;
 
     private void Start()
     {
@@ -38,21 +39,22 @@ public class ScreensManager : MonoBehaviour
 
     public void Show(Screens screen)
     {
-        if (!_isNavigatingBack && _currentScreen != null && _currentScreen.ScreenType != screen)
-        {
-            _screenHistory.Push(_currentScreen.ScreenType);
-        }
-        _isNavigatingBack = false;
-        Navigation.SelectScreen(screen);
+        NavigateTo(screen, true);
     }
 
     public void Back()
     {
-        if (_screenHistory.Count == 0) return;
-
-        _isNavigatingBack = true;
-        var previousScreen = _screenHistory.Pop();
-        Navigation.SelectScreen(previousScreen);
+        if (_currentScreen == null) return;
+        while (_screenHistory.Count > 0)
+        {
+            var previousScreen = _screenHistory.Pop();
+            if (previousScreen == _currentScreen.ScreenType) continue;
+            if (screens.Any(s => s.ScreenType == previousScreen))
+            {
+                NavigateTo(previousScreen, false);
+                return;
+            }
+        }
     }
 
     public bool CanGoBack()
@@ -65,11 +67,29 @@ public class ScreensManager : MonoBehaviour
         _screenHistory.Clear();
     }
 
+    private void NavigateTo(Screens screen, bool addToHistory)
+    {
+        if (_currentScreen != null && _currentScreen.ScreenType == screen) return;
+        if (addToHistory && _currentScreen != null)
+        {
+            _screenHistory.Push(_currentScreen.ScreenType);
+        }
+        Navigation.SelectScreen(screen);
+    }
+
     private async void ShowScreen(Screens screen)
     {
+        if (_isTransitioning)
+        {
+            _pendingScreen = screen;
+            return;
+        }
+
         var targetScreen = screens.FirstOrDefault(s => s.ScreenType == screen);
 
         if (targetScreen == null) return;
+
+        _isTransitioning = true;
 
         if (_currentScreen != null && _currentScreen != targetScreen)
         {
@@ -78,6 +98,18 @@ public class ScreensManager : MonoBehaviour
 
         await targetScreen.ShowAsync();
         _currentScreen = targetScreen;
+
+        _isTransitioning = false;
+        if (_pendingScreen.HasValue && _pendingScreen.Value != _currentScreen.ScreenType)
+        {
+            var next = _pendingScreen.Value;
+            _pendingScreen = null;
+            ShowScreen(next);
+        }
+        else
+        {
+            _pendingScreen = null;
+        }
     }
 
 }

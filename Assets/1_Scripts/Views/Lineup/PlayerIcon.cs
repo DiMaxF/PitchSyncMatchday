@@ -5,6 +5,7 @@ public class PlayerIcon : UIView<SquadPlayerModel>
 {
     [SerializeField] private Text countText;
     [SerializeField] private Image squadColor;
+    [SerializeField] private BaseView captain;
 
     private RectTransform _rect;
 
@@ -37,6 +38,12 @@ public class PlayerIcon : UIView<SquadPlayerModel>
         if (squadColor != null)
         {
             squadColor.sprite = data.teamIcon;
+        }
+
+        if (captain != null) 
+        {
+            if(data.isCaptain) captain.Show();
+            else captain.Hide();
         }
     }
 }

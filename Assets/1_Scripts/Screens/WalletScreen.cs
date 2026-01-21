@@ -137,6 +137,8 @@ public class WalletScreen : UIScreen
                 }
             }));
         }
+
+        UpdateTotals();
     }
 
     private void ShowConfirmRemoveParticipant(int participantId)

@@ -8,6 +8,7 @@ public class HomeScreen : UIScreen
 {
     [SerializeField] private Button pitchFinderButton;
     [SerializeField] private Button myBookingButton;
+    [SerializeField] private Button myBookingButton2;
     [SerializeField] private Button walletButton;
     [SerializeField] private Button lineupButton;
     [SerializeField] private Button notificationsButton;
@@ -35,7 +36,12 @@ public class HomeScreen : UIScreen
                 ScreenManager.Show(Screens.MyBookingScreen);
             })
             .AddTo(this);
-            
+        myBookingButton2.OnClickAsObservable()
+.Subscribe(_ =>
+{
+    ScreenManager.Show(Screens.MyBookingScreen);
+})
+.AddTo(this);
         walletButton.OnClickAsObservable()
             .Subscribe(_ =>
             {

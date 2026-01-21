@@ -11,6 +11,7 @@ public class PitchFinderScreen : UIScreen
     [SerializeField] private ListContainer sortFilteres;
     [SerializeField] private ListContainer sizeFilteres;
     [SerializeField] private ListContainer pitchCards;
+    [SerializeField] private Button resetFilters;
 
     private PitchFinderDataManager PitchFinder => DataManager.PitchFinder;
 
@@ -68,6 +69,9 @@ public class PitchFinderScreen : UIScreen
         base.SubscribeToData();
         SubscribeToSearchBar();
         SubscribeToPitchCards();
+        SubscribeToResetButton();
+        SubscribeToFilteredPitches();
+        
         if (sizeFilteres != null)
         {
             AddToDispose(UIManager.SubscribeToView(sizeFilteres, (ToggleButtonModel data) =>
@@ -90,6 +94,46 @@ public class PitchFinderScreen : UIScreen
                     PitchFinder.SelectSortType(isSelected ? (SortPicthesType?)null : sortType);
                 }
             }));
+        }
+    }
+
+    private void SubscribeToResetButton()
+    {
+        if (resetFilters != null)
+        {
+            AddToDispose(resetFilters.OnClickAsObservable()
+                .Subscribe(_ => ResetAllFilters()));
+        }
+    }
+
+    private void SubscribeToFilteredPitches()
+    {
+        if (resetFilters != null)
+        {
+            AddToDispose(PitchFinder.FilteredPitches.ObserveCountChanged()
+                .Subscribe(count => UpdateResetButtonVisibility(count)));
+            
+            UpdateResetButtonVisibility(PitchFinder.FilteredPitches.Count);
+        }
+    }
+
+    private void UpdateResetButtonVisibility(int pitchCount)
+    {
+        if (resetFilters != null)
+        {
+            resetFilters.gameObject.SetActive(pitchCount == 0);
+        }
+    }
+
+    private void ResetAllFilters()
+    {
+        PitchFinder.SelectSizeFilter(null);
+        PitchFinder.SelectSortType(null);
+        PitchFinder.SearchQuery.Value = string.Empty;
+        
+        if (searchBar != null)
+        {
+            searchBar.text = string.Empty;
         }
     }
 }

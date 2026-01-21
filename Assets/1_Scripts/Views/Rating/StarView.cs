@@ -3,46 +3,14 @@ using UnityEngine;
 
 public class StarView : UIView<bool>
 {
-    private bool _previousSelectedState;
-    private bool _isInitialized = false;
-    protected override bool ListenToSelfEvents => false;
-    public override void Init(bool initialData = default)
+    [SerializeField] private GameObject hide;
+    public void SetShow() 
     {
-        _isInitialized = false;
-        _previousSelectedState = false;
-        base.Init(initialData);
+        hide.SetActive(false);
     }
 
-    public override void UpdateUI()
+    public void SetHide() 
     {
-        var data = DataProperty.Value;
-
-        if (!_isInitialized)
-        {
-            _previousSelectedState = data;
-            _isInitialized = true;
-            if (data)
-            {
-                ShowAsync().Forget();
-            }
-            else
-            {
-                HideAsync().Forget();
-            }
-            return;
-        }
-
-        if (_previousSelectedState != data)
-        {
-            _previousSelectedState = data;
-            if (data)
-            {
-                ShowAsync().Forget();
-            }
-            else
-            {
-                HideAsync().Forget();
-            }
-        }
+        hide.SetActive(true);
     }
 }

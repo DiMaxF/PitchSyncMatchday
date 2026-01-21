@@ -1,13 +1,19 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MatchSchemeView : UIView<LineupModel>
 {
     [SerializeField] private RectTransform pitchRect;
     [SerializeField] private Transform playersContainer;
     [SerializeField] private PlayerIcon playerPrefab;
+    [SerializeField] private RectTransform captureRoot;
+    [SerializeField] private int captureLayer = 31;
+    [SerializeField] private int maxCaptureSize = 2048;
 
     [SerializeField] private float minIconSize = 35f;
     [SerializeField] private float maxIconSize = 85f;
@@ -180,5 +186,98 @@ public class MatchSchemeView : UIView<LineupModel>
             if (icon != null) Destroy(icon.gameObject);
         }
         _icons.Clear();
+    }
+
+    public void CaptureAsImage(System.Action<Texture2D> onComplete)
+    {
+        CaptureAsImageAsync(onComplete).Forget();
+    }
+
+    private async UniTaskVoid CaptureAsImageAsync(System.Action<Texture2D> onComplete)
+    {
+        await UniTask.Yield(PlayerLoopTiming.PostLateUpdate);
+
+        var root = captureRoot != null ? captureRoot : pitchRect;
+        if (root == null)
+        {
+            onComplete?.Invoke(null);
+            return;
+        }
+
+        Vector2 size = root.rect.size;
+        int width = Mathf.Clamp(Mathf.RoundToInt(size.x), 1, maxCaptureSize);
+        int height = Mathf.Clamp(Mathf.RoundToInt(size.y), 1, maxCaptureSize);
+
+        var rt = RenderTexture.GetTemporary(width, height, 24, RenderTextureFormat.ARGB32);
+
+        var camGO = new GameObject("SchemeCaptureCamera");
+        var cam = camGO.AddComponent<Camera>();
+        cam.orthographic = true;
+        cam.orthographicSize = height / 2f;
+        cam.aspect = (float)width / height;
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.backgroundColor = Color.clear;
+        cam.cullingMask = 1 << captureLayer;
+        cam.targetTexture = rt;
+        cam.nearClipPlane = 0.1f;
+        cam.farClipPlane = 100f;
+        cam.transform.position = new Vector3(0f, 0f, -10f);
+        cam.transform.rotation = Quaternion.identity;
+
+        var canvasGO = new GameObject("SchemeCaptureCanvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        var canvas = canvasGO.GetComponent<Canvas>();
+        var scaler = canvasGO.GetComponent<CanvasScaler>();
+        canvas.renderMode = RenderMode.WorldSpace;
+        canvas.worldCamera = cam;
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
+        scaler.scaleFactor = 1f;
+
+        var canvasRect = canvasGO.GetComponent<RectTransform>();
+        canvasRect.sizeDelta = size;
+        canvasRect.pivot = new Vector2(0.5f, 0.5f);
+        canvasRect.anchoredPosition = Vector2.zero;
+        canvasRect.localScale = Vector3.one;
+
+        var clone = Instantiate(root.gameObject, canvas.transform, false);
+        SetLayerRecursive(canvasGO, captureLayer);
+        SetLayerRecursive(clone, captureLayer);
+
+        var cloneRect = clone.GetComponent<RectTransform>();
+        if (cloneRect != null)
+        {
+            cloneRect.anchorMin = new Vector2(0.5f, 0.5f);
+            cloneRect.anchorMax = new Vector2(0.5f, 0.5f);
+            cloneRect.anchoredPosition = Vector2.zero;
+            cloneRect.sizeDelta = size;
+            cloneRect.localScale = Vector3.one;
+        }
+
+        Canvas.ForceUpdateCanvases();
+        if (cloneRect != null) LayoutRebuilder.ForceRebuildLayoutImmediate(cloneRect);
+
+        cam.Render();
+
+        RenderTexture previous = RenderTexture.active;
+        RenderTexture.active = rt;
+        var texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+        texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        texture.Apply();
+        RenderTexture.active = previous;
+
+        Destroy(camGO);
+        Destroy(canvasGO);
+        RenderTexture.ReleaseTemporary(rt);
+
+        onComplete?.Invoke(texture);
+    }
+
+    private void SetLayerRecursive(GameObject target, int layer)
+    {
+        if (target == null) return;
+        target.layer = layer;
+        foreach (Transform child in target.transform)
+        {
+            SetLayerRecursive(child.gameObject, layer);
+        }
     }
 }

@@ -76,7 +76,7 @@ public class BookingCard : UIView<BookingModel>
 
         if (pitchInfoText != null)
         {
-            pitchInfoText.text = $"{data.pitchSize} · {((int)data.duration) / 60} min";
+            pitchInfoText.text = $"{data.pitchSize} · {(int)data.duration} min";
         }
     }
 

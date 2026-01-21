@@ -117,7 +117,7 @@ public class NotificationsDataManager : IDataManager
         if (matchSoonTime > DateTime.Now)
         {
             EnqueueIfMissing(NotificationType.MatchSoon, matchSoonTime,
-                $"Матч в {stadiumName} через 30 минут. Не забудьте QR и lineup!",
+                $"Match at {stadiumName} in 30 minutes. Don't forget QR and lineup!",
                 booking.id, null);
         }
 
@@ -125,7 +125,7 @@ public class NotificationsDataManager : IDataManager
         if (checkInTime > DateTime.Now)
         {
             EnqueueIfMissing(NotificationType.CheckIn, checkInTime,
-                "Пора на поле! Покажите QR на входе.",
+                "Time to check in! Show your QR code at the entrance.",
                 booking.id, null);
         }
     }
@@ -134,7 +134,7 @@ public class NotificationsDataManager : IDataManager
     {
         if (match == null) return;
         var scoreText = $"{match.scoreBlue}:{match.scoreOrange}";
-        var message = $"Матч завершён! Счёт {scoreText}. Проверьте wallet и notes.";
+        var message = $"Match finished! Score {scoreText}. Check wallet and notes.";
         EnqueueIfMissing(NotificationType.MatchFinished, DateTime.Now, message,
             null, match.id);
     }
@@ -209,13 +209,13 @@ public class NotificationsDataManager : IDataManager
         if (notification.type == NotificationType.WalletRemainingDaily.ToString())
         {
             var remaining = GetWalletRemaining();
-            return $"В wallet матча осталось ${remaining:F0}. Кто-то ещё не скинулся?";
+            return $"Match wallet has ${remaining:F0} remaining. Has someone not paid yet?";
         }
 
         if (notification.type == NotificationType.WalletUnpaid24h.ToString())
         {
             var remaining = GetWalletRemaining();
-            return $"Не забудьте собрать ${remaining:F0} с участников.";
+            return $"Don't forget to collect ${remaining:F0} from participants.";
         }
 
         return notification.message ?? string.Empty;
@@ -238,17 +238,17 @@ public class NotificationsDataManager : IDataManager
         switch (notificationType)
         {
             case "MatchSoon":
-                return "Матч скоро начнётся";
+                return "Match Starting Soon";
             case "CheckIn":
-                return "Пора на поле";
+                return "Time to Check In";
             case "MatchFinished":
-                return "Матч завершён";
+                return "Match Finished";
             case "WalletRemainingDaily":
-                return "Напоминание о кошельке";
+                return "Wallet Reminder";
             case "WalletUnpaid24h":
-                return "Неоплаченные расходы";
+                return "Unpaid Expenses";
             default:
-                return "Уведомление";
+                return "Notification";
         }
     }
 

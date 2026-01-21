@@ -198,6 +198,7 @@ public class WalletDataManager : IDataManager
         };
 
         Participants.Add(participant);
+        RecalculateTotals();
         SaveWallet();
     }
 
@@ -216,6 +217,7 @@ public class WalletDataManager : IDataManager
             owedAmount = owedAmount
         };
 
+        RecalculateTotals();
         SaveWallet();
     }
 
@@ -225,6 +227,7 @@ public class WalletDataManager : IDataManager
         if (participant != null)
         {
             Participants.Remove(participant);
+            RecalculateTotals();
             SaveWallet();
         }
     }
@@ -243,6 +246,7 @@ public class WalletDataManager : IDataManager
         };
 
         Expenses.Add(expense);
+        RecalculateTotals();
         SaveWallet();
     }
 
@@ -252,6 +256,7 @@ public class WalletDataManager : IDataManager
         if (expense != null)
         {
             Expenses.Remove(expense);
+            RecalculateTotals();
             SaveWallet();
         }
     }

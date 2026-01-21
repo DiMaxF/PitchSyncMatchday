@@ -85,6 +85,7 @@ public class BookingDataManager : IDataManager
         _allBookings = appModel.bookings;
 
         InitializeExtraConfigs(config);
+        NormalizeDurations();
         SyncAllBookingsToReactive();
         UpdateFilteredBookings();
         EnsureAllBookingsHaveAllExtras();
@@ -110,6 +111,42 @@ public class BookingDataManager : IDataManager
         AllBookings.ObserveRemove().Subscribe(_ => UpdateFilteredBookingsByCategory()).AddTo(_disposables);
         AllBookings.ObserveReplace().Subscribe(_ => UpdateFilteredBookingsByCategory()).AddTo(_disposables);
         AllBookings.ObserveReset().Subscribe(_ => UpdateFilteredBookingsByCategory()).AddTo(_disposables);
+    }
+
+    private void NormalizeDurations()
+    {
+        _appModel.defaultDuration = NormalizeDurationValue(_appModel.defaultDuration);
+        foreach (var booking in _allBookings)
+        {
+            if (booking == null) continue;
+            booking.duration = NormalizeDurationValue(booking.duration);
+        }
+    }
+
+    private MatchDuration NormalizeDurationValue(MatchDuration duration)
+    {
+        if (System.Enum.IsDefined(typeof(MatchDuration), duration)) return duration;
+
+        int raw = (int)duration;
+        int minutes = raw;
+        if (raw > 0 && raw < 10)
+        {
+            minutes = raw * 60;
+        }
+
+        var durations = System.Enum.GetValues(typeof(MatchDuration)).Cast<MatchDuration>();
+        MatchDuration closest = MatchDuration.Min60;
+        int bestDelta = int.MaxValue;
+        foreach (var d in durations)
+        {
+            int delta = Mathf.Abs((int)d - minutes);
+            if (delta < bestDelta)
+            {
+                bestDelta = delta;
+                closest = d;
+            }
+        }
+        return closest;
     }
     private void InitializeExtraConfigs(AppConfig config)
     {
@@ -478,6 +515,7 @@ public class BookingDataManager : IDataManager
 
     public void SetDuration(MatchDuration duration)
     {
+        duration = NormalizeDurationValue(duration);
         SelectedDuration.Value = duration;
         if (CurrentDraft.Value != null)
         {

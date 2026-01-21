@@ -200,6 +200,15 @@ public class MatchCenterDataManager : IDataManager
         {
             match = _appModel.matches.FirstOrDefault(m => m.id == booking.matchId.Value);
         }
+        if (match == null)
+        {
+            match = _appModel.matches.FirstOrDefault(m => m.bookingId.HasValue && m.bookingId.Value == booking.id);
+            if (match != null && !booking.matchId.HasValue)
+            {
+                booking.matchId = match.id;
+                DataManager.Instance.SaveAppModel();
+            }
+        }
 
         if (match == null)
         {

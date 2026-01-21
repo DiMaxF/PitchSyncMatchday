@@ -26,6 +26,7 @@ public abstract class UIView<TData> : UIView
     {
         SubscribeToDataChanges();
         DataProperty.Value = initialData;
+        UpdateUI();
     }
 
     public void Init(object data)
@@ -45,7 +46,7 @@ public abstract class UIView<TData> : UIView
         if (_updateSubscription != null) return;
 
         _updateSubscription = DataProperty
-            .Where(data => data != null)
+            .Skip(1)
             .Subscribe(_ => UpdateUI())
             .AddTo(this);
     }

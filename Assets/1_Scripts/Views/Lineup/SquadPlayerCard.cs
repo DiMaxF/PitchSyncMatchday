@@ -9,7 +9,8 @@ public class SquadPlayerCard : UIView<SquadPlayerModel>
     [SerializeField] private Text positionBadge;
     [SerializeField] private Text squadNumberText;
     [SerializeField] private Button removeButton;
-    [SerializeField] private SimpleToggle captainToggle;
+    [SerializeField] private Button captainButton;
+    [SerializeField] private BaseView captainMark;
     [SerializeField] private SwipeToDelete swipeToDelete;
 
     protected override void Subscribe()
@@ -29,9 +30,10 @@ public class SquadPlayerCard : UIView<SquadPlayerModel>
                 .AddTo(this);
         }
 
-        if (captainToggle != null)
+        if (captainButton != null)
         {
-            AddToDispose(UIManager.SubscribeToView(captainToggle, (bool isCaptain) =>
+            AddToDispose(captainButton.OnClickAsObservable()
+                .Subscribe(_ =>
             {
                 if (DataProperty.Value != null)
                 {
@@ -75,9 +77,16 @@ public class SquadPlayerCard : UIView<SquadPlayerModel>
             positionBadge.text = data.position.ToString();
         }
 
-        if (captainToggle != null)
+        if (captainMark != null)
         {
-            captainToggle.Init(data.isCaptain);
+            if (data.isCaptain)
+            {
+                captainMark.Show();
+            }
+            else
+            {
+                captainMark.Hide();
+            }
         }
 
         if (squadNumberText != null)

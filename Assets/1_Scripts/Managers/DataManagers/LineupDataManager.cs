@@ -304,30 +304,10 @@ public class LineupDataManager : IDataManager
         {
             otherSquad.Remove(existingInOther);
             RenumberSquad(teamSide == TeamSide.Green ? TeamSide.Red : TeamSide.Green);
+            EnsureSingleCaptain(teamSide == TeamSide.Green ? TeamSide.Red : TeamSide.Green);
         }
 
         bool shouldBeCaptain = targetSquad.Count == 0;
-        
-        if (!shouldBeCaptain)
-        {
-            for (int i = 0; i < targetSquad.Count; i++)
-            {
-                var p = targetSquad[i];
-                if (p.isCaptain)
-                {
-                    targetSquad[i] = new SquadPlayerModel
-                    {
-                        playerId = p.playerId,
-                        name = p.name,
-                        position = p.position,
-                        squadNumber = p.squadNumber,
-                        isCaptain = false,
-                        teamSide = p.teamSide,
-                        teamIcon = p.teamIcon
-                    };
-                }
-            }
-        }
 
         var squadNumber = targetSquad.Count + 1;
         var squadPlayer = new SquadPlayerModel
@@ -342,6 +322,7 @@ public class LineupDataManager : IDataManager
         };
 
         targetSquad.Add(squadPlayer);
+        EnsureSingleCaptain(teamSide);
         UpdateAvailablePlayers();
     }
 
@@ -353,6 +334,7 @@ public class LineupDataManager : IDataManager
         {
             squad.Remove(player);
             RenumberSquad(teamSide);
+            EnsureSingleCaptain(teamSide);
             UpdateAvailablePlayers();
         }
     }
@@ -380,35 +362,33 @@ public class LineupDataManager : IDataManager
         var squad = teamSide == TeamSide.Green ? SquadGreen : SquadRed;
         var player = squad.FirstOrDefault(sp => sp.playerId == playerId);
         if (player == null) return;
-
+        int currentIndex = squad.IndexOf(player);
+        int targetIndex = currentIndex;
         if (player.isCaptain)
         {
-            var index = squad.IndexOf(player);
-            squad[index] = new SquadPlayerModel
+            if (squad.Count > 1)
             {
-                playerId = player.playerId,
-                name = player.name,
-                position = player.position,
-                squadNumber = player.squadNumber,
-                isCaptain = false,
-                teamSide = player.teamSide
-            };
-        }
-        else
-        {
-            for (int i = 0; i < squad.Count; i++)
-            {
-                var p = squad[i];
-                squad[i] = new SquadPlayerModel
-                {
-                    playerId = p.playerId,
-                    name = p.name,
-                    position = p.position,
-                    squadNumber = p.squadNumber,
-                    isCaptain = p.playerId == playerId,
-                    teamSide = p.teamSide
-                };
+                targetIndex = (currentIndex + 1) % squad.Count;
             }
+            else
+            {
+                targetIndex = currentIndex;
+            }
+        }
+        for (int i = 0; i < squad.Count; i++)
+        {
+            var p = squad[i];
+            bool isCaptain = i == targetIndex;
+            squad[i] = new SquadPlayerModel
+            {
+                playerId = p.playerId,
+                name = p.name,
+                position = p.position,
+                squadNumber = p.squadNumber,
+                isCaptain = isCaptain,
+                teamSide = p.teamSide,
+                teamIcon = p.teamIcon
+            };
         }
     }
 
@@ -419,31 +399,27 @@ public class LineupDataManager : IDataManager
         allSquadPlayers.AddRange(SquadGreen);
         allSquadPlayers.AddRange(SquadRed);
 
-        var players = allSquadPlayers
-            .Select(sp => GetPlayerById(sp.playerId))
-            .Where(p => p != null)
-            .ToList();
+        var seenIds = new HashSet<int>();
+        var players = new List<PlayerModel>();
+        foreach (var sp in allSquadPlayers)
+        {
+            if (sp == null) continue;
+            if (!seenIds.Add(sp.playerId)) continue;
+            var player = GetPlayerById(sp.playerId);
+            if (player == null)
+            {
+                player = new PlayerModel(sp.playerId, sp.name, sp.position);
+            }
+            players.Add(player);
+        }
 
         SquadGreen.Clear();
         SquadRed.Clear();
 
-        var gks = players.Where(p => p.position == PlayerPosition.GK).ToList();
-        var others = players.Where(p => p.position != PlayerPosition.GK).ToList();
-
         int blueIndex = 1;
         int redIndex = 1;
 
-        if (gks.Count >= 2)
-        {
-            AddPlayerToSquad(gks[0], TeamSide.Green, blueIndex++);
-            AddPlayerToSquad(gks[1], TeamSide.Red, redIndex++);
-        }
-        else if (gks.Count == 1)
-        {
-            AddPlayerToSquad(gks[0], TeamSide.Green, blueIndex++);
-        }
-
-        var shuffled = others.OrderBy(x => UnityEngine.Random.value).ToList();
+        var shuffled = players.OrderBy(x => UnityEngine.Random.value).ToList();
 
         if (SelectedDraftMode.Value == LineupMod.Alternate)
         {
@@ -487,7 +463,40 @@ public class LineupDataManager : IDataManager
             }
         }
         _suppressAvailablePlayersUpdate = false;
+        EnsureSingleCaptain(TeamSide.Green);
+        EnsureSingleCaptain(TeamSide.Red);
         UpdateAvailablePlayers();
+    }
+
+    private void EnsureSingleCaptain(TeamSide teamSide)
+    {
+        var squad = teamSide == TeamSide.Green ? SquadGreen : SquadRed;
+        if (squad.Count == 0) return;
+        int captainIndex = -1;
+        for (int i = 0; i < squad.Count; i++)
+        {
+            if (squad[i].isCaptain)
+            {
+                captainIndex = i;
+                break;
+            }
+        }
+        if (captainIndex < 0) captainIndex = 0;
+        for (int i = 0; i < squad.Count; i++)
+        {
+            var p = squad[i];
+            bool isCaptain = i == captainIndex;
+            squad[i] = new SquadPlayerModel
+            {
+                playerId = p.playerId,
+                name = p.name,
+                position = p.position,
+                squadNumber = p.squadNumber,
+                isCaptain = isCaptain,
+                teamSide = p.teamSide,
+                teamIcon = p.teamIcon
+            };
+        }
     }
 
     private void AddPlayerToSquad(PlayerModel player, TeamSide teamSide, int squadNumber)

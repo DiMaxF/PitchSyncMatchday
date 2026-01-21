@@ -92,7 +92,7 @@ public class BookingConfirmDataManager : IDataManager
         }
         
         PitchSizeText.Value = booking.pitchSize.ToString();
-        DurationText.Value = $"{((int)booking.duration) / 60} min";
+        DurationText.Value = $"{(int)booking.duration} min";
         TotalPrice.Value = booking.totalCost;
         
         ExtrasSummary.Clear();

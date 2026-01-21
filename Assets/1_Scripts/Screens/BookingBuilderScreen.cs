@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using UniRx;
 using UnityEngine;
@@ -22,6 +23,16 @@ public class BookingBuilderScreen : UIScreen
         base.OnEnable();
         InitializeContainers();
         InitializeExtras();
+        InitializeDefaultValues();
+    }
+
+    private void InitializeDefaultValues()
+    {
+        if (Booking.CurrentDraft.Value != null)
+        {
+            Booking.SetPitchSize(Booking.CurrentDraft.Value.pitchSize);
+            Booking.SetDuration(Booking.CurrentDraft.Value.duration);
+        }
     }
 
     private void InitializeContainers()
@@ -35,6 +46,7 @@ public class BookingBuilderScreen : UIScreen
         {
             durationContainer.Init(Booking.DurationsAsObject);
         }
+
     }
 
     private void InitializeExtras()

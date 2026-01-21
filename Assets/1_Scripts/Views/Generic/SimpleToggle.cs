@@ -6,10 +6,17 @@ using UnityEngine.UI;
 public class SimpleToggle : UIView<bool>
 {
     [SerializeField] private Button action;
+    [SerializeField] private bool useInternalToggle = true;
 
     private bool _previousSelectedState;
     private bool _isInitialized = false;
     protected override bool ListenToSelfEvents => false;
+
+    public bool UseInternalToggle
+    {
+        get => useInternalToggle;
+        set => useInternalToggle = value;
+    }
 
     public override void Init(bool initialData = default)
     {
@@ -26,9 +33,16 @@ public class SimpleToggle : UIView<bool>
             action.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    var newValue = !DataProperty.Value;
-                    DataProperty.Value = newValue;
-                    Trigger(newValue);
+                    if (useInternalToggle)
+                    {
+                        var newValue = !DataProperty.Value;
+                        DataProperty.Value = newValue;
+                        Trigger(newValue);
+                    }
+                    else
+                    {
+                        Trigger(!DataProperty.Value);
+                    }
                 })
                 .AddTo(this);
         }

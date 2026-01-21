@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class RatingView : UIView<float>
 {
-    [SerializeField] private ListContainer stars;
+    [SerializeField] private StarView[] stars;
     [SerializeField] private Text valueText;
-
-    private ReactiveCollection<object> _starsCollection;
 
     public override void UpdateUI()
     {
@@ -17,45 +12,19 @@ public class RatingView : UIView<float>
 
         if (stars != null)
         {
-            var starsList = GetStars(data);
-
-            if (_starsCollection == null)
+            new Log($"value {data}", "RatingView");
+            for (int i = 0; i < stars.Length; i++)
             {
-                _starsCollection = starsList.Select(s => (object)s).ToReactiveCollection();
-                stars.Init(_starsCollection);
-            }
-            else
-            {
-                for (int i = 0; i < starsList.Count && i < _starsCollection.Count; i++)
+                if (stars[i] != null)
                 {
-                    if ((bool)_starsCollection[i] != starsList[i])
-                    {
-                        _starsCollection[i] = starsList[i];
-                    }
-                }
-
-                while (_starsCollection.Count < starsList.Count)
-                {
-                    _starsCollection.Add(starsList[_starsCollection.Count]);
-                }
-
-                while (_starsCollection.Count > starsList.Count)
-                {
-                    _starsCollection.RemoveAt(_starsCollection.Count - 1);
+                    bool isActive = data >= (i);
+                    new Log($"{i} {isActive}", $"Star{i}");
+                    if(isActive)stars[i].SetShow();
+                    else stars[i].SetHide();
                 }
             }
         }
 
         if (valueText != null) valueText.text = data.ToString("0.0");
-    }
-
-    private List<bool> GetStars(float rating, int total = 5)
-    {
-        var result = new List<bool>();
-        for (int i = 1; i <= total; i++)
-        {
-            result.Add(rating >= i);
-        }
-        return result;
     }
 }
