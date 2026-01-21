@@ -7,6 +7,7 @@ public class FinishBookingScreen : UIScreen
 {
     [SerializeField] private Text score;
     [SerializeField] private Text time;
+    [SerializeField] private StatusMatch status;
     [SerializeField] private ListContainer keyMoments;
     [SerializeField] private MatchSchemeView schemeView;
 
@@ -73,6 +74,11 @@ public class FinishBookingScreen : UIScreen
         if (MatchCenter != null && MatchCenter.CurrentLineup.Value != null)
         {
             schemeView?.Init(MatchCenter.CurrentLineup.Value);
+        }
+
+        if (status != null) 
+        {
+            status.Init(MatchCenter.CurrentMatch.Value.status);
         }
     }
 

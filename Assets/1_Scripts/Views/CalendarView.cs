@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +31,8 @@ public class CalendarView : UIView<DateTime>
         {
             manager.UpdateCalenderWithSelectedDate(initialData);
         }
+
+        UpdateSelectedText(initialData);
     }
 
     public override void UpdateUI()
@@ -42,6 +45,7 @@ public class CalendarView : UIView<DateTime>
             if (date.Year >= 1 && date.Year <= 9999 && date.Month >= 1 && date.Month <= 12)
             {
                 manager.UpdateCalenderWithSelectedDate(date);
+                UpdateSelectedText(date);
             }
         }
     }
@@ -49,8 +53,16 @@ public class CalendarView : UIView<DateTime>
     private void OnDateSelected(DateTime selectedDate)
     {
         DataProperty.Value = selectedDate;
-
+        UpdateSelectedText(selectedDate);
         Trigger(selectedDate);
+    }
+
+    private void UpdateSelectedText(DateTime date)
+    {
+        if (selectedText != null)
+        {
+            selectedText.text = date.ToString("dddd, MMM d", CultureInfo.InvariantCulture);
+        }
     }
 
     protected override void OnDestroy()

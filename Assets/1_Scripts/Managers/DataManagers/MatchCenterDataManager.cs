@@ -13,6 +13,7 @@ public class MatchCenterDataManager : IDataManager
     private bool _isSyncingNotes = false;
 
     public ReactiveProperty<MatchModel> CurrentMatch { get; } = new ReactiveProperty<MatchModel>(null);
+    public ReactiveProperty<MatchStatus> CurrentMatchStatus { get; } = new ReactiveProperty<MatchStatus>(MatchStatus.Upcoming);
     public ReactiveProperty<LineupModel> CurrentLineup { get; } = new ReactiveProperty<LineupModel>(null);
     public ReactiveProperty<int> ElapsedSeconds { get; } = new ReactiveProperty<int>(0);
     public ReactiveProperty<int> ScoreBlue { get; } = new ReactiveProperty<int>(0);
@@ -257,6 +258,7 @@ public class MatchCenterDataManager : IDataManager
         }
 
         CurrentMatch.Value = match;
+        CurrentMatchStatus.Value = match.status;
         CurrentLineup.Value = lineup;
         PendingBookingId = lineup == null ? match.bookingId : null;
 
@@ -296,6 +298,7 @@ public class MatchCenterDataManager : IDataManager
         }
 
         CurrentMatch.Value.status = MatchStatus.Live;
+        CurrentMatchStatus.Value = MatchStatus.Live;
         CurrentTimerState.Value = TimerState.Start;
         StartTimer();
         AutoSave();
@@ -444,6 +447,7 @@ public class MatchCenterDataManager : IDataManager
         StopTimer();
         CurrentTimerState.Value = TimerState.Pause;
         CurrentMatch.Value.status = MatchStatus.Finished;
+        CurrentMatchStatus.Value = MatchStatus.Finished;
         CurrentMatch.Value.endTimeIso = DateTime.UtcNow.ToString("o");
 
         SaveMatch();

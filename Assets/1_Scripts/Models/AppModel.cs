@@ -22,4 +22,7 @@ public class AppModel
     public string profileName = "User";
     public string profileEmail = "user@example.com";
     public string profileUserpicPath = "";
+    public float userLatitude = 0f;
+    public float userLongitude = 0f;
+    public bool locationPermissionGranted = false;
 }

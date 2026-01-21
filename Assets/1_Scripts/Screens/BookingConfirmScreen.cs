@@ -92,7 +92,11 @@ public class BookingConfirmScreen : UIScreen
             AddToDispose(matchCenterButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    ScreenManager?.Show(Screens.HomeScreen);
+                    if (BookingConfirm.ConfirmedBooking.Value != null)
+                    {
+                        DataManager.MatchCenter.InitializeFromBooking(BookingConfirm.ConfirmedBooking.Value.id);
+                        ScreenManager?.Show(Screens.MatchCenterScreen);
+                    }
                 }));
         }
     }

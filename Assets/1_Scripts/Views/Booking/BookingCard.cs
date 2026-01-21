@@ -51,7 +51,7 @@ public class BookingCard : UIView<BookingModel>
 
         if (statusText != null)
         {
-            statusText.Init(data);
+            statusText.Init(data.status);
         }
 
         var stadium = GetStadiumById(data.stadiumId);
@@ -69,14 +69,14 @@ public class BookingCard : UIView<BookingModel>
         {
             if (dateTimeText != null)
             {
-                dateTimeText.text = $"{dateTime.ToString("dd MMMM yyyy")} � {dateTime.ToString("HH:mm")}";
+                dateTimeText.text = $"{dateTime.ToString("dd MMMM yyyy")} · {dateTime.ToString("HH:mm")}";
             }
         }
 
 
         if (pitchInfoText != null)
         {
-            pitchInfoText.text = $"{data.pitchSize} � {((int)data.duration) / 60} min";
+            pitchInfoText.text = $"{data.pitchSize} · {((int)data.duration) / 60} min";
         }
     }
 

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class MatchCenterScreen : UIScreen
 {
     [SerializeField] private Button backButton;
-    [SerializeField] private Text statusMatchText;
+    [SerializeField] private StatusMatch statusMatchText;
     [SerializeField] private Text subtitle;
     [SerializeField] private ListContainer screenTabs;
 
@@ -43,6 +43,9 @@ public class MatchCenterScreen : UIScreen
 
         AddToDispose(MatchCenter.SelectedTab.Subscribe(tab => UpdateActiveTab(tab)));
         AddToDispose(MatchCenter.CurrentMatch.Subscribe(_ => UpdateSubtitle()));
+        AddToDispose(MatchCenter.CurrentMatchStatus.Subscribe(_ => UpdateStatusMatch()));
+
+        UpdateStatusMatch();
     }
 
     private void UpdateActiveTab(MatchCenterTabs tab)
@@ -83,6 +86,15 @@ public class MatchCenterScreen : UIScreen
         base.RefreshViews();
         UpdateActiveTab(MatchCenter.SelectedTab.Value);
         UpdateSubtitle();
+        UpdateStatusMatch();
+    }
+
+    private void UpdateStatusMatch()
+    {
+        if (statusMatchText != null && MatchCenter != null)
+        {
+            statusMatchText.Init(MatchCenter.CurrentMatchStatus.Value);
+        }
     }
 
     private void UpdateSubtitle()

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PitchConfig
   id: 2
   name: Chicago Indoor Sports
-  address: 3900 S Ashland Ave, Chicago, IL 60609
+  address: Chicago
   location: {x: -87.6652, y: 41.8226}
   rating: 4.6
   reviewsCount: 512

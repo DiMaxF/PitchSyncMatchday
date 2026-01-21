@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PitchConfig
   id: 0
   name: Socceroof Brooklyn
-  address: 333 Douglass St, Brooklyn, NY 11217
+  address: Brooklyn
   location: {x: -73.9847, y: 40.6799}
   rating: 4.7
   reviewsCount: 428

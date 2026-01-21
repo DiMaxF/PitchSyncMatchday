@@ -15,6 +15,9 @@ public class ProfileDataManager : IDataManager
     public ReactiveProperty<string> ProfileName { get; }
     public ReactiveProperty<string> ProfileEmail { get; }
     public ReactiveProperty<string> ProfileUserpicPath { get; }
+    public ReactiveProperty<float> UserLatitude { get; }
+    public ReactiveProperty<float> UserLongitude { get; }
+    public ReactiveProperty<bool> LocationPermissionGranted { get; }
 
     public ProfileDataManager(AppModel appModel)
     {
@@ -31,6 +34,9 @@ public class ProfileDataManager : IDataManager
         ProfileName = new ReactiveProperty<string>(appModel.profileName);
         ProfileEmail = new ReactiveProperty<string>(appModel.profileEmail);
         ProfileUserpicPath = new ReactiveProperty<string>(appModel.profileUserpicPath);
+        UserLatitude = new ReactiveProperty<float>(appModel.userLatitude);
+        UserLongitude = new ReactiveProperty<float>(appModel.userLongitude);
+        LocationPermissionGranted = new ReactiveProperty<bool>(appModel.locationPermissionGranted);
 
         MatchesPlayed.Subscribe(value => _appModel.matchesPlayed = value).AddTo(_disposables);
         BookingsCount.Subscribe(value => _appModel.bookingsCount = value).AddTo(_disposables);
@@ -41,6 +47,9 @@ public class ProfileDataManager : IDataManager
         ProfileName.Subscribe(value => _appModel.profileName = value).AddTo(_disposables);
         ProfileEmail.Subscribe(value => _appModel.profileEmail = value).AddTo(_disposables);
         ProfileUserpicPath.Subscribe(value => _appModel.profileUserpicPath = value).AddTo(_disposables);
+        UserLatitude.Subscribe(value => _appModel.userLatitude = value).AddTo(_disposables);
+        UserLongitude.Subscribe(value => _appModel.userLongitude = value).AddTo(_disposables);
+        LocationPermissionGranted.Subscribe(value => _appModel.locationPermissionGranted = value).AddTo(_disposables);
     }
 
     private void SyncCountersFromData()

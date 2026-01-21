@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PitchConfig
   id: 1
   name: UrbanFutsal LA
-  address: 2323 Violet St, Los Angeles, CA 90021
+  address: Los Angeles
   location: {x: -118.2284, y: 34.0361}
   rating: 4.8
   reviewsCount: 356

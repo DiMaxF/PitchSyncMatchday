@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2652261759710445436}
-  - component: {fileID: 8108991621733564664}
+  - component: {fileID: -4399296891724481604}
   m_Layer: 5
-  m_Name: ShortExtraCard
+  m_Name: NoExtra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38,7 +38,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8108991621733564664
+--- !u!114 &-4399296891724481604
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -47,11 +47,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7824799532642677497}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61c1c4b2665128a458c244d90197a60e, type: 3}
+  m_Script: {fileID: 11500000, guid: af6fb0133895013478c3207bcf24c8bf, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShortExtraCard
-  valueText: {fileID: 4396306178040072153}
-  icon: {fileID: 1235250405642252470}
+  m_EditorClassIdentifier: Assembly-CSharp::BaseView
 --- !u!1 &9026288870376836716
 GameObject:
   m_ObjectHideFlags: 0
@@ -69,7 +67,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5262406555692847289
 RectTransform:
   m_ObjectHideFlags: 0
@@ -177,7 +175,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -21924
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -197,7 +195,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 124
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 1238105588477222749, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -219,22 +217,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: RegularText
       objectReference: {fileID: 0}
+    - target: {fileID: 7803556796061979116, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}
+      propertyPath: m_Text
+      value: No Extras
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}
---- !u!114 &4396306178040072153 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7803556796061979116, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}
-  m_PrefabInstance: {fileID: 5857244275639785013}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
 --- !u!224 &4640887791783201128 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1238105588477222749, guid: f890e7287832f7443bb26a2c0ccea4f1, type: 3}

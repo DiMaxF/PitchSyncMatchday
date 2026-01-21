@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PitchConfig
   id: 4
   name: Starfire Sports
-  address: 14800 Starfire Way, Tukwila, WA 98188
+  address: Tukwila
   location: {x: -122.2549, y: 47.4706}
   rating: 4.9
   reviewsCount: 674

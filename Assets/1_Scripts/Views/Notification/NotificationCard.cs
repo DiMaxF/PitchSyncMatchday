@@ -86,7 +86,7 @@ public class NotificationCard : UIView<NotificationModel>
 
         if (notRead != null)
         {
-            if (data.isRead)
+            if (!data.isRead)
             {
                 notRead.Hide();
             }

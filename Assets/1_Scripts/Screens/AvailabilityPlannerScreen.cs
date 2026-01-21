@@ -27,6 +27,7 @@ public class AvailabilityPlannerScreen : UIScreen
         {
             var tomorrow = DateTime.Now.AddDays(1);
             calendar.Init(tomorrow);
+            Booking.SetSelectedDate(tomorrow);
         }
     }
 

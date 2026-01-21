@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UniRx;
+using System.Linq;
 using UniRx.Triggers;
 
 public class HomeScreen : UIScreen
@@ -11,6 +12,7 @@ public class HomeScreen : UIScreen
     [SerializeField] private Button lineupButton;
     [SerializeField] private Button notificationsButton;
     [SerializeField] private Button bookPitchButton;
+    [SerializeField] private QrPanel qrPanel;
     [SerializeField] private ListContainer upcomingEvents;
 
     private BookingDataManager Booking => DataManager.Booking;
@@ -68,6 +70,26 @@ public class HomeScreen : UIScreen
                     ScreenManager?.Show(Screens.BookingDetailsScreen);
                 }
             }));
+
+            AddToDispose(UIManager.SubscribeToView(upcomingEvents, (int bookingId) =>
+            {
+                var booking = Booking.AllBookings.FirstOrDefault(b => b.id == bookingId);
+                if (booking != null)
+                {
+                    BookingConfirm.InitializeForBooking(booking);
+
+                    AddToDispose(BookingConfirm.QRCodeTexture.Subscribe(texture =>
+                    {
+                        if (texture != null && qrPanel != null)
+                        {
+                            var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                            qrPanel.Init(sprite);
+                            qrPanel.gameObject.SetActive(true);
+                            qrPanel.Show();
+                        }
+                    }));
+                }
+            }));
         }
 
         if (bookPitchButton != null && Booking.UpcomingBookingsAsObject != null)
@@ -76,6 +98,13 @@ public class HomeScreen : UIScreen
             
             AddToDispose(Booking.UpcomingBookingsAsObject.ObserveCountChanged()
                 .Subscribe(_ => UpdateBookPitchButtonVisibility()));
+
+            bookPitchButton.OnClickAsObservable()
+            .Subscribe(_ =>
+            {
+                ScreenManager.Show(Screens.PitchFinderScreen);
+            })
+            .AddTo(this);
         }
     }
 

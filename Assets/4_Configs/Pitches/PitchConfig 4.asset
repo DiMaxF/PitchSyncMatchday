@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PitchConfig
   id: 3
   name: Miami Soccer Park
-  address: 4701 NW 74th Ave, Doral, FL 33166
+  address: Doral
   location: {x: -80.3172, y: 25.8168}
   rating: 4.5
   reviewsCount: 289

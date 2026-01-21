@@ -109,9 +109,22 @@ public class BookingConfirmDataManager : IDataManager
             }
         }
         
-        GenerateQRCode(booking.qrPayload ?? JsonUtility.ToJson(booking));
+        string payload = booking.qrPayload;
+        if (string.IsNullOrEmpty(payload))
+        {
+            payload = GenerateCompactQRPayload(booking);
+        }
+        GenerateQRCode(payload);
     }
     
+    private string GenerateCompactQRPayload(BookingModel booking)
+    {
+        if (booking == null) return string.Empty;
+        
+        int durationMinutes = (int)booking.duration;
+        return $"{booking.id}|{booking.dateTimeIso}|{durationMinutes}";
+    }
+
     private StadiumModel GetStadiumById(int stadiumId)
     {
         if (_appModel?.stadiums == null) return null;
@@ -129,9 +142,9 @@ public class BookingConfirmDataManager : IDataManager
         var writer = new MultiFormatWriter();
         var hints = new Dictionary<EncodeHintType, object>();
         hints.Add(EncodeHintType.CHARACTER_SET, "UTF-8");
-        hints.Add(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        hints.Add(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
         
-        int qrSize = 512;
+        int qrSize = 256;
         var bitMatrix = writer.encode(payload, BarcodeFormat.QR_CODE, qrSize, qrSize, hints);
         
         var texture = new Texture2D(bitMatrix.Width, bitMatrix.Height, TextureFormat.RGBA32, false);

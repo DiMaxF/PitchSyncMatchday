@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19ed7c8e909fc6045a42af326d1a7762, type: 3}
   m_Name: Fade
   m_EditorClassIdentifier: Assembly-CSharp::AnimationConfig
-  Duration: 0.25
+  Duration: 0.15
   Delay: 0
   Ease: 2

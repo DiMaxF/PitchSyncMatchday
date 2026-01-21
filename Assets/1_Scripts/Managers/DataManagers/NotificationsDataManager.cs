@@ -33,6 +33,14 @@ public class NotificationsDataManager : IDataManager
                 if (enabled)
                 {
                     ProcessDueNotifications();
+                    RestoreScheduledNotifications();
+                }
+                else
+                {
+                    if (NotificationSender.Instance != null)
+                    {
+                        NotificationSender.Instance.CancelAllNotifications();
+                    }
                 }
             })
             .AddTo(_disposables);
@@ -88,6 +96,10 @@ public class NotificationsDataManager : IDataManager
         foreach (var n in sorted)
         {
             Queue.Add(n);
+            if (!n.delivered && TryParseDateTime(n.scheduledAtIso, out var scheduledTime) && scheduledTime > DateTime.Now)
+            {
+                ScheduleSystemNotification(n);
+            }
         }
         UpdateUnreadCount();
     }
@@ -211,8 +223,33 @@ public class NotificationsDataManager : IDataManager
 
     private void TriggerNotification(NotificationModel notification)
     {
-        Debug.Log($"[Notification] {notification.message}");
+        if (NotificationSender.Instance == null) return;
+
+        string title = GetNotificationTitle(notification.type);
+        string message = notification.message ?? string.Empty;
+
+        NotificationSender.Instance.SendNotification(title, message, notification.id);
+        
         DataManager.Instance.SaveAppModel();
+    }
+
+    private string GetNotificationTitle(string notificationType)
+    {
+        switch (notificationType)
+        {
+            case "MatchSoon":
+                return "Матч скоро начнётся";
+            case "CheckIn":
+                return "Пора на поле";
+            case "MatchFinished":
+                return "Матч завершён";
+            case "WalletRemainingDaily":
+                return "Напоминание о кошельке";
+            case "WalletUnpaid24h":
+                return "Неоплаченные расходы";
+            default:
+                return "Уведомление";
+        }
     }
 
     public void MarkRead(int notificationId)
@@ -253,6 +290,12 @@ public class NotificationsDataManager : IDataManager
         var notification = Queue.FirstOrDefault(n => n.id == notificationId);
         if (notification == null) return;
 
+        // Отменяем системное уведомление
+        if (NotificationSender.Instance != null)
+        {
+            NotificationSender.Instance.CancelNotification(notificationId);
+        }
+
         Queue.Remove(notification);
         _appModel.notifications.RemoveAll(n => n.id == notificationId);
         DataManager.Instance.SaveAppModel();
@@ -260,6 +303,12 @@ public class NotificationsDataManager : IDataManager
 
     public void DeleteAllNotifications()
     {
+        // Отменяем все системные уведомления
+        if (NotificationSender.Instance != null)
+        {
+            NotificationSender.Instance.CancelAllNotifications();
+        }
+
         Queue.Clear();
         _appModel.notifications.Clear();
         DataManager.Instance.SaveAppModel();
@@ -285,7 +334,25 @@ public class NotificationsDataManager : IDataManager
         Queue.Add(model);
         _appModel.notifications.Add(model);
         SortQueue();
+        
+        ScheduleSystemNotification(model);
+        
         DataManager.Instance.SaveAppModel();
+    }
+
+    private void ScheduleSystemNotification(NotificationModel notification)
+    {
+        if (NotificationSender.Instance == null) return;
+        if (!DataManager.Profile.NotificationsEnabled.Value) return;
+
+        if (!TryParseDateTime(notification.scheduledAtIso, out var scheduledTime)) return;
+
+        string title = GetNotificationTitle(notification.type);
+        string message = string.IsNullOrEmpty(notification.message) 
+            ? BuildMessage(notification) 
+            : notification.message;
+
+        NotificationSender.Instance.ScheduleNotification(title, message, scheduledTime, notification.id);
     }
 
     private bool HasNotification(NotificationType type, string scheduledAtIso, int? bookingId, int? matchId)
@@ -358,6 +425,19 @@ public class NotificationsDataManager : IDataManager
     {
         var count = Queue.Count(n => !n.isRead);
         UnreadCount.Value = count;
+    }
+
+    private void RestoreScheduledNotifications()
+    {
+        if (NotificationSender.Instance == null) return;
+
+        foreach (var notification in Queue)
+        {
+            if (!notification.delivered && TryParseDateTime(notification.scheduledAtIso, out var scheduledTime) && scheduledTime > DateTime.Now)
+            {
+                ScheduleSystemNotification(notification);
+            }
+        }
     }
 
     public void Dispose()

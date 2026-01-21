@@ -608,7 +608,7 @@ public class BookingDataManager : IDataManager
         }
 
         CurrentDraft.Value.status = BookingStatus.Confirmed;
-        CurrentDraft.Value.qrPayload = JsonUtility.ToJson(CurrentDraft.Value);
+        CurrentDraft.Value.qrPayload = GenerateCompactQRPayload(CurrentDraft.Value);
 
         bool isNewBooking = !_allBookings.Contains(CurrentDraft.Value);
         
@@ -771,19 +771,29 @@ public class BookingDataManager : IDataManager
         PastBookings.Clear();
 
         var upcoming = _allBookings
-            .Where(b => DateTime.TryParse(b.dateTimeIso, out var date) && date > now)
+            .Where(b => b.status != BookingStatus.Finished && 
+                       DateTime.TryParse(b.dateTimeIso, out var date) && date > now)
             .OrderBy(b => DateTime.Parse(b.dateTimeIso))
             .ToList();
 
         var past = _allBookings
-            .Where(b => DateTime.TryParse(b.dateTimeIso, out var date) && date <= now)
-            .OrderByDescending(b => DateTime.Parse(b.dateTimeIso))
+            .Where(b => b.status == BookingStatus.Finished || 
+                       (DateTime.TryParse(b.dateTimeIso, out var date) && date <= now))
+            .OrderByDescending(b => DateTime.TryParse(b.dateTimeIso, out var date) ? date : DateTime.MinValue)
             .ToList();
 
         foreach (var b in upcoming) UpcomingBookings.Add(b);
         foreach (var b in past) PastBookings.Add(b);
         
         UpdateFilteredBookingsByCategory();
+    }
+
+    private string GenerateCompactQRPayload(BookingModel booking)
+    {
+        if (booking == null) return string.Empty;
+        
+        int durationMinutes = (int)booking.duration;
+        return $"{booking.id}|{booking.dateTimeIso}|{durationMinutes}";
     }
 
     public void Dispose()

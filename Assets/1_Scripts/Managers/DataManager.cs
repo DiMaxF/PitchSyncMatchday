@@ -45,6 +45,32 @@ public class DataManager : MonoBehaviour
        
         LoadAppModel();
         InitManagers();
+        InitLocationService();
+        InitNotificationSender();
+    }
+
+    private void InitLocationService()
+    {
+        if (LocationService.Instance == null)
+        {
+            GameObject locationServiceObj = new GameObject("LocationService");
+            locationServiceObj.AddComponent<LocationService>();
+            DontDestroyOnLoad(locationServiceObj);
+        }
+        else
+        {
+            LocationService.Instance.Initialize();
+        }
+    }
+
+    private void InitNotificationSender()
+    {
+        if (NotificationSender.Instance == null)
+        {
+            GameObject notificationSenderObj = new GameObject("NotificationSender");
+            notificationSenderObj.AddComponent<NotificationSender>();
+            DontDestroyOnLoad(notificationSenderObj);
+        }
     }
 
     private void LoadAppModel()
